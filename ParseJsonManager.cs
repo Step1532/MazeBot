@@ -21,12 +21,5 @@ namespace ConsoleApplication1
             //TODO: Parse players
             return PlayersList;
         }
-
-        public List<KeyValuePair<Pair>> Get
-        {
-
-
-
-        }
     }
 }

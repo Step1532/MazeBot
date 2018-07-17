@@ -39,6 +39,67 @@ namespace MazeGenerator
 
                 }
             }
+            if (e.Message.Text == "/up")
+            {
+                if (e.Message.Chat.Id == e.Message.From.Id)
+                {
+                    var a = new LobbyControl();
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
+                    Console.WriteLine("good");
+
+                }
+            }
+            if (e.Message.Text == "/down")
+            {
+                if (e.Message.Chat.Id == e.Message.From.Id)
+                {
+                    var a = new LobbyControl();
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
+                    Console.WriteLine("good");
+
+                }
+            }
+            if (e.Message.Text == "/left")
+            {
+                if (e.Message.Chat.Id == e.Message.From.Id)
+                {
+                    var a = new LobbyControl();
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
+                    Console.WriteLine("good");
+
+                }
+            }
+            if (e.Message.Text == "/right")
+            {
+                if (e.Message.Chat.Id == e.Message.From.Id)
+                {
+                    var a = new LobbyControl();
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
+                    Console.WriteLine("good");
+
+                }
+            }
+            if (e.Message.Text == "/fire")
+            {
+                if (e.Message.Chat.Id == e.Message.From.Id)
+                {
+                    var a = new LobbyControl();
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
+                    Console.WriteLine("good");
+
+                }
+            }
+            if (e.Message.Text == "/right")
+            {
+                if (e.Message.Chat.Id == e.Message.From.Id)
+                {
+                    var a = new LobbyControl();
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
+                    Console.WriteLine("good");
+
+                }
+            }
+
             if (e.Message.Text == "/getinfo")
             {
                 var maze = NewMaze.GetNewMaze();
