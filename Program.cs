@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.IO;
-using ConsoleApplication1;
+﻿using MazeGenerator.TeleBot;
+using System;
 
 namespace MazeGenerator
 
 {
-      class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var bot = new MazeBot();
             Console.ReadLine();

@@ -8,7 +8,7 @@
     <ProjectGuid>{61DE5044-E01F-4E2F-9C08-D8302E172C94}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConsoleApplication1</RootNamespace>
+    <RootNamespace>MazeGenerator</RootNamespace>
     <AssemblyName>MazeGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
@@ -76,16 +76,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bot.cs" />
-    <Compile Include="CoordinateEvents.cs" />
-    <Compile Include="JsonManager.cs" />
-    <Compile Include="Lobbies.cs" />
-    <Compile Include="LobbyControl.cs" />
-    <Compile Include="Maze.cs" />
-    <Compile Include="MazeLogic.cs" />
-    <Compile Include="NewMaze.cs" />
-    <Compile Include="ParseJsonManager.cs" />
-    <Compile Include="Players.cs" />
+    <Compile Include="TeleBot\Bot.cs" />
+    <Compile Include="MazeLogic\CoordinateEvents.cs" />
+    <Compile Include="Tools\JsonManager.cs" />
+    <Compile Include="MazeLogic\Lobbies.cs" />
+    <Compile Include="TeleBot\LobbyControl.cs" />
+    <Compile Include="NewGame\Maze.cs" />
+    <Compile Include="MazeLogic\MazeLogic.cs" />
+    <Compile Include="NewGame\NewMaze.cs" />
+    <Compile Include="Tools\ParseJsonManager.cs" />
+    <Compile Include="NewGame\Players.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
