@@ -10,7 +10,7 @@ namespace MazeGenerator.Tools
     {
         public static string AnswerUp(bool isAction, string username)
         {
-
+            return null;
         }
     }
 }
