@@ -18,8 +18,8 @@ namespace MazeGenerator.NewGame
         public static void AddNewPlayer(int playerId, int userId, int lobbydId)
         {
             ParseJsonManager e = new ParseJsonManager();
-            int h = e.GetMazeSize(lobbydId).x;
-            int w = e.GetMazeSize(lobbydId).y;
+            int h = e.GetMazeSize(lobbydId)[0].x;
+            int w = e.GetMazeSize(lobbydId)[0].y;
             Random rnd = new Random();
             CoordinateEvents a = new CoordinateEvents();
             Player player = new Player

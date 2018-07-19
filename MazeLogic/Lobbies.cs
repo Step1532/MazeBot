@@ -23,11 +23,11 @@ namespace MazeGenerator.MazeLogic
             List<bool> lobbyList = new List<bool>();
             for (int i = 0; i < LobbyList.Count; i++)
             {
-                if (LobbyList[i] == a.RulesList[0]) lobbyList[i] = true;
+                if (LobbyList[i] == a.RulesList[0]) lobbyList.Add(true);
             }
             return lobbyList;
         }
-
+        //TODO: добавление новых лобби
         public void CreateNewLobby()
         {
             

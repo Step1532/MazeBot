@@ -9,6 +9,7 @@ using Telegram.Bot;
 using System.Threading.Tasks;
 using MazeGenerator.NewGame;
 using MazeGenerator.TeleBot;
+using MazeGenerator.Tools;
 using Telegram.Bot.Args;
 using Telegram.Bot.Requests;
 using Telegram.Bot.Types.Enums;
@@ -106,7 +107,9 @@ namespace MazeGenerator.TeleBot
 
             if (e.Message.Text == "/getinfo")
             {
-                var maze = NewMaze.GetNewMaze();
+                NewMaze.GetNewMaze(1);
+                ParseJsonManager a = new ParseJsonManager();
+                bool[,] maze = a.GetMazeMap(1);
                 Bot.SendTextMessageAsync(e.Message.Chat.Id, "```" + maze + "```", ParseMode.Markdown);
                 Console.WriteLine("good");
             }

@@ -6,12 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MazeGenerator;
+using MazeGenerator.Tools;
 
 namespace MazeGenerator.NewGame
 {
     class NewMaze
     {
-        public static string GetNewMaze()
+        public static void GetNewMaze(int Gameid)
         {
             ushort h, w;
             Random rnd = new Random();
@@ -27,23 +28,24 @@ namespace MazeGenerator.NewGame
             maze1.dumpMaze();
 
             Byte[,] blockmaze = maze1.LineToBlock();
-            string s = "";
-            for (UInt16 y = 0; y < blockmaze.GetLength(1); y++)
-            {
-                string xline = string.Empty;
+            JsonManager e= new JsonManager();
+            e.WriteMazeToJson(blockmaze, Gameid);
+            Console.WriteLine(string.Format($"new maze is created in lobby{1}"), Gameid);
+            //string s = "";
+            //for (UInt16 y = 0; y < blockmaze.GetLength(1); y++)
+            //{
+            //    string xline = string.Empty;
 
-                for (UInt16 x = 0; x < blockmaze.GetLength(0); x++)
-                {
-                    xline += ' ' + blockmaze[x, y].ToString();
-                }
+            //    for (UInt16 x = 0; x < blockmaze.GetLength(0); x++)
+            //    {
+            //        xline += blockmaze[x, y].ToString();
+            //    }
 
-                s += string.Format("{1}", y, xline);
-                //   File.Create("new_labirinth.dat").Close();
-                //File.AppendAllText("new_labirinth.dat", string.Format("{1}", y, xline));
+            //    s += string.Format("{1}", y, xline);
+            //    //   File.Create("new_labirinth.dat").Close();
+            //    //File.AppendAllText("new_labirinth.dat", string.Format("{1}", y, xline));
 
-            }
-
-            return s;
+            //}
         }
     }
 }
