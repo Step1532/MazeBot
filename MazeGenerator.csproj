@@ -76,6 +76,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MazeLogic\Answers.cs" />
+    <Compile Include="Rules.cs" />
     <Compile Include="TeleBot\Bot.cs" />
     <Compile Include="MazeLogic\CoordinateEvents.cs" />
     <Compile Include="Tools\JsonManager.cs" />
@@ -85,7 +87,7 @@
     <Compile Include="MazeLogic\MazeLogic.cs" />
     <Compile Include="NewGame\NewMaze.cs" />
     <Compile Include="Tools\ParseJsonManager.cs" />
-    <Compile Include="NewGame\Players.cs" />
+    <Compile Include="NewGame\Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

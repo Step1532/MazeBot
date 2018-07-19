@@ -8,12 +8,12 @@ namespace MazeGenerator.TeleBot
         {
             switch (CheckLobby())
             {
-                case 1: return "";
-                case 2: return "";
-                case 3: return "";
-                case 4: return "";
-                case 5: return "";
-                default:return "Sorry";
+                case 1: return "https://ссыль на 1 лобби";
+                case 2: return "https://ссыль на 2 лобби";
+                case 3: return "https://ссыль на 3 лобби";
+                case 4: return "https://ссыль на 4 лобби";
+                case 5: return "https://ссыль на 5 лобби";
+                default:return "Sorry, all lobbies are full";
             }
         }
         private int CheckLobby()
@@ -22,8 +22,7 @@ namespace MazeGenerator.TeleBot
             var a = new Lobbies();
             var lobbies = a.IsFullLobby();
             int i = 0;
-            for (; i < lobbies.Count; i++) if(!lobbies[i]) break;
-            //TODO:  в JSON пишем +1
+            for (; i < lobbies.Count; i++) if(!lobbies[i]) break;      
             return i;
         }
 
