@@ -17,16 +17,16 @@ namespace MazeGenerator.TeleBot
                 default:return "Sorry, all lobbies are full";
             }
         }
-        public int CheckLobbyId(int lobbyid)
+        public int CheckLobbyId(long lobbyid)
         {
             switch (lobbyid)
             {
                 case 310811454: return 1;
-                case 2: return 2;
-                case 3: return 3;
-                case 4: return 4;
-                case 5: return 5;
-                default: return 6;
+                case 2: return 1;
+                case 3: return 2;
+                case 4: return 3;
+                case 5: return 4;
+                default: return 1;
             }
         }
         private int CheckLobby()

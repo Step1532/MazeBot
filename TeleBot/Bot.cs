@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using MazeGenerator.NewGame;
 using MazeGenerator.TeleBot;
 using MazeGenerator.Tools;
+using MazeGenerator.MazeLogic;
 using Telegram.Bot.Args;
 using Telegram.Bot.Requests;
 using Telegram.Bot.Types.Enums;
@@ -20,6 +21,13 @@ namespace MazeGenerator.TeleBot
     public class MazeBot
     {
         public readonly TelegramBotClient Bot;
+        public LobbyControl a = new LobbyControl();
+        public Player player = new Player();
+        public ParseJsonManager PJson = new ParseJsonManager();
+        public  JsonManager MJson = new JsonManager();
+        public Rules ruls = new Rules();
+        public MazeLogic.MazeLogic Act = new MazeLogic.MazeLogic();
+        public int stroke = 1;
 
         public MazeBot(string _tMaze)
         {
@@ -36,7 +44,6 @@ namespace MazeGenerator.TeleBot
             {
                 if (e.Message.Chat.Id == e.Message.From.Id)
                 {
-                    var a = new LobbyControl();
                     Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
                     Console.WriteLine("good");
 
@@ -44,25 +51,33 @@ namespace MazeGenerator.TeleBot
             }
             if (e.Message.Text == "/add")
             {
-                    Player player = new Player();
-                    LobbyControl a = new LobbyControl();
-                    int lobbydId = a.CheckLobbyId(e.Message.From.Id);
-                    ParseJsonManager k = new ParseJsonManager();
-                    var lobbyList = k.GetLobbiesList();
-                    player.AddNewPlayer(lobbyList[lobbydId-1], e.Message.From.Id, lobbydId);
-                    Console.WriteLine("good");          
+
+                    int lobbydId = a.CheckLobbyId(e.Message.Chat.Id);
+                    var lobbyList = PJson.GetLobbiesList();
+                //TODO переделать, ограничение, разбан чата
+                if (lobbyList[lobbydId - 1] != ruls.RulesList[0]) 
+                {
+                    lobbyList[lobbydId - 1]++;
+                    player.AddNewPlayer(lobbyList[lobbydId - 1], e.Message.From.Id, lobbydId);
+                    NewGames game = new NewGames();
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, game.CheckStartGame(lobbyList[lobbydId - 1], lobbydId),
+                        ParseMode.Markdown);
+                    MJson.WriteLobbiesPlayerCountToJson(lobbyList);
+                    Console.WriteLine("good");
+                }
+                else { Bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId); }
+                
             }
 
             //TODO: написать команды + направление движения
-            if (e.Message.Text == "/up")
+            if (e.Message.Text == "/up" && e.Message.Chat.Id != e.Message.From.Id)
             {
-                if (e.Message.Chat.Id == e.Message.From.Id)
-                {
-                    var a = new LobbyControl();
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
+                    string s = FormatAnswers.AnswerUp(Act.TryMoveUp(e.Message.From.Id, a.CheckLobbyId(e.Message.From.Id)),
+                    e.Message.From.Username);
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, s, ParseMode.Markdown);
                     Console.WriteLine("good");
-
-                }
+                    stroke++;
+                    if (stroke > ruls.RulesList[0]) stroke = 1;
             }
             if (e.Message.Text == "/down")
             {

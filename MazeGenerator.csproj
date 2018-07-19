@@ -77,9 +77,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Answers.cs" />
+    <Compile Include="NewGames.cs" />
     <Compile Include="Rules.cs" />
     <Compile Include="TeleBot\Bot.cs" />
     <Compile Include="MazeLogic\CoordinateEvents.cs" />
+    <Compile Include="Tools\FormatAnswers.cs" />
     <Compile Include="Tools\JsonManager.cs" />
     <Compile Include="MazeLogic\Lobbies.cs" />
     <Compile Include="TeleBot\LobbyControl.cs" />

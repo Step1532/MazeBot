@@ -15,6 +15,8 @@ namespace MazeGenerator.NewGame
         public CoordinateEvents rotate = new CoordinateEvents();
         public int userid;
         public CoordinateEvents UserCoordinate = new CoordinateEvents();
+        public  JsonManager json = new JsonManager();
+        public ParseJsonManager pjson = new ParseJsonManager();
         public void AddNewPlayer(int playerId, int userId, int lobbydId)
         { 
             ParseJsonManager e = new ParseJsonManager();
@@ -31,6 +33,9 @@ namespace MazeGenerator.NewGame
                 userid = userId,
                 UserCoordinate = a.GeneraCoordinateEvents(lobbydId)              
             };
+
+            json.WritePlayersToJson(player, lobbydId);
+            Console.WriteLine(player.playerid + " " + player.rotate.x + " " + player.rotate.y + " " + player.userid + " " + player.UserCoordinate.x + player.UserCoordinate.y);
         }
 
         public static List<int> GetPlayerInfo(int playerId)

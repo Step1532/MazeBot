@@ -9,7 +9,7 @@ using MazeGenerator.NewGame;
 using Newtonsoft.Json;
 namespace MazeGenerator.Tools
 {
-    class JsonManager
+    public class JsonManager
     {
         //TODO: запись в Json
 
@@ -23,11 +23,32 @@ namespace MazeGenerator.Tools
             File.WriteAllText(string.Format($@"\Game{Gameid}\CoordinateEvents.json"), serialized);
 
         }
-        public void WritePlayersToJson(List<Player> players, int Gameid)
+        public void WritePlayersToJson(Player players, int Gameid)
         {
-            string serialized = JsonConvert.SerializeObject(players);
-            Directory.CreateDirectory($@"\Game{Gameid}");
-            File.WriteAllText(string.Format($@"\Game{Gameid}\Players.json"), serialized);
+            List < Player > PlayersList = new List<Player>();
+            string json = File.ReadAllText(string.Format($@"\Game{Gameid}\Players.json"));
+            PlayersList = JsonConvert.DeserializeObject<List<Player>>(json);
+            if (PlayersList == null)
+            {
+                PlayersList = new List<Player>();
+                PlayersList.Add(players);
+                string serialized = JsonConvert.SerializeObject(PlayersList);
+                Directory.CreateDirectory($@"\Game{Gameid}");
+                File.WriteAllText(string.Format($@"\Game{Gameid}\Players.json"), serialized);
+            }
+            else
+            {
+                PlayersList.Add(players);
+                string serialized = JsonConvert.SerializeObject(PlayersList);
+                Directory.CreateDirectory($@"\Game{Gameid}");
+                File.WriteAllText(string.Format($@"\Game{Gameid}\Players.json"), serialized);
+            }
+        }
+
+        public void SavePlayerToJson(List<Player> players, int gameId)
+        {
+
+
         }
         public void WriteCoordinateEventsToJson(List<CoordinateEvents> eventses, int Gameid)
         {
