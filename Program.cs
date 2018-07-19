@@ -8,7 +8,9 @@ namespace MazeGenerator
     {
         private static void Main(string[] args)
         {
-            var bot = new MazeBot();
+            string token;
+            token = Console.ReadLine();
+            var bot = new MazeBot(token);
             Console.ReadLine();
             bot.Bot.StopReceiving();
         }

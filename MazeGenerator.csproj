@@ -76,7 +76,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MazeLogic\Answers.cs" />
+    <Compile Include="Answers.cs" />
     <Compile Include="Rules.cs" />
     <Compile Include="TeleBot\Bot.cs" />
     <Compile Include="MazeLogic\CoordinateEvents.cs" />

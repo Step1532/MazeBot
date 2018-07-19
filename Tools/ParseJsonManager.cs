@@ -23,9 +23,9 @@ namespace MazeGenerator.Tools
             //TODO: парс лабиринта
             return e;
         }
-        public List<Players> GetPlayersList(int GameId)
+        public List<Player> GetPlayersList(int GameId)
         {
-            List<Players> PlayersList = new List<Players>();
+            List<Player> PlayersList = new List<Player>();
             //TODO: Parse players
             return PlayersList;
         }

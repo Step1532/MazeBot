@@ -18,10 +18,9 @@ namespace MazeGenerator.TeleBot
 {
     public class MazeBot
     {
-        private static readonly string _tMaze = "557358914:AAE03Faw9-BwKFygJHFMl530FiGH9sPvB6Y";
         public readonly TelegramBotClient Bot;
 
-        public MazeBot()
+        public MazeBot(string _tMaze)
         {
             Bot = new TelegramBotClient(_tMaze);
             Bot.OnMessage += OnNewMessage;
