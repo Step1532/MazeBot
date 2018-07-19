@@ -20,7 +20,7 @@ namespace MazeGenerator.MazeLogic
             ParseJsonManager a = new ParseJsonManager();
             Random rnd =new Random();
             bool[,] mazeMap = a.GetMazeMap(gameId);
-            e = a.GetMazeSize(gameId)[0];
+            e = a.GetMazeEventses(gameId)[0];
             int x, y;
             for (int i = 0; i < 1000; i++)
             {

@@ -25,12 +25,12 @@ namespace MazeGenerator.TeleBot
         {
             Bot = new TelegramBotClient(_tMaze);
             Bot.OnMessage += OnNewMessage;
-           
             Bot.StartReceiving();
         }
 
         public void OnNewMessage(object sender, MessageEventArgs e)
         {
+
             if (e.Message.Type != MessageType.Text) return;
             if (e.Message.Text == "/start")
             {
@@ -42,7 +42,17 @@ namespace MazeGenerator.TeleBot
 
                 }
             }
-            
+            if (e.Message.Text == "/add")
+            {
+                    Player player = new Player();
+                    LobbyControl a = new LobbyControl();
+                    int lobbydId = a.CheckLobbyId(e.Message.From.Id);
+                    ParseJsonManager k = new ParseJsonManager();
+                    var lobbyList = k.GetLobbiesList();
+                    player.AddNewPlayer(lobbyList[lobbydId-1], e.Message.From.Id, lobbydId);
+                    Console.WriteLine("good");          
+            }
+
             //TODO: написать команды + направление движения
             if (e.Message.Text == "/up")
             {
@@ -109,8 +119,6 @@ namespace MazeGenerator.TeleBot
             {
                 NewMaze.GetNewMaze(1);
                 ParseJsonManager a = new ParseJsonManager();
-                bool[,] maze = a.GetMazeMap(1);
-                Bot.SendTextMessageAsync(e.Message.Chat.Id, "```" + maze + "```", ParseMode.Markdown);
                 Console.WriteLine("good");
             }
         } 

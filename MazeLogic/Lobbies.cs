@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using MazeGenerator.Tools;
@@ -16,16 +17,18 @@ namespace MazeGenerator.MazeLogic
             ParseJsonManager e = new ParseJsonManager();
             LobbyList = e.GetLobbiesList(); 
         }
-        public List<bool> IsFullLobby()
+        public int IsFullLobby()
         {
             ReadLobbyList();
             Rules a = new Rules();
-            List<bool> lobbyList = new List<bool>();
             for (int i = 0; i < LobbyList.Count; i++)
             {
-                if (LobbyList[i] == a.RulesList[0]) lobbyList.Add(true);
+                if (LobbyList[i] != a.RulesList[0])
+                {
+                    return i + 1;
+                }
             }
-            return lobbyList;
+            return 0;
         }
         //TODO: добавление новых лобби
         public void CreateNewLobby()

@@ -14,19 +14,19 @@ namespace MazeGenerator.Tools
     {
         public bool[,] GetMazeMap(int GameId)
         {
-            string json = File.ReadAllText(string.Format($"/Game{GameId}/maze.json"));
+            string json = File.ReadAllText(string.Format($@"\Game{GameId}\maze.json"));
             bool[,] maze = JsonConvert.DeserializeObject<bool[,]>(json);
             return maze;
         }
-        public List<CoordinateEvents> GetMazeSize (int GameId)
+        public List<CoordinateEvents> GetMazeEventses(int GameId)
         {
-            string json = File.ReadAllText(string.Format($"/Game{GameId}/CoordinateEvents.json"));
+            string json = File.ReadAllText(string.Format($@"\Game{GameId}\CoordinateEvents.json"));
             List<CoordinateEvents> e = JsonConvert.DeserializeObject<List<CoordinateEvents>>(json);
             return e;
         }
         public List<Player> GetPlayersList(int GameId)
         {
-            string json = File.ReadAllText(string.Format($"/Game{GameId}/Players.json"));
+            string json = File.ReadAllText(string.Format($@"\Game{GameId}\Players.json"));
             List<Player> PlayersList = JsonConvert.DeserializeObject<List<Player>>(json);
             return PlayersList;
         }

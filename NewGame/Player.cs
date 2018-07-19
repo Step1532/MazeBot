@@ -12,23 +12,24 @@ namespace MazeGenerator.NewGame
     public class Player
     {
         public int playerid;
-        public int rotate;
+        public CoordinateEvents rotate = new CoordinateEvents();
         public int userid;
         public CoordinateEvents UserCoordinate = new CoordinateEvents();
-        public static void AddNewPlayer(int playerId, int userId, int lobbydId)
-        {
+        public void AddNewPlayer(int playerId, int userId, int lobbydId)
+        { 
             ParseJsonManager e = new ParseJsonManager();
-            int h = e.GetMazeSize(lobbydId)[0].x;
-            int w = e.GetMazeSize(lobbydId)[0].y;
+            int h = e.GetMazeEventses(lobbydId)[0].x;
+            int w = e.GetMazeEventses(lobbydId)[0].y;
             Random rnd = new Random();
             CoordinateEvents a = new CoordinateEvents();
+            a.x = rnd.Next(-1, 1);
+            a.y = rnd.Next(-1, 1);
             Player player = new Player
             {
                 playerid = playerId,
-                rotate = rnd.Next(1, 4),
+                rotate = a,
                 userid = userId,
-                UserCoordinate = a.GeneraCoordinateEvents(lobbydId)
-                
+                UserCoordinate = a.GeneraCoordinateEvents(lobbydId)              
             };
         }
 
