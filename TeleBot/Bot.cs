@@ -44,7 +44,7 @@ namespace MazeGenerator.TeleBot
             {
                 if (e.Message.Chat.Id == e.Message.From.Id)
                 {
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
+                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(e.Message.From.Id), ParseMode.Markdown);
                     Console.WriteLine("good");
 
                 }
@@ -62,7 +62,7 @@ namespace MazeGenerator.TeleBot
                     NewGames game = new NewGames();
                     Bot.SendTextMessageAsync(e.Message.Chat.Id, game.CheckStartGame(lobbyList[lobbydId - 1], lobbydId),
                         ParseMode.Markdown);
-                    MJson.WriteLobbiesPlayerCountToJson(lobbyList);
+                   
                     Console.WriteLine("good");
                 }
                 else { Bot.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId); }

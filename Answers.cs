@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MazeGenerator.MazeLogic
 {
+    //TODO: move to FormatPrint
     public class Answers
     {
         public readonly List<string> AnswerId0 = new List<string>()

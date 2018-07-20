@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MazeGenerator
 {
+    //TODO: use properties
     public class Rules
     {
         public List<int> RulesList = new List<int>()

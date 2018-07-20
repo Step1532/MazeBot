@@ -21,15 +21,17 @@ namespace MazeGenerator.MazeLogic
         //public Rules ruls = new Rules();
         //public MazeLogic act = new MazeLogic();
         public bool[,] maze;
+        //TODO: enum with direction
+        //TODO: user forward/back
         public  bool TryMoveUp(int playerId, int gameid)
         {
             List<Player> players = new List<Player>();
             players = PJson.GetPlayersList(gameid);
-            player = players.Find(e => player.playerid == playerId);
+            player = players.Find(e => player.Playerid == playerId);
             maze = PJson.GetMazeMap(gameid);
-            if (maze[player.UserCoordinate.x, player.UserCoordinate.y - 1] == false)
+            if (maze[player.UserCoordinate.X, player.UserCoordinate.Y - 1] == false)
             {
-                player.UserCoordinate.y--;
+                player.UserCoordinate.Y--;
                 return true;
             }
             else

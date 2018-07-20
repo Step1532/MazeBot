@@ -5,15 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MazeGenerator.MazeLogic;
+using MazeGenerator.Models;
 using MazeGenerator.NewGame;
 using Newtonsoft.Json;
 namespace MazeGenerator.Tools
 {
+    //TODO: refactoring
     public class JsonManager
     {
+        public static void UpdateJson<T>(string fileName, Action<T> update)
+        {
+            var data = JsonConvert.DeserializeObject<T>(fileName);
+            update(data);
+            File.WriteAllText(fileName, JsonConvert.SerializeObject(data));
+        }
+
         //TODO: запись в Json
 
-        public void WriteMazeToJson(Byte[,] maze, int Gameid, List<CoordinateEvents> eventses)
+        public void WriteMazeToJson(Byte[,] maze, int Gameid, List<Coordinate> eventses)
         {
             string serialized = JsonConvert.SerializeObject(maze);
             Directory.CreateDirectory($@"\Game{Gameid}");
@@ -50,7 +59,7 @@ namespace MazeGenerator.Tools
 
 
         }
-        public void WriteCoordinateEventsToJson(List<CoordinateEvents> eventses, int Gameid)
+        public void WriteCoordinateEventsToJson(List<Coordinate> eventses, int Gameid)
         {
             string serialized = JsonConvert.SerializeObject(eventses);
             Directory.CreateDirectory($@"\Game{Gameid}");

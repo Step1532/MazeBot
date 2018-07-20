@@ -7,12 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using MazeGenerator;
 using MazeGenerator.MazeLogic;
+using MazeGenerator.Models;
 using MazeGenerator.Tools;
 
 namespace MazeGenerator.NewGame
 {
+    //TODO: move to NewGame
     class NewMaze
     {
+        //TODO: void InitializeLobbyWithMaze(Lobby lobby)
         public static void GetNewMaze(int Gameid)
         {
             ushort h, w;
@@ -31,10 +34,10 @@ namespace MazeGenerator.NewGame
             Byte[,] blockmaze = maze1.LineToBlock();
             JsonManager e= new JsonManager();
             //TODO: хрень, переписать!!!!!!!!!!!
-            List<CoordinateEvents> listEvents = new List<CoordinateEvents>();
-            CoordinateEvents a = new CoordinateEvents();
-            a.x = h;
-            a.y = w;
+            List<Coordinate> listEvents = new List<Coordinate>();
+            Coordinate a;
+            a.X = h;
+            a.Y = w;
             listEvents.Add(a);
             e.WriteMazeToJson(blockmaze, Gameid, listEvents);
             Console.WriteLine(string.Format($"new maze is created in lobby{Gameid}"));

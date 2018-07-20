@@ -77,19 +77,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Answers.cs" />
+    <Compile Include="Models\Coordinate.cs" />
+    <Compile Include="Models\Direction.cs" />
+    <Compile Include="Models\GameEvent.cs" />
+    <Compile Include="Models\EventTypeEnum.cs" />
+    <Compile Include="Models\Lobby.cs" />
+    <Compile Include="Models\LobbyRules.cs" />
     <Compile Include="NewGames.cs" />
     <Compile Include="Rules.cs" />
     <Compile Include="TeleBot\Bot.cs" />
-    <Compile Include="MazeLogic\CoordinateEvents.cs" />
+    <Compile Include="Tools\Extentions.cs" />
     <Compile Include="Tools\FormatAnswers.cs" />
     <Compile Include="Tools\JsonManager.cs" />
-    <Compile Include="MazeLogic\Lobbies.cs" />
     <Compile Include="TeleBot\LobbyControl.cs" />
     <Compile Include="NewGame\Maze.cs" />
     <Compile Include="MazeLogic\MazeLogic.cs" />
     <Compile Include="NewGame\NewMaze.cs" />
     <Compile Include="Tools\ParseJsonManager.cs" />
-    <Compile Include="NewGame\Player.cs" />
+    <Compile Include="Models\Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -100,6 +105,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
