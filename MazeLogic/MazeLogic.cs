@@ -16,7 +16,6 @@ namespace MazeGenerator.MazeLogic
         public Random rnd = new Random();
         //public readonly TelegramBotClient Bot;
         public Player player = new Player();
-        public ParseJsonManager PJson = new ParseJsonManager();
         //public JsonManager MJson = new JsonManager();
         //public Rules ruls = new Rules();
         //public MazeLogic act = new MazeLogic();
@@ -26,9 +25,9 @@ namespace MazeGenerator.MazeLogic
         public  bool TryMove(int playerId, int gameid, Direction direction)
         {
             List<Player> players = new List<Player>();
-            players = PJson.GetPlayersList(gameid);
+            players = ParseJsonManager.GetPlayersList(gameid);
             player = players.Find(e => player.Playerid == playerId);
-            maze = PJson.GetMazeMap(gameid);
+            maze = ParseJsonManager.GetMazeMap(gameid);
             if (maze[player.UserCoordinate.X, player.UserCoordinate.Y - 1] == false)
             {
                 player.UserCoordinate.Y--;

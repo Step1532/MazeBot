@@ -78,12 +78,11 @@
   <ItemGroup>
     <Compile Include="Answers.cs" />
     <Compile Include="Models\Coordinate.cs" />
-    <Compile Include="Models\Direction.cs" />
     <Compile Include="Models\GameEvent.cs" />
     <Compile Include="Models\EventTypeEnum.cs" />
     <Compile Include="Models\Lobby.cs" />
     <Compile Include="Models\LobbyRules.cs" />
-    <Compile Include="NewGames.cs" />
+    <Compile Include="NewGame\NewGames.cs" />
     <Compile Include="Rules.cs" />
     <Compile Include="TeleBot\Bot.cs" />
     <Compile Include="Tools\Extentions.cs" />
@@ -92,7 +91,6 @@
     <Compile Include="TeleBot\LobbyControl.cs" />
     <Compile Include="NewGame\Maze.cs" />
     <Compile Include="MazeLogic\MazeLogic.cs" />
-    <Compile Include="NewGame\NewMaze.cs" />
     <Compile Include="Tools\ParseJsonManager.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="Program.cs" />

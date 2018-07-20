@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 namespace MazeGenerator.Tools
 {
     //TODO: refactoring
-    public class JsonManager
+    public static class JsonManager
     {
         public static void UpdateJson<T>(string fileName, Action<T> update)
         {
@@ -22,7 +22,7 @@ namespace MazeGenerator.Tools
 
         //TODO: запись в Json
 
-        public void WriteMazeToJson(Byte[,] maze, int Gameid, List<Coordinate> eventses)
+        public static void WriteMazeToJson(Byte[,] maze, int Gameid, List<Coordinate> eventses)
         {
             string serialized = JsonConvert.SerializeObject(maze);
             Directory.CreateDirectory($@"\Game{Gameid}");
@@ -32,7 +32,7 @@ namespace MazeGenerator.Tools
             File.WriteAllText(string.Format($@"\Game{Gameid}\CoordinateEvents.json"), serialized);
 
         }
-        public void WritePlayersToJson(Player players, int Gameid)
+        public static void WritePlayersToJson(Player players, int Gameid)
         {
             List < Player > PlayersList = new List<Player>();
             string json = File.ReadAllText(string.Format($@"\Game{Gameid}\Players.json"));
@@ -54,18 +54,18 @@ namespace MazeGenerator.Tools
             }
         }
 
-        public void SavePlayerToJson(List<Player> players, int gameId)
+        public static void SavePlayerToJson(List<Player> players, int gameId)
         {
 
 
         }
-        public void WriteCoordinateEventsToJson(List<Coordinate> eventses, int Gameid)
+        public static void WriteCoordinateEventsToJson(List<Coordinate> eventses, int Gameid)
         {
             string serialized = JsonConvert.SerializeObject(eventses);
             Directory.CreateDirectory($@"\Game{Gameid}");
             File.WriteAllText(string.Format($@"\Game{Gameid}\CoordinateEvents.json"), serialized);
         }
-        public void WriteLobbiesPlayerCountToJson(List<int> playerscount)
+        public static void WriteLobbiesPlayerCountToJson(List<int> playerscount)
         {
             string serialized = JsonConvert.SerializeObject(playerscount);
             File.WriteAllText(string.Format("lobbiesPlayerCount.json"), serialized);

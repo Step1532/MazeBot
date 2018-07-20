@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace MazeGenerator.Models
 {
+    //TODO: fill with types
     public enum EventTypeEnum
     {
       Size  
