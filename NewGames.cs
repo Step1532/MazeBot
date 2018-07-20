@@ -55,7 +55,7 @@ namespace MazeGenerator
 
             Byte[,] blockmaze = maze1.LineToBlock();
             //TODO: хрень, переписать!!!!!!!!!!!
-            lobby.Maze = blockmaze;
+//            lobby.Maze = blockmaze;
            // e.WriteMazeToJson(blockmaze, Gameid, listEvents);
            //Console.WriteLine(string.Format($"new maze is created in lobby{Gameid}"));
         }
@@ -64,8 +64,8 @@ namespace MazeGenerator
         {
             List<Coordinate> listEvents = new List<Coordinate>();
             Coordinate a;
-            a = lobby.Maze.GenerateRandomPosition();
-            listEvents.Add(a);
+//            a = lobby.Maze.GenerateRandomPosition();
+//            listEvents.Add(a);
             //TODO: считывание с правил в цикле 
         }
     }

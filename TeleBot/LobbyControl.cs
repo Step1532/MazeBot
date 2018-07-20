@@ -12,20 +12,20 @@ namespace MazeGenerator.TeleBot
     {
         public string GenerateLink(int userId)
         {
-            if (Validation(userId))
-            {
+//           if (Validation(userId))
+//            {
                 //TODO: ссылки на лобби, сделать лобби
-                switch (CheckLobby())
-                {
-                    case 1: return "https://t.me/joinchat/EoabPk5DPTqJ231LveIF0g";
-                    case 2: return "https://ссыль_на-2-лобби";
-                    case 3: return "https://ссыль-на-3--обби";
-                    case 4: return "https://ссыль-на-4-лобби";
-                    case 5: return "https://ссыль-на-5--обби";
-                    default: return null;
+//                switch (CheckLobby())
+//                {
+//                    case 1: return "https://t.me/joinchat/EoabPk5DPTqJ231LveIF0g";
+//                    case 2: return "https://ссыль_на-2-лобби";
+//                    case 3: return "https://ссыль-на-3--обби";
+//                    case 4: return "https://ссыль-на-4-лобби";
+//                    case 5: return "https://ссыль-на-5--обби";
+//                    default: return null;
                     //default: return "Sorry, all lobbies are full";
-                }
-            }
+//                }
+//            }
 
             return null;
         }
@@ -35,9 +35,9 @@ namespace MazeGenerator.TeleBot
             return true;
             List<int> users = JsonConvert.DeserializeObject<List<int>>(File.ReadAllText($@"\users.json"));
             //TODO: чет сделать  с этим методом
-            if (users.TrueForAll(e => userId))
+//            if (users.TrueForAll(e => userId))
             {
-                JsonManager.UpdateJson("onlineUsersId.json", (List<int> users) => { users.Add(userId); });   
+//                JsonManager.UpdateJson("onlineUsersId.json", (List<int> users) => { users.Add(userId); });   
             }
 
         }
@@ -58,13 +58,13 @@ namespace MazeGenerator.TeleBot
         private int FindEmptyLobby()
         {
             ParseJsonManager e = new ParseJsonManager();
-            List<int> LobbyList = e.GetLobbiesList();
+//            List<int> LobbyList = e.GetLobbiesList();
             Rules a = new Rules();
-            for (int i = 0; i < LobbyList.Count; i++)
+//            for (int i = 0; i < LobbyList.Count; i++)
             {
-                if (LobbyList[i] != a.RulesList[0])
+//                if (LobbyList[i] != a.RulesList[0])
                 {
-                    return i + 1;
+//                    return i + 1;
                 }
             }
             return 0;

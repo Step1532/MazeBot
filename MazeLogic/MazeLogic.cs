@@ -23,7 +23,7 @@ namespace MazeGenerator.MazeLogic
         public bool[,] maze;
         //TODO: enum with direction
         //TODO: user forward/back
-        public  bool TryMove(int playerId, int gameid, int direction)
+        public  bool TryMove(int playerId, int gameid, Direction direction)
         {
             List<Player> players = new List<Player>();
             players = PJson.GetPlayersList(gameid);
