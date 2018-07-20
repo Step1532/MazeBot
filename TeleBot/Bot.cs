@@ -52,8 +52,9 @@ namespace MazeGenerator.TeleBot
             if (e.Message.Text == "/add")
             {
 
-                    int lobbydId = a.CheckLobbyId(e.Message.Chat.Id);
-                    var lobbyList = PJson.GetLobbiesList();
+                    int lobbydId = a.GetLobbyId(e.Message.Chat.Id);
+                    var lobbyList = PJson.();
+                //TODO: Вынести логику, добавть статические всему
                 //TODO переделать, ограничение, разбан чата
                 if (lobbyList[lobbydId - 1] != ruls.RulesList[0]) 
                 {
@@ -72,67 +73,17 @@ namespace MazeGenerator.TeleBot
             //TODO: написать команды + направление движения
             if (e.Message.Text == "/up" && e.Message.Chat.Id != e.Message.From.Id)
             {
-                    string s = FormatAnswers.AnswerUp(Act.TryMoveUp(e.Message.From.Id, a.CheckLobbyId(e.Message.From.Id)),
+                    string s = FormatAnswers.AnswerUp(Act.TryMove(e.Message.From.Id, a.GetLobbyId(e.Message.From.Id)),
                     e.Message.From.Username);
                     Bot.SendTextMessageAsync(e.Message.Chat.Id, s, ParseMode.Markdown);
                     Console.WriteLine("good");
                     stroke++;
                     if (stroke > ruls.RulesList[0]) stroke = 1;
             }
-            if (e.Message.Text == "/down")
-            {
-                if (e.Message.Chat.Id == e.Message.From.Id)
-                {
-                    var a = new LobbyControl();
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
-                    Console.WriteLine("good");
-
-                }
-            }
-            if (e.Message.Text == "/left")
-            {
-                if (e.Message.Chat.Id == e.Message.From.Id)
-                {
-                    var a = new LobbyControl();
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
-                    Console.WriteLine("good");
-
-                }
-            }
-            if (e.Message.Text == "/right")
-            {
-                if (e.Message.Chat.Id == e.Message.From.Id)
-                {
-                    var a = new LobbyControl();
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
-                    Console.WriteLine("good");
-
-                }
-            }
-            if (e.Message.Text == "/fire")
-            {
-                if (e.Message.Chat.Id == e.Message.From.Id)
-                {
-                    var a = new LobbyControl();
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
-                    Console.WriteLine("good");
-
-                }
-            }
-            if (e.Message.Text == "/right")
-            {
-                if (e.Message.Chat.Id == e.Message.From.Id)
-                {
-                    var a = new LobbyControl();
-                    Bot.SendTextMessageAsync(e.Message.Chat.Id, a.GenerateLink(), ParseMode.Markdown);
-                    Console.WriteLine("good");
-
-                }
-            }
 
             if (e.Message.Text == "/getinfo")
             {
-                NewMaze.GetNewMaze(1);
+                NewGames.StartGame();
                 ParseJsonManager a = new ParseJsonManager();
                 Console.WriteLine("good");
             }

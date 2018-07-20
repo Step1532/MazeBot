@@ -34,14 +34,17 @@ namespace MazeGenerator.TeleBot
         {
             return true;
             List<int> users = JsonConvert.DeserializeObject<List<int>>(File.ReadAllText($@"\users.json"));
-            
-            //for(int)
+            //TODO: чет сделать  с этим методом
+            if (users.TrueForAll(e => userId))
+            {
+                JsonManager.UpdateJson("onlineUsersId.json", (List<int> users) => { users.Add(userId); });   
+            }
 
         }
         //TODO: GetLobbyId(long chatId)
-        public int CheckLobbyId(long lobbyid)
+        public int GetLobbyId(long chatid)
         {
-            switch (lobbyid)
+            switch (chatid)
             {
                 case 310811454: return 1;
                 case 2: return 1;
@@ -52,7 +55,7 @@ namespace MazeGenerator.TeleBot
             }
         }
         //TODO: rename FindEmptyLobby
-        private int CheckLobby()
+        private int FindEmptyLobby()
         {
             ParseJsonManager e = new ParseJsonManager();
             List<int> LobbyList = e.GetLobbiesList();
