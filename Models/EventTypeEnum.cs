@@ -9,6 +9,11 @@ namespace MazeGenerator.Models
     //TODO: fill with types
     public enum EventTypeEnum
     {
-      Size  
+        Size,
+        Exit,
+        Arsenal,
+        Hospital,
+        Holes,
+        FalseGoldCount
     } 
 }

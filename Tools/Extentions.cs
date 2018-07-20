@@ -13,7 +13,7 @@ namespace MazeGenerator.Tools
         {
             Random rnd = new Random();
             int x, y;
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100000; i++)
             {
                 //TODO: check this
                 x = rnd.Next(0, maze.GetLength(0));

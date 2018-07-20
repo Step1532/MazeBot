@@ -10,20 +10,23 @@ using MazeGenerator.Tools;
 
 namespace MazeGenerator
 {
-    class NewGames
+    public class NewGames
     {
         public Rules ruls = new Rules();
         public LobbyControl a = new LobbyControl();
         public Player player = new Player();
 
-        public Lobby lobby; 
+        public Lobby lobby;
+        List<GameEvent> listEvents = new List<GameEvent>();
+
         //TODO: возможно стоит передавать чат id и через метод преобраззовать уже в лобби
         public void StartGame(int lobbyId)
         {
             lobby = new Lobby(lobbyId);
             //TODO: load rules
-            GetNewMaze();
+            lobby.Maze = GetNewMaze(lobby.Rules.Size);
             GenerateEvents();
+
         }
 
         public string CheckStartGame(int countPlayers, int lobbyid)
@@ -36,9 +39,10 @@ namespace MazeGenerator
 
             return string.Format($"Ожидание новых игроков, не хватает {ruls.RulesList[0] - countPlayers}");
         }
+
         public static bool[,] GetNewMaze(Coordinate size)
         {
-            Maze maze1 = new Maze((ushort)size.X, (ushort)size.Y);
+            Maze maze1 = new Maze((ushort) size.X, (ushort) size.Y);
             maze1.dumpMaze();
 
             List<UInt16[]> gt_output = maze1.GenerateTWMaze_GrowingTree();
@@ -58,11 +62,70 @@ namespace MazeGenerator
 
         public static void GenerateEvents()
         {
-            List<Coordinate> listEvents = new List<Coordinate>();
-            Coordinate a;
-//            a = lobby.Maze.GenerateRandomPosition();
-//            listEvents.Add(a);
+            GameEvent events = new GameEvent();
+            Coordinate coordinate;
+            //TODO: костыль
+            for (int i = 0; i < lobby.Rules.ArsenalCount; i++)
+            {
+                events.Type = EventTypeEnum.Arsenal;
+                events.Position = lobby.Maze.GenerateRandomPosition();
+
+                while (CheckCoordinateEvents(events.Position))
+                    events.Position = lobby.Maze.GenerateRandomPosition();
+
+                listEvents.Add(events);
+            }
+            for (int i = 0; i < lobby.Rules.ExitCount; i++)
+            {
+                events.Type = EventTypeEnum.Exit;
+                events.Position = lobby.Maze.GenerateRandomPosition();
+
+                while (CheckCoordinateEvents(events.Position))
+                    events.Position = lobby.Maze.GenerateRandomPosition();
+
+                listEvents.Add(events);
+            }
+            for (int i = 0; i < lobby.Rules.FalseGoldCount; i++)
+            {
+                events.Type = EventTypeEnum.FalseGoldCount;
+                events.Position = lobby.Maze.GenerateRandomPosition();
+
+                while (CheckCoordinateEvents(events.Position))
+                    events.Position = lobby.Maze.GenerateRandomPosition();
+
+                listEvents.Add(events);
+            }
+            for (int i = 0; i < lobby.Rules.HolesCount; i++)
+            {
+                events.Type = EventTypeEnum.Holes;
+                events.Position = lobby.Maze.GenerateRandomPosition();
+
+                while (CheckCoordinateEvents(events.Position))
+                    events.Position = lobby.Maze.GenerateRandomPosition();
+
+                listEvents.Add(events);
+            }
+            for (int i = 0; i < lobby.Rules.HospitalCount; i++)
+            {
+                events.Type = EventTypeEnum.Hospital;
+                events.Position = lobby.Maze.GenerateRandomPosition();
+
+                while (CheckCoordinateEvents(events.Position))
+                    events.Position = lobby.Maze.GenerateRandomPosition();
+
+                listEvents.Add(events);
+            }
             //TODO: считывание с правил в цикле 
+
+
+            lobby.Events = listEvents;
+        }
+
+        public static  bool CheckCoordinateEvents(Coordinate events)
+        {
+            //TODO: сдесь дожна быть ваша магия
+            return listEvents.Exists();
         }
     }
 }
+

@@ -14,11 +14,13 @@ namespace MazeGenerator.Models
         public bool[,] Maze; 
         public List<Player> Players;
         public LobbyRules Rules;
+        public List<GameEvent> Events;
         public int GameId;
 
         public Lobby(int gameId)
         {
             GameId = gameId;
+            Rules = LobbyRules.GenerateTemplateRules();
         }
         public void Save()
         {
