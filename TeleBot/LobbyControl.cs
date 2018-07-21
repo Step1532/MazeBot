@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using MazeGenerator.MazeLogic;
 using MazeGenerator.Models;
 using MazeGenerator.NewGame;
 using MazeGenerator.Tools;
@@ -8,39 +7,41 @@ using Newtonsoft.Json;
 
 namespace MazeGenerator.TeleBot
 {
-    public  class LobbyControl
+    public class LobbyControl
     {
         public string GenerateLink(int userId)
         {
-//           if (Validation(userId))
-//            {
-                //TODO: ссылки на лобби, сделать лобби
-//                switch (CheckLobby())
-//                {
-//                    case 1: return "https://t.me/joinchat/EoabPk5DPTqJ231LveIF0g";
-//                    case 2: return "https://ссыль_на-2-лобби";
-//                    case 3: return "https://ссыль-на-3--обби";
-//                    case 4: return "https://ссыль-на-4-лобби";
-//                    case 5: return "https://ссыль-на-5--обби";
-//                    default: return null;
-                    //default: return "Sorry, all lobbies are full";
-//                }
-//            }
+            if (Validation(userId)) return "https://t.me/joinchat/EoabPk5DPTqJ231LveIF0g";
+
+            //if (Validation(userId))
+            //{
+            //    //TODO: ссылки на лобби, сделать лобби
+            //     switch (CheckLobby())
+            //    {
+            //        case 1: return "https://t.me/joinchat/EoabPk5DPTqJ231LveIF0g";
+            //        case 2: return "https://ссыль_на-2-лобби";
+            //        case 3: return "https://ссыль-на-3--обби";
+            //        case 4: return "https://ссыль-на-4-лобби";
+            //        case 5: return "https://ссыль-на-5--обби";
+            //        default: return null;
+            //    }
+            //}
 
             return null;
         }
-        //TODO: слздать фал users
+
+        //TODO: создать файл users
         public bool Validation(int userId)
         {
             return true;
-            List<int> users = JsonConvert.DeserializeObject<List<int>>(File.ReadAllText($@"\users.json"));
+            var users = JsonConvert.DeserializeObject<List<int>>(File.ReadAllText($@"\users.json"));
             //TODO: чет сделать  с этим методом
 //            if (users.TrueForAll(e => userId))
             {
 //                JsonManager.UpdateJson("onlineUsersId.json", (List<int> users) => { users.Add(userId); });   
             }
-
         }
+
         //TODO: GetLobbyId(long chatId)
         public int GetLobbyId(long chatid)
         {
@@ -54,11 +55,30 @@ namespace MazeGenerator.TeleBot
                 default: return 1;
             }
         }
+
+        public void AddPlayer(int playerId, int lobbyId)
+        {
+            JsonManager.UpdateJson(@"\users.json", (List<int> users) => { users.Add(playerId); });
+            JsonManager.UpdateJson("lobbiesPlayerCount.json", (List<int> lobbiesList) => { lobbiesList[lobbyId]++; });
+
+            var lobby = new Lobby(lobbyId);
+            lobby.Load();
+            var player = new Player
+            {
+                PlayerId = playerId,
+                Rotate = Direction.North,
+                UserCoordinate = lobby.Maze.GenerateRandomPosition(),
+                UserId = -1
+            };
+
+            lobby.Players.Add(player);
+            lobby.Save();
+        }
+
         //TODO: rename FindEmptyLobby
         private int FindEmptyLobby()
         {
 //            List<int> LobbyList = e.GetLobbiesList();
-            Rules a = new Rules();
 //            for (int i = 0; i < LobbyList.Count; i++)
             {
 //                if (LobbyList[i] != a.RulesList[0])
@@ -67,17 +87,6 @@ namespace MazeGenerator.TeleBot
                 }
             }
             return 0;
-        }
-
-        public void AddPlayer(Player player, int lobbyId)
-        {
-            JsonManager.UpdateJson($@"\users.json", (List<int> users) => { users.Add(player.Playerid); });
-            JsonManager.UpdateJson("lobbiesPlayerCount.json", (List<int> lobbiesList) => { lobbiesList[lobbyId]++; });
-            Lobby lobby = new Lobby(lobbyId);
-            lobby.Load();
-            lobby.Players.Add(player);
-            player.UserCoordinate = lobby.Maze.GenerateRandomPosition();
-            lobby.Save();
         }
     }
 }
