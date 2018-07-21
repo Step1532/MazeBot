@@ -1,46 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MazeGenerator.NewGame;
-using MazeGenerator.TeleBot;
+﻿using MazeGenerator.NewGame;
 using MazeGenerator.Tools;
-using Telegram.Bot;
 
 namespace MazeGenerator.MazeLogic
 {
+    //TODO: Same name class/namespace
     public class MazeLogic
     {
-        public Answers a = new Answers();
-        public Random rnd = new Random();
-        //public readonly TelegramBotClient Bot;
-        public Player player = new Player();
-        //public JsonManager MJson = new JsonManager();
-        //public Rules ruls = new Rules();
-        //public MazeLogic act = new MazeLogic();
-        public bool[,] maze;
         //TODO: enum with direction
         //TODO: user forward/back
-        public  bool TryMove(int playerId, int gameid, Direction direction)
+        //TODO: send Lobby and Player, not id
+        public bool TryMove(int playerId, int gameId, Direction direction)
         {
-            List<Player> players = new List<Player>();
-            players = ParseJsonManager.GetPlayersList(gameid);
-            player = players.Find(e => player.Playerid == playerId);
-            maze = ParseJsonManager.GetMazeMap(gameid);
+            var player = ParseJsonManager
+                .GetPlayersList(gameId)
+                .Find(e => e.PlayerId == playerId);
+            var maze = ParseJsonManager.GetMazeMap(gameId);
+
+            //TODO: get new position from direction
             if (maze[player.UserCoordinate.X, player.UserCoordinate.Y - 1] == false)
             {
                 player.UserCoordinate.Y--;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
-        public  void Shoot(string Action, int playerId)
+
+        public void Shoot(string Action, int playerId)
         {
-;
+            ;
         }
     }
 }

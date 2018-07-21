@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MazeGenerator.Models
+﻿namespace MazeGenerator.Models
 {
     public class LobbyRules
     {
-        public Coordinate Size;
-        public int ExitCount;
         public int ArsenalCount;
-        public int HospitalCount;
-        public int HolesCount;
+        public int ExitCount;
         public int FalseGoldCount;
+        public int HolesCount;
+        public int HospitalCount;
+        public Coordinate Size;
 
         public static LobbyRules GenerateTemplateRules()
         {

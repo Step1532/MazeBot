@@ -1,23 +1,18 @@
-﻿using MazeGenerator.TeleBot;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
+﻿using System;
+using MazeGenerator.TeleBot;
 
 namespace MazeGenerator
 
 {
     internal class Program
     {
-
         private static void Main(string[] args)
         {
-
-            string token;
-            token = Console.ReadLine();
+            var token = Console.ReadLine();
             var bot = new MazeBot(token);
+
             Console.ReadLine();
-            bot.Bot.StopReceiving();
+            bot.BotClient.StopReceiving();
         }
     }
 }

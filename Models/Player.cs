@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using MazeGenerator.MazeLogic;
-using MazeGenerator.Models;
-using MazeGenerator.Tools;
+﻿using MazeGenerator.NewGame;
 
-namespace MazeGenerator.NewGame
+namespace MazeGenerator.Models
 {
     public class Player
     {
-        public int Playerid;
+        public int PlayerId;
         public Direction Rotate;
-        public int Userid;
         public Coordinate UserCoordinate;
+        public int UserId;
     }
 }
