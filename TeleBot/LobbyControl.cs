@@ -57,7 +57,6 @@ namespace MazeGenerator.TeleBot
         //TODO: rename FindEmptyLobby
         private int FindEmptyLobby()
         {
-            ParseJsonManager e = new ParseJsonManager();
 //            List<int> LobbyList = e.GetLobbiesList();
             Rules a = new Rules();
 //            for (int i = 0; i < LobbyList.Count; i++)

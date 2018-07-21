@@ -25,7 +25,7 @@ namespace MazeGenerator
             lobby = new Lobby(lobbyId);
             //TODO: load rules
             lobby.Maze = GetNewMaze(lobby.Rules.Size);
-            GenerateEvents();
+            lobby.Events = GenerateEvents(lobby);
 
         }
 
@@ -60,9 +60,10 @@ namespace MazeGenerator
             //Console.WriteLine(string.Format($"new maze is created in lobby{Gameid}"));
         }
 
-        public static void GenerateEvents()
+        public static List<GameEvent> GenerateEvents(Lobby lobby)
         {
             GameEvent events = new GameEvent();
+            List<GameEvent> listEvents = new List<GameEvent>();
             Coordinate coordinate;
             //TODO: костыль
             for (int i = 0; i < lobby.Rules.ArsenalCount; i++)
@@ -115,10 +116,8 @@ namespace MazeGenerator
 
                 listEvents.Add(events);
             }
-            //TODO: считывание с правил в цикле 
-
-
-            lobby.Events = listEvents;
+            //TODO: считывание с правил в цикле
+            return listEvents;
         }
 
         public static  bool CheckCoordinateEvents(Coordinate events)
