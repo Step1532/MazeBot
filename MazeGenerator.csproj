@@ -76,23 +76,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Route.cs" />
     <Compile Include="TeleBot\Answers.cs" />
     <Compile Include="Models\Coordinate.cs" />
     <Compile Include="Models\GameEvent.cs" />
     <Compile Include="Models\EventTypeEnum.cs" />
-    <Compile Include="MazeLogic\Lobby.cs" />
+    <Compile Include="Logic\Lobby.cs" />
     <Compile Include="Models\LobbyRules.cs" />
     <Compile Include="GameGenerator\LobbyGenerator.cs" />
-    <Compile Include="MazeLogic\Rules.cs" />
     <Compile Include="TeleBot\Bot.cs" />
     <Compile Include="Tools\Extentions.cs" />
     <Compile Include="TeleBot\FormatAnswers.cs" />
     <Compile Include="Tools\JsonManager.cs" />
     <Compile Include="TeleBot\LobbyControl.cs" />
     <Compile Include="GameGenerator\Maze.cs" />
-    <Compile Include="MazeLogic\MazeLogic.cs" />
-    <Compile Include="Tools\ParseJsonManager.cs" />
+    <Compile Include="Logic\MazeLogic.cs" />
     <Compile Include="Models\Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

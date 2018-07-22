@@ -8,24 +8,21 @@ namespace MazeGenerator.GameGenerator
 {
     public static class LobbyGenerator
     {
-        //TODO: возможно стоит передавать чат id и через метод преобраззовать уже в лобби
-        public static Lobby GenerateLobby(int lobbyId)
+        public static Lobby GenerateLobby(Lobby lobby)
         {
-            var lobby = new Lobby(lobbyId);
-            lobby.Maze = GetNewMaze(lobby.Rules.Size);
+            CreateNewMaze(lobby);
             GenerateEvents(lobby);
             return lobby;
         }
 
-        private static bool[,] GetNewMaze(Coordinate size)
+        private static void CreateNewMaze(Lobby lobby)
         {
-            var newMaze = new Maze((ushort) size.X, (ushort) size.Y);
-
-            //TODO: check if x/y in correct order
+            var newMaze = new Maze((ushort)lobby.Rules.Size.X, (ushort)lobby.Rules.Size.Y);
+            newMaze.GenerateTWMaze_GrowingTree();
+            
             var bytesMaze = newMaze.LineToBlock();
-            var finalMaze = new bool[size.X, size.Y];
-            Array.Copy(bytesMaze, finalMaze, bytesMaze.Length);
-            return finalMaze;
+
+            lobby.Maze = bytesMaze;
         }
 
         private static void GenerateEvents(Lobby lobby)
@@ -40,7 +37,6 @@ namespace MazeGenerator.GameGenerator
                 AddEvent(EventTypeEnum.Holes, lobby);
             for (var i = 0; i < lobby.Rules.HospitalCount; i++)
                 AddEvent(EventTypeEnum.Hospital, lobby);
-            //TODO: считывание с правил в цикле 
         }
 
         private static void AddEvent(EventTypeEnum eventType, Lobby lobby)
@@ -56,8 +52,8 @@ namespace MazeGenerator.GameGenerator
 
         private static bool CheckCoordinateEvents(Lobby lobby, Coordinate newCoordinate)
         {
-            //TODO: check if x/y in correct order
-            if (lobby.Maze[newCoordinate.X, newCoordinate.Y]) return false;
+            if (lobby.Maze[newCoordinate.X, newCoordinate.Y] == 1)
+                return false;
 
             return lobby.Events.Any(e => e.Position.Equals(newCoordinate));
         }

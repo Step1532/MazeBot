@@ -237,8 +237,8 @@ namespace MazeGenerator.GameGenerator
             }
         }
 
-
-        public Direction OppositeDirection(Direction forward)
+        //TODO: move to 
+        public static Direction OppositeDirection(Direction forward)
         {
             Direction opposite = Direction.North;
 

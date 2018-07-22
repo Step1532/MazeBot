@@ -12,7 +12,6 @@ namespace MazeGenerator.TeleBot
         public readonly TelegramBotClient BotClient;
         private MazeLogic.MazeLogic _mazeLogic = new MazeLogic.MazeLogic();
 
-        public Rules ruls = new Rules();
         public int stroke = 1;
 
         public MazeBot(string _tMaze)
@@ -60,8 +59,6 @@ namespace MazeGenerator.TeleBot
 
                 stroke++;
                 //TODO:
-                if (stroke > ruls.RulesList[0])
-                    stroke = 1;
             }
 
             if (command == "/getinfo")

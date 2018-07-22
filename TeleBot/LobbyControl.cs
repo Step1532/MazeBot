@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using MazeGenerator.GameGenerator;
 using MazeGenerator.MazeLogic;
 using MazeGenerator.Models;
 using MazeGenerator.Tools;
@@ -45,8 +46,6 @@ namespace MazeGenerator.TeleBot
 //                JsonManager.UpdateJson("onlineUsersId.json", (List<int> users) => { users.Add(userId); });   
             }
         }
-
-        //TODO: GetLobbyId(long chatId)
         public int GetLobbyId(long chatid)
         {
             switch (chatid)
@@ -70,7 +69,7 @@ namespace MazeGenerator.TeleBot
             var player = new Player
             {
                 PlayerId = playerId,
-                Rotate = Route.North,
+                Rotate = Direction.North,
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
                 UserId = -1
             };

@@ -1,4 +1,8 @@
-﻿namespace MazeGenerator.Models
+﻿using System;
+using MazeGenerator.GameGenerator;
+using MazeGenerator.Tools;
+
+namespace MazeGenerator.Models
 {
     public class Coordinate
     {
@@ -17,6 +21,22 @@
             return false;
         }
 
-        //TODO: Coordinate TargetCoordinate(Direction rotate, Direction moveDirection)
+        public static Coordinate TargetCoordinate(Direction rotate, Direction moveDirection)
+        {
+            switch (moveDirection)
+            {
+                case Direction.North:
+                    return rotate.GetCoordinate();
+                case Direction.South:
+                    return Extentions.GetCoordinate(Maze.OppositeDirection(rotate));
+                case Direction.East:
+                    byte route = (byte)(((byte)rotate) << 1);
+                    return Extentions.GetCoordinate((Direction)(route == 16 ? 1 : route));
+                case Direction.West:
+                    return TargetCoordinate(Maze.OppositeDirection(rotate), Direction.East);
+               
+            }
+            throw new Exception("TargetCoordinate");
+        }
     }
 }
