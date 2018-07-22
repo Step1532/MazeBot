@@ -76,6 +76,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Route.cs" />
     <Compile Include="TeleBot\Answers.cs" />
     <Compile Include="Models\Coordinate.cs" />
     <Compile Include="Models\GameEvent.cs" />

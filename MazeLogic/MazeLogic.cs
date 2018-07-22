@@ -1,4 +1,5 @@
-﻿using MazeGenerator.NewGame;
+﻿using MazeGenerator.Models;
+using MazeGenerator.NewGame;
 using MazeGenerator.Tools;
 
 namespace MazeGenerator.MazeLogic
@@ -9,20 +10,25 @@ namespace MazeGenerator.MazeLogic
         //TODO: enum with direction
         //TODO: user forward/back
         //TODO: send Lobby and Player, not id
-        public bool TryMove(int playerId, int gameId, Direction direction)
+        public bool TryMove(Lobby lobby, Player player, Route direction)
         {
-            var player = ParseJsonManager
-                .GetPlayersList(gameId)
-                .Find(e => e.PlayerId == playerId);
-            var maze = ParseJsonManager.GetMazeMap(gameId);
-
             //TODO: get new position from direction
-            if (maze[player.UserCoordinate.X, player.UserCoordinate.Y - 1] == false)
+            int a = 0, b = 0;
+            //TODO: обдумать
+            switch (direction)
+            {
+                case Route.North: a =  0; b = -1; break;
+                case Route.East : a = -1; b =  0; break;
+                case Route.South: a =  0; b =  1; break;
+                case Route.Weast: a =  0; b =  0; break;
+                
+            }
+            if (lobby.Maze[player.UserCoordinate.X - a, player.UserCoordinate.Y - b] == false)
             {
                 player.UserCoordinate.Y--;
+                lobby.Save();
                 return true;
             }
-
             return false;
         }
 

@@ -36,6 +36,7 @@ namespace MazeGenerator.TeleBot
             return true;
             var users = JsonConvert.DeserializeObject<List<int>>(File.ReadAllText($@"\users.json"));
             //TODO: чет сделать  с этим методом
+            //TODO: возможно стоит дать ссылкуу на лобби в котором он учавствует
 //            if (users.TrueForAll(e => userId))
             {
 //                JsonManager.UpdateJson("onlineUsersId.json", (List<int> users) => { users.Add(userId); });   
@@ -66,7 +67,7 @@ namespace MazeGenerator.TeleBot
             var player = new Player
             {
                 PlayerId = playerId,
-                Rotate = Direction.North,
+                Rotate = Route.North,
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
                 UserId = -1
             };

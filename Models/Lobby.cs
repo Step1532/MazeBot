@@ -23,6 +23,26 @@ namespace MazeGenerator.Models
             Directory.CreateDirectory($@"\Game{GameId}");
             File.WriteAllText($@"\Game{GameId}\maze.json", JsonConvert.SerializeObject(Maze));
             File.WriteAllText($@"\Game{GameId}\CoordinateEvents.json", JsonConvert.SerializeObject(Rules));
+            //TODO: неправильное сохр игроков?
+            //    var PlayersList = new List<Player>();
+            //    var json = File.ReadAllText(string.Format($@"\Game{Gameid}\Players.json"));
+            //    PlayersList = JsonConvert.DeserializeObject<List<Player>>(json);
+            //    if (PlayersList == null)
+            //    {
+            //        PlayersList = new List<Player>();
+            //        PlayersList.Add(players);
+            //        var serialized = JsonConvert.SerializeObject(PlayersList);
+            //        Directory.CreateDirectory($@"\Game{Gameid}");
+            //        File.WriteAllText(string.Format($@"\Game{Gameid}\Players.json"), serialized);
+            //    }
+            //    else
+            //    {
+            //        PlayersList.Add(players);
+            //        var serialized = JsonConvert.SerializeObject(PlayersList);
+            //        Directory.CreateDirectory($@"\Game{Gameid}");
+            //        File.WriteAllText(string.Format($@"\Game{Gameid}\Players.json"), serialized);
+            //    }
+
             File.WriteAllText($@"\Game{GameId}\Players.json", JsonConvert.SerializeObject(Players));
             //TODO: save events
         }

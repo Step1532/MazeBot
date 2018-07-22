@@ -47,7 +47,6 @@ namespace MazeGenerator.TeleBot
                 //TODO переделать, ограничение, разбан чата
                 //BotClient.SendTextMessageAsync(e.Message.Chat.Id, game.CheckStartGame(lobbyList[lobbydId - 1], lobbydId),
                 //                        ParseMode.Markdown);
-
                 //TODO: mb reply message?
                 //else { BotClient.DeleteMessageAsync(e.Message.Chat.Id, e.Message.MessageId); }
             }
