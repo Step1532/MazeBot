@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using MazeGenerator.MazeLogic;
 using MazeGenerator.Models;
-using MazeGenerator.NewGame;
 using MazeGenerator.Tools;
 using Newtonsoft.Json;
 
@@ -11,7 +11,10 @@ namespace MazeGenerator.TeleBot
     {
         public string GenerateLink(int userId)
         {
-            if (Validation(userId)) return "https://t.me/joinchat/EoabPk5DPTqJ231LveIF0g";
+            if (Validation(userId))
+            {
+                return "https://t.me/joinchat/EoabPk5DPTqJ231LveIF0g";
+            }
 
             //if (Validation(userId))
             //{
@@ -76,7 +79,6 @@ namespace MazeGenerator.TeleBot
             lobby.Save();
         }
 
-        //TODO: rename FindEmptyLobby
         private int FindEmptyLobby()
         {
 //            List<int> LobbyList = e.GetLobbiesList();

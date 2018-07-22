@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using MazeGenerator.MazeLogic;
 using MazeGenerator.Models;
 using MazeGenerator.Tools;
 
-namespace MazeGenerator.NewGame
+namespace MazeGenerator.GameGenerator
 {
     public static class LobbyGenerator
     {
@@ -15,18 +16,6 @@ namespace MazeGenerator.NewGame
             GenerateEvents(lobby);
             return lobby;
         }
-
-        //public string CheckStartGame(int countPlayers, int lobbyid)
-        //{
-        //    //TODO: Delete any user strings in this class
-        //    if (countPlayers == ruls.RulesList[0])
-        //    {
-        //        GenerateLobby(lobbyid);
-        //        return "Новая игра начата";
-        //    }
-
-        //    return string.Format($"Ожидание новых игроков, не хватает {ruls.RulesList[0] - countPlayers}");
-        //}
 
         private static bool[,] GetNewMaze(Coordinate size)
         {
@@ -62,7 +51,7 @@ namespace MazeGenerator.NewGame
                 coordinate = lobby.Maze.GenerateRandomPosition();
             } while (CheckCoordinateEvents(lobby, coordinate));
 
-            lobby.Events.Add(new GameEvent {Position = coordinate, Type = eventType});
+            lobby.Events.Add(new GameEvent(eventType, coordinate));
         }
 
         private static bool CheckCoordinateEvents(Lobby lobby, Coordinate newCoordinate)
