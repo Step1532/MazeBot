@@ -38,5 +38,12 @@ namespace MazeGenerator.Models
             }
             throw new Exception("TargetCoordinate");
         }
+
+        public static Coordinate operator -(Coordinate left, Coordinate right)
+        {
+            var newX = left.X - right.X;
+            var newY = left.Y - right.Y;
+            return new Coordinate(newX, newY);
+        }
     }
 }

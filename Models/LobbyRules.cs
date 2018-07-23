@@ -13,7 +13,7 @@
         {
             return new LobbyRules
             {
-                Size = new Coordinate(10, 10),
+                Size = new Coordinate(10, 7),
                 ExitCount = 1,
                 ArsenalCount = 1,
                 HospitalCount = 1,

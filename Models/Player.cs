@@ -8,6 +8,5 @@ namespace MazeGenerator.Models
         public int PlayerId { get; set; }
         public Direction Rotate { get; set; }
         public Coordinate UserCoordinate { get; set; }
-        public int UserId { get; set; }
     }
 }

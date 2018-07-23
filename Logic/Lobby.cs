@@ -23,6 +23,7 @@ namespace MazeGenerator.MazeLogic
             GameId = gameId;
             Rules = LobbyRules.GenerateTemplateRules();
             Events = new List<GameEvent>();
+            Players = new List<Player>();
         }
 
         public void Save()

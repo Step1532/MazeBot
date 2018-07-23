@@ -71,9 +71,7 @@ namespace MazeGenerator.TeleBot
                 PlayerId = playerId,
                 Rotate = Direction.North,
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
-                UserId = -1
             };
-
             lobby.Players.Add(player);
             lobby.Save();
         }

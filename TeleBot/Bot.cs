@@ -10,7 +10,6 @@ namespace MazeGenerator.TeleBot
     {
         private readonly LobbyControl _lobbyControl = new LobbyControl();
         public readonly TelegramBotClient BotClient;
-        private MazeLogic.MazeLogic _mazeLogic = new MazeLogic.MazeLogic();
 
         public int stroke = 1;
 

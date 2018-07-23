@@ -1,4 +1,6 @@
 ﻿using System;
+using MazeGenerator.MazeLogic;
+using MazeGenerator.Models;
 
 namespace MazeGenerator.TeleBot
 {
@@ -9,13 +11,19 @@ namespace MazeGenerator.TeleBot
             return null;
         }
 
-        public static void ConsoleApp(Byte[,] maze)
+        public static void ConsoleApp(Lobby lobby)
         {
-            for (int i = 0; i < maze.GetLength(0); i++)
+            Coordinate a = new Coordinate(0, 0);
+            for (int i = 0; i < lobby.Maze.GetLength(1); i++)
             {
-                for (int j = 0; j < maze.GetLength(1); j++)
+                for (int j = 0; j < lobby.Maze.GetLength(0); j++)
                 {
-                    Console.Write(maze[i,j] == 0 ? "  " : "0 ");
+                    var p = lobby.Players.Find(e => Equals(e.UserCoordinate, new Coordinate(j, i)));
+                    if(p != null)
+                        Console.Write("p" + p.PlayerId);
+                    else 
+                        Console.Write(lobby.Maze[j, i] == 0 ? "  " : "0 ");
+
                 }
                 Console.WriteLine();
             }
