@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="Logic\LobbyService.cs" />
     <Compile Include="Models\MazeObjectType.cs" />
+    <Compile Include="Models\Treasure.cs" />
     <Compile Include="TeleBot\Answers.cs" />
     <Compile Include="Models\Coordinate.cs" />
     <Compile Include="Models\GameEvent.cs" />

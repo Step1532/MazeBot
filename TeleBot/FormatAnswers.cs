@@ -18,15 +18,21 @@ namespace MazeGenerator.TeleBot
             {
                 for (int j = 0; j < lobby.Maze.GetLength(0); j++)
                 {
-                    var p = lobby.Players.Find(e => Equals(e.UserCoordinate, new Coordinate(j, i)));
-                    if(p != null)
-                        Console.Write("p" + p.PlayerId);
-                    else 
-                        Console.Write(lobby.Maze[j, i] == 0 ? "  " : "0 ");
+                    if(j == lobby.Events[1].Position.X && i == lobby.Events[1].Position.Y)
+                        Console.Write("  ");
+                    else
+                    {
+                        var p = lobby.Players.Find(e => Equals(e.UserCoordinate, new Coordinate(j, i)));
+                        if (p != null)
+                            Console.Write("p" + p.PlayerId);
+                        else
+                            Console.Write(lobby.Maze[j, i] == 0 ? "  " : "0 ");
+                    }
 
                 }
                 Console.WriteLine();
             }
+            Console.WriteLine(lobby.Events[1].Position.X + " " + lobby.Events[1].Position.Y);
         }
     } 
 }

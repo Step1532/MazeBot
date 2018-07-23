@@ -30,7 +30,7 @@ namespace MazeGenerator.GameGenerator
             for (var i = 0; i < lobby.Rules.ArsenalCount; i++)
                 AddEvent(EventTypeEnum.Arsenal, lobby);
             for (var i = 0; i < lobby.Rules.ExitCount; i++)
-                AddEvent(EventTypeEnum.Exit, lobby);
+                AddEventExit(lobby);
             for (var i = 0; i < lobby.Rules.FalseGoldCount; i++)
                 AddEvent(EventTypeEnum.FalseGoldCount, lobby);
             for (var i = 0; i < lobby.Rules.HolesCount; i++)
@@ -48,6 +48,18 @@ namespace MazeGenerator.GameGenerator
             } while (CheckCoordinateEvents(lobby, coordinate));
 
             lobby.Events.Add(new GameEvent(eventType, coordinate));
+        }
+        private static void AddEventExit(Lobby lobby)
+        {
+            Coordinate coordinate;
+            do
+            {
+                coordinate = lobby.Maze.GenerateRandomPosition();
+                coordinate.X = 1;
+            } while (CheckCoordinateEvents(lobby, coordinate));
+
+            coordinate.X--;
+            lobby.Maze[coordinate.X, coordinate.Y] = 0;
         }
 
         private static bool CheckCoordinateEvents(Lobby lobby, Coordinate newCoordinate)

@@ -7,16 +7,23 @@ namespace MazeGenerator.Logic
 {
     public static class MazeLogic
     {
-        public static bool TryMove(Lobby lobby, Player player, Direction direction)
+        public static MazeObjectType TryMove(Lobby lobby, Player player, Direction direction)
         {
             var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
-            if (lobby.Maze[player.UserCoordinate.X - coord.X, player.UserCoordinate.Y - coord.Y] == 0)
+            var res = LobbyService.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
+            if(res == MazeObjectType.Void)
             {
                 player.UserCoordinate.X -= coord.X;
                 player.UserCoordinate.Y -= coord.Y;
-                return true;
+                if (player.UserCoordinate.X == 0 || player.UserCoordinate.Y == 0 ||
+                    player.UserCoordinate.X == lobby.Maze.GetLength(1) ||
+                    player.UserCoordinate.Y == lobby.Maze.GetLength(0))
+                    return MazeObjectType.Exit;
+                else
+                    return MazeObjectType.Void;
             }
-            return false;
+            else
+                return MazeObjectType.Wall;
         }
 
         public static string Shoot(Lobby lobby, Player player, Direction direction)

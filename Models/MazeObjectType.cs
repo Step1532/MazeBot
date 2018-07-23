@@ -5,6 +5,7 @@
         Wall,
         Void,
         Player,
-        Event
+        Event,
+        Exit
     }
 }

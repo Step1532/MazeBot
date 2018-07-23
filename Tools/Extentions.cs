@@ -12,7 +12,7 @@ namespace MazeGenerator.Tools
         public static Coordinate GenerateRandomPosition(this Byte[,] maze)
         {
             int x, y;
-            for (var i = 0; i < 100000; i++)
+            while (true)
             {
                 x = rnd.Next(maze.GetLength(0));
                 y = rnd.Next(maze.GetLength(1));

@@ -45,13 +45,17 @@ namespace MazeGenerator
                     if (act.Item1 == true)
                         Logic.MazeLogic.Shoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
                     else
-                        Logic.MazeLogic.TryMove(lobby, lobby.Players[stroke], act.Item2);
+                    {
+                        var res  = Logic.MazeLogic.TryMove(lobby, lobby.Players[stroke], act.Item2);
+                        if(res == MazeObjectType.Exit)
+                            break;
+                    }
                     stroke++;
                     if (stroke == lobby.Players.Count)
                         stroke = 0;
                     Console.Clear();
                 }
-
+                Console.WriteLine("игра закончена");
             Console.ReadLine();
            //bot.BotClient.StopReceiving();
         }
