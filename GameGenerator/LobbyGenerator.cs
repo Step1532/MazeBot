@@ -31,8 +31,6 @@ namespace MazeGenerator.GameGenerator
                 AddEvent(EventTypeEnum.Arsenal, lobby);
             for (var i = 0; i < lobby.Rules.ExitCount; i++)
                 AddEventExit(lobby);
-            for (var i = 0; i < lobby.Rules.FalseGoldCount; i++)
-                AddEvent(EventTypeEnum.FalseGoldCount, lobby);
             for (var i = 0; i < lobby.Rules.HolesCount; i++)
                 AddEvent(EventTypeEnum.Holes, lobby);
             for (var i = 0; i < lobby.Rules.HospitalCount; i++)
@@ -62,7 +60,7 @@ namespace MazeGenerator.GameGenerator
             lobby.Maze[coordinate.X, coordinate.Y] = 0;
         }
 
-        private static bool CheckCoordinateEvents(Lobby lobby, Coordinate newCoordinate)
+        private static bool CheckCoordinateEvents(Lobby lobby, Coordinate newCoordinate) //проверка что б события не совпадали координатами
         {
             if (lobby.Maze[newCoordinate.X, newCoordinate.Y] == 1)
                 return false;

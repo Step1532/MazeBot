@@ -6,6 +6,5 @@
         Arsenal,
         Hospital,
         Holes,
-        FalseGoldCount
     }
 }

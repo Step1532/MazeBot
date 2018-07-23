@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using MazeGenerator.GameGenerator;
+using MazeGenerator.Logic;
 using MazeGenerator.MazeLogic;
 using MazeGenerator.Models;
 using MazeGenerator.TeleBot;
@@ -47,6 +49,10 @@ namespace MazeGenerator
                     else
                     {
                         var res  = Logic.MazeLogic.TryMove(lobby, lobby.Players[stroke], act.Item2);
+                        if (res == MazeObjectType.Event)
+                        {
+                            Debug.Print(LobbyService.WhatsEvent(lobby.Players[stroke].UserCoordinate, lobby));
+                        }
                         if(res == MazeObjectType.Exit)
                             break;
                     }

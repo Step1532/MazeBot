@@ -7,11 +7,11 @@ namespace MazeGenerator.Logic
 {
     public static class MazeLogic
     {
-        public static MazeObjectType TryMove(Lobby lobby, Player player, Direction direction)
+        public static MazeObjectType TryMove(Lobby lobby, Player player, Direction direction) // возвращает можно ли идти в направлении
         {
             var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
             var res = LobbyService.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
-            if(res == MazeObjectType.Void)
+            if (res == MazeObjectType.Void)
             {
                 player.UserCoordinate.X -= coord.X;
                 player.UserCoordinate.Y -= coord.Y;
@@ -22,11 +22,18 @@ namespace MazeGenerator.Logic
                 else
                     return MazeObjectType.Void;
             }
+            else if (res == MazeObjectType.Event)
+            {
+                player.UserCoordinate.X -= coord.X;
+                player.UserCoordinate.Y -= coord.Y;
+                return MazeObjectType.Event;
+            }
             else
                 return MazeObjectType.Wall;
+            return res;
         }
 
-        public static string Shoot(Lobby lobby, Player player, Direction direction)
+        public static Player Shoot(Lobby lobby, Player player, Direction direction) //  проверка может ли пуля попасть в игрока, если да возвращакт игрока
         {
             var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
             var bulletPosition = new Coordinate(player.UserCoordinate.X, player.UserCoordinate.Y);
@@ -40,15 +47,16 @@ namespace MazeGenerator.Logic
             //TODO: fix return
             //TODO: create ActionType
             if (type == MazeObjectType.Wall)
-                return "nothing";
+                return null;
             if (type == MazeObjectType.Player)
             {
                 var p = lobby.Players.Find(e => Equals(e.UserCoordinate, bulletPosition));
-                lobby.Players.Remove(p);
-                return "Player";
+                if (p.Health == 1)
+                    lobby.Players.Remove(p);
+                return p;
             }
-                
-            return "";
+
+            return null;
         }
     }
 }
