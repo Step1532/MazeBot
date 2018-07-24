@@ -21,12 +21,12 @@ namespace MazeGenerator.Logic
             {
                 return MazeObjectType.Player;
             }
-            if (coord.X == 0 || coord.Y == 0 || coord.X == lobby.Maze.GetLength(1) || coord.Y == lobby.Maze.GetLength(0))
+            if (lobby.Maze[coord.X, coord.Y] == 1)
+                return MazeObjectType.Wall;
+            if (coord.X == 0 || coord.Y == 0 || coord.X == lobby.Maze.GetLength(1)-1 || coord.Y == lobby.Maze.GetLength(0)-1)
                 return MazeObjectType.Exit;
             if (lobby.Maze[coord.X, coord.Y] == 0)
                 return MazeObjectType.Void;
-            if (lobby.Maze[coord.X, coord.Y] == 1)
-                return MazeObjectType.Wall;
 
             //TODO: create own exeption
             throw new Exception("CheckCoord");
@@ -35,13 +35,13 @@ namespace MazeGenerator.Logic
         {
             var res = lobby.Events.Find(e => Equals(e.Position, coord));
             if (res.Type == EventTypeEnum.Arsenal)
-                return "Arsenal";
+                return "A ";
             if (res.Type == EventTypeEnum.Holes)
-                return "Holes";
+                return "H ";
             if (res.Type == EventTypeEnum.Hospital)
-                return "Hospitel";
+                return "+ ";
             if (res.Type == EventTypeEnum.Exit)
-                return "Exit";
+                return "E ";
 
 
 

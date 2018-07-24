@@ -11,28 +11,40 @@ namespace MazeGenerator.Logic
         {
             var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
             var res = LobbyService.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
-            if (res == MazeObjectType.Void)
+            if (res != MazeObjectType.Wall)
             {
                 player.UserCoordinate.X -= coord.X;
                 player.UserCoordinate.Y -= coord.Y;
-                if (player.UserCoordinate.X == 0 || player.UserCoordinate.Y == 0 ||
-                    player.UserCoordinate.X == lobby.Maze.GetLength(1) ||
-                    player.UserCoordinate.Y == lobby.Maze.GetLength(0))
-                    return MazeObjectType.Exit;
-                else
-                    return MazeObjectType.Void;
+                //костыль, переделать под бота
+                if (res == MazeObjectType.Event)
+                {
+                    var events = LobbyService.WhatsEvent(player.UserCoordinate, lobby);
+                    if (events == "A ")
+                    {
+                        player.Bombs = 3;
+                        player.Guns = 2;
+                    }
+                    //TODO: если будем делать пещеры
+                  //  if (events == "H ")
+                  //  {
+
+                  //  }
+                    if (events == "+ ")
+                    {
+                        player.Health = 3;
+                    }
+                }
+
             }
-            else if (res == MazeObjectType.Event)
-            {
-                player.UserCoordinate.X -= coord.X;
-                player.UserCoordinate.Y -= coord.Y;
-                return MazeObjectType.Event;
-            }
-            else
-                return MazeObjectType.Wall;
             return res;
         }
 
+        public static bool TryShoot(Lobby lobby, Player player, Direction direction) //  проверка может ли игрок выстрелить
+        {
+            if (player.Health > 1 && player.Guns > 1)
+                Shoot(lobby, player, direction);
+            return false;
+        }
         public static Player Shoot(Lobby lobby, Player player, Direction direction) //  проверка может ли пуля попасть в игрока, если да возвращакт игрока
         {
             var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
@@ -53,10 +65,27 @@ namespace MazeGenerator.Logic
                 var p = lobby.Players.Find(e => Equals(e.UserCoordinate, bulletPosition));
                 if (p.Health == 1)
                     lobby.Players.Remove(p);
+                else
+                    p.Health--;
                 return p;
             }
 
             return null;
+        }
+        public static bool Bomb(Lobby lobby, Player player, Direction direction) //  взрыв стены
+        {
+            var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
+            if (lobby.Maze[player.UserCoordinate.X - coord.X, player.UserCoordinate.Y - coord.Y] == 1)
+            {
+                lobby.Maze[player.UserCoordinate.X - coord.X, player.UserCoordinate.Y - coord.Y] = 0;
+                player.Bombs--;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+                
         }
     }
 }

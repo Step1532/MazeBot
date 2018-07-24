@@ -44,15 +44,13 @@ namespace MazeGenerator
                 {
                     FormatAnswers.ConsoleApp(lobby);
                     var act = MoveDirection();
-                    if (act.Item1 == true)
-                        Logic.MazeLogic.Shoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
+                    if (act.Item1 == 1)
+                        Logic.MazeLogic.TryShoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
+                    if (act.Item1 == 2)
+                        Logic.MazeLogic.Bomb(lobby, lobby.Players[stroke], MoveDirection().Item2);
                     else
                     {
                         var res  = Logic.MazeLogic.TryMove(lobby, lobby.Players[stroke], act.Item2);
-                        if (res == MazeObjectType.Event)
-                        {
-                            Debug.Print(LobbyService.WhatsEvent(lobby.Players[stroke].UserCoordinate, lobby));
-                        }
                         if(res == MazeObjectType.Exit)
                             break;
                     }
@@ -66,7 +64,7 @@ namespace MazeGenerator
            //bot.BotClient.StopReceiving();
         }
 
-        public static (bool, Direction) MoveDirection()
+        public static (int, Direction) MoveDirection()
         {
             do
             {
@@ -74,15 +72,17 @@ namespace MazeGenerator
                 switch (key.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        return (false, Direction.North);
+                        return (0, Direction.North);
                     case ConsoleKey.RightArrow:
-                        return (false, Direction.East);
+                        return (0, Direction.East);
                     case ConsoleKey.DownArrow:
-                        return (false, Direction.South);
+                        return (0, Direction.South);
                     case ConsoleKey.LeftArrow:
-                        return (false, Direction.West);
+                        return (0, Direction.West);
                     case ConsoleKey.X:
-                        return (true, Direction.North);
+                        return (1, Direction.North);
+                    case ConsoleKey.Z:
+                        return (2, Direction.North);
                 }
             } while (true);
         }

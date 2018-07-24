@@ -1,4 +1,5 @@
 ﻿using System;
+using MazeGenerator.Logic;
 using MazeGenerator.MazeLogic;
 using MazeGenerator.Models;
 
@@ -18,8 +19,8 @@ namespace MazeGenerator.TeleBot
             {
                 for (int j = 0; j < lobby.Maze.GetLength(0); j++)
                 {
-                    if(j == lobby.Events[1].Position.X && i == lobby.Events[1].Position.Y)
-                        Console.Write("  ");
+                    if (LobbyService.CheckLobbyCoordinate(new Coordinate(j, i), lobby) == MazeObjectType.Event)
+                        Console.Write(LobbyService.WhatsEvent(new Coordinate(j, i), lobby));
                     else
                     {
                         var p = lobby.Players.Find(e => Equals(e.UserCoordinate, new Coordinate(j, i)));

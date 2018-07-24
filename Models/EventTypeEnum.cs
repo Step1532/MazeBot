@@ -6,5 +6,6 @@
         Arsenal,
         Hospital,
         Holes,
+        Chest,
     }
 }
