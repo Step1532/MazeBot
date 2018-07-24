@@ -42,8 +42,17 @@ namespace MazeGenerator.Logic
                 return "+ ";
             if (res.Type == EventTypeEnum.Exit)
                 return "E ";
+            if (res.Type == EventTypeEnum.Chest)
+                return "C ";
 
 
+
+            throw new Exception("WhatsEvent");
+        }
+        public static Treasure CheckChest(Coordinate coord, Lobby lobby) // проверкачто за клад
+        {
+            var res = lobby.Chests.Find(e => Equals(e.Position, coord));
+            return res;
 
             throw new Exception("WhatsEvent");
         }

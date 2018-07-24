@@ -10,6 +10,7 @@ namespace MazeGenerator.MazeLogic
     {
         public int GameId { get; }
         public List<GameEvent> Events { get; private set; }
+        public List<Treasure>  Chests { get; set; }
         public Byte[,] Maze { get; set; }
         public List<Player> Players { get; private set; }
         public LobbyRules Rules { get; private set; }
@@ -24,6 +25,7 @@ namespace MazeGenerator.MazeLogic
             Rules = LobbyRules.GenerateTemplateRules();
             Events = new List<GameEvent>();
             Players = new List<Player>();
+            Chests = new List<Treasure>();
         }
 
         public void Save()

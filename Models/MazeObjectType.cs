@@ -6,6 +6,6 @@
         Void,
         Player,
         Event,
-        Exit
+        Exit,
     }
 }

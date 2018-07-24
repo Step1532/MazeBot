@@ -35,6 +35,9 @@ namespace MazeGenerator.GameGenerator
                 AddEvent(EventTypeEnum.Holes, lobby);
             for (var i = 0; i < lobby.Rules.HospitalCount; i++)
                 AddEvent(EventTypeEnum.Hospital, lobby);
+            for (var i = 0; i < lobby.Rules.FalseGoldCount; i++)
+                AddEventChest(lobby, false);
+            AddEventChest(lobby, true);
         }
 
         private static void AddEvent(EventTypeEnum eventType, Lobby lobby)
@@ -58,6 +61,16 @@ namespace MazeGenerator.GameGenerator
 
             coordinate.X--;
             lobby.Maze[coordinate.X, coordinate.Y] = 0;
+        }
+        private static void AddEventChest(Lobby lobby, bool Istrue)
+        {
+            Coordinate coordinate;
+            do
+            {
+                coordinate = lobby.Maze.GenerateRandomPosition();
+            } while (CheckCoordinateEvents(lobby, coordinate));
+            lobby.Events.Add(new GameEvent(EventTypeEnum.Chest, coordinate));
+            lobby.Chests.Add(new Treasure(coordinate, Istrue));
         }
 
         private static bool CheckCoordinateEvents(Lobby lobby, Coordinate newCoordinate) //проверка что б события не совпадали координатами

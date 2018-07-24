@@ -10,33 +10,47 @@ namespace MazeGenerator.Logic
         public static MazeObjectType TryMove(Lobby lobby, Player player, Direction direction) // возвращает можно ли идти в направлении
         {
             var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
-            var res = LobbyService.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
-            if (res != MazeObjectType.Wall)
+            if ((player.UserCoordinate - coord).X != -1 || (player.UserCoordinate - coord).Y != -1 || (player.UserCoordinate - coord).X != lobby.Maze.GetLength(1)+1 || (player.UserCoordinate - coord).Y != lobby.Maze.GetLength(0) + 1)
             {
-                player.UserCoordinate.X -= coord.X;
-                player.UserCoordinate.Y -= coord.Y;
-                //костыль, переделать под бота
-                if (res == MazeObjectType.Event)
-                {
-                    var events = LobbyService.WhatsEvent(player.UserCoordinate, lobby);
-                    if (events == "A ")
-                    {
-                        player.Bombs = 3;
-                        player.Guns = 2;
-                    }
-                    //TODO: если будем делать пещеры
-                  //  if (events == "H ")
-                  //  {
+                var res = LobbyService.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
 
-                  //  }
-                    if (events == "+ ")
+                if (res != MazeObjectType.Wall)
+                {
+                    player.UserCoordinate.X -= coord.X;
+                    player.UserCoordinate.Y -= coord.Y;
+                    //костыль, переделать под бота
+                    if (res == MazeObjectType.Event)
                     {
-                        player.Health = 3;
+                        var events = LobbyService.WhatsEvent(player.UserCoordinate, lobby);
+                        if (events == "A ")
+                        {
+                            player.Bombs = 3;
+                            player.Guns = 2;
+                        }
+                        //TODO: если будем делать пещеры
+                        //  if (events == "H ")
+                        //  {
+
+                        //  }
+                        if (events == "+ ")
+                        {
+                            player.Health = 3;
+                        }
+
+                        if (events == "C ")
+                        {
+                            player.chest = LobbyService.CheckChest(player.UserCoordinate, lobby);
+                        }
                     }
+
                 }
 
+                return res;
             }
-            return res;
+            else
+            {
+                return MazeObjectType.Wall;
+            }
         }
 
         public static bool TryShoot(Lobby lobby, Player player, Direction direction) //  проверка может ли игрок выстрелить

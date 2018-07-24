@@ -10,5 +10,11 @@ namespace MazeGenerator.Models
     {
         public Coordinate Position { get; set; }
         public bool IsTrue  { get; set; }
+
+        public Treasure(Coordinate position, bool istrue)
+        {
+            Position = position;
+            IsTrue = istrue;
+        }
     }
 }

@@ -51,8 +51,15 @@ namespace MazeGenerator
                     else
                     {
                         var res  = Logic.MazeLogic.TryMove(lobby, lobby.Players[stroke], act.Item2);
-                        if(res == MazeObjectType.Exit)
-                            break;
+                        if (res == MazeObjectType.Exit)
+                        {
+                            if (lobby.Players[stroke].chest.IsTrue == true)
+                                break;
+                            else
+                            {
+                                lobby.Players[stroke].chest = null;
+                            }
+                        }
                     }
                     stroke++;
                     if (stroke == lobby.Players.Count)
