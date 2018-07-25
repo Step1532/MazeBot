@@ -28,10 +28,10 @@ namespace MazeGenerator.Models
                 case Direction.North:
                     return rotate.GetCoordinate();
                 case Direction.South:
-                    return Extentions.GetCoordinate(Maze.OppositeDirection(rotate));
+                    return Maze.OppositeDirection(rotate).GetCoordinate();
                 case Direction.East:
                     byte route = (byte)(((byte)rotate) << 1);
-                    return Extentions.GetCoordinate((Direction)(route == 16 ? 1 : route));
+                    return ((Direction)(route == 16 ? 1 : route)).GetCoordinate();
                 case Direction.West:
                     return TargetCoordinate(Maze.OppositeDirection(rotate), Direction.East);
                

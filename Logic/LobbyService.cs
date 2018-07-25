@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MazeGenerator.MazeLogic;
 using MazeGenerator.Models;
 
 namespace MazeGenerator.Logic
 {
-    public class LobbyService
+    public static class LobbyService
     {
         //TODO: вынести из лобби логику лоад и сейв сюда, лобби в модели
-        public static MazeObjectType CheckLobbyCoordinate(Coordinate coord, Lobby lobby) // проверка что находится в клетке
+        /// <summary>
+        /// Проверка что находится в клетке
+        /// </summary>
+        public static MazeObjectType CheckLobbyCoordinate(Coordinate coord, Lobby lobby)
         {
             if (lobby.Events.Any(e => Equals(e.Position, coord)))
             {
@@ -31,37 +33,30 @@ namespace MazeGenerator.Logic
             //TODO: create own exeption
             throw new Exception("CheckCoord");
         }
-        public static string WhatsEvent(Coordinate coord, Lobby lobby) // проверка что находится в клетке
+
+        //TODO: лучше возвращать EventTypeEnum, а вывод уже в FormatPrint обозначать
+        /// <summary>
+        /// Проверка что находится в клетке
+        /// </summary>
+        public static EventTypeEnum WhatsEvent(Coordinate coord, Lobby lobby)
         {
             var res = lobby.Events.Find(e => Equals(e.Position, coord));
-            if (res.Type == EventTypeEnum.Arsenal)
-                return "A ";
-            if (res.Type == EventTypeEnum.Holes)
-                return "H ";
-            if (res.Type == EventTypeEnum.Hospital)
-                return "+ ";
-            if (res.Type == EventTypeEnum.Exit)
-                return "E ";
-            if (res.Type == EventTypeEnum.Chest)
+            if (res != null)
             {
-                var r = lobby.Chests.Find(e => Equals(e.Position, coord));
-                if (r.IsTrue)
-                    return "C ";
-                else
-                {
-                    return "C|";
-                }
+                return res.Type;
             }
 
 
             throw new Exception("WhatsEvent");
         }
-        public static Treasure CheckChest(Coordinate coord, Lobby lobby) // проверкачто за клад
+
+        /// <summary>
+        /// Проверка что за клад
+        /// </summary>
+        public static Treasure CheckChest(Coordinate coord, Lobby lobby)
         {
             var res = lobby.Chests.Find(e => Equals(e.Position, coord));
             return res;
-
-            throw new Exception("WhatsEvent");
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using MazeGenerator.GameGenerator;
-using MazeGenerator.MazeLogic;
+using MazeGenerator.Logic;
 using MazeGenerator.Models;
 using MazeGenerator.Tools;
 using Newtonsoft.Json;

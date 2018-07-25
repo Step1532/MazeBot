@@ -1,6 +1,6 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using MazeGenerator.MazeLogic;
+using MazeGenerator.Logic;
 using MazeGenerator.Models;
 using MazeGenerator.Tools;
 
@@ -8,18 +8,18 @@ namespace MazeGenerator.GameGenerator
 {
     public static class LobbyGenerator
     {
-        public static Lobby GenerateLobby(Lobby lobby)
+        //TODO: void
+        public static void GenerateLobbyMaze(Lobby lobby)
         {
             CreateNewMaze(lobby);
             GenerateEvents(lobby);
-            return lobby;
         }
 
         private static void CreateNewMaze(Lobby lobby)
         {
-            var newMaze = new Maze((ushort)lobby.Rules.Size.X, (ushort)lobby.Rules.Size.Y);
+            var newMaze = new Maze((ushort) lobby.Rules.Size.X, (ushort) lobby.Rules.Size.Y);
             newMaze.GenerateTWMaze_GrowingTree();
-            
+
             var bytesMaze = newMaze.LineToBlock();
 
             lobby.Maze = bytesMaze;
@@ -27,6 +27,7 @@ namespace MazeGenerator.GameGenerator
 
         private static void GenerateEvents(Lobby lobby)
         {
+            lobby.Events = new List<GameEvent>();
             for (var i = 0; i < lobby.Rules.ArsenalCount; i++)
                 AddEvent(EventTypeEnum.Arsenal, lobby);
             for (var i = 0; i < lobby.Rules.ExitCount; i++)
@@ -50,6 +51,7 @@ namespace MazeGenerator.GameGenerator
 
             lobby.Events.Add(new GameEvent(eventType, coordinate));
         }
+
         private static void AddEventExit(Lobby lobby)
         {
             Coordinate coordinate;
@@ -62,6 +64,7 @@ namespace MazeGenerator.GameGenerator
             coordinate.X--;
             lobby.Maze[coordinate.X, coordinate.Y] = 0;
         }
+
         private static void AddEventChest(Lobby lobby, bool Istrue)
         {
             Coordinate coordinate;
@@ -69,11 +72,18 @@ namespace MazeGenerator.GameGenerator
             {
                 coordinate = lobby.Maze.GenerateRandomPosition();
             } while (CheckCoordinateEvents(lobby, coordinate));
+
             lobby.Events.Add(new GameEvent(EventTypeEnum.Chest, coordinate));
             lobby.Chests.Add(new Treasure(coordinate, Istrue));
         }
 
-        private static bool CheckCoordinateEvents(Lobby lobby, Coordinate newCoordinate) //проверка что б события не совпадали координатами
+        /// <summary>
+        ///     Проверка чтобы события не совпадали координатами
+        /// </summary>
+        /// <param name="lobby"></param>
+        /// <param name="newCoordinate"></param>
+        /// <returns></returns>
+        private static bool CheckCoordinateEvents(Lobby lobby, Coordinate newCoordinate)
         {
             if (lobby.Maze[newCoordinate.X, newCoordinate.Y] == 1)
                 return false;

@@ -1,6 +1,5 @@
 ﻿using System;
 using MazeGenerator.Logic;
-using MazeGenerator.MazeLogic;
 using MazeGenerator.Models;
 
 namespace MazeGenerator.TeleBot
@@ -20,7 +19,10 @@ namespace MazeGenerator.TeleBot
                 for (int j = 0; j < lobby.Maze.GetLength(0); j++)
                 {
                     if (LobbyService.CheckLobbyCoordinate(new Coordinate(j, i), lobby) == MazeObjectType.Event)
-                        Console.Write(LobbyService.WhatsEvent(new Coordinate(j, i), lobby));
+                    {
+                        Console.Write(EventLetter(LobbyService.WhatsEvent(new Coordinate(j, i), lobby)));
+                        
+                    }
                     else
                     {
                         var p = lobby.Players.Find(e => Equals(e.UserCoordinate, new Coordinate(j, i)));
@@ -34,6 +36,25 @@ namespace MazeGenerator.TeleBot
                 Console.WriteLine();
             }
             Console.WriteLine(lobby.Events[1].Position.X + " " + lobby.Events[1].Position.Y);
+        }
+
+        public static string EventLetter(EventTypeEnum type)
+        {
+            switch (type)
+            {
+                case EventTypeEnum.Exit:
+                    return "E ";
+                case EventTypeEnum.Arsenal:
+                    return "A ";
+                case EventTypeEnum.Hospital:
+                    return "+ ";
+                case EventTypeEnum.Holes:
+                    return "H ";
+                case EventTypeEnum.Chest:
+                    return "C ";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     } 
 }

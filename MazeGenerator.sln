@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeGenerator", "MazeGenerator.csproj", "{61DE5044-E01F-4E2F-9C08-D8302E172C94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeGenerator.Database", "MazeGenerator.Database\MazeGenerator.Database.csproj", "{40298AD9-3CA1-4816-81E4-D3B788FDF352}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MazeGenerator.Database", "MazeGenerator.Database\MazeGenerator.Database.csproj", "{40298AD9-3CA1-4816-81E4-D3B788FDF352}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeGenerator.Test", "MazeGenerator.Test\MazeGenerator.Test.csproj", "{8EC9BE4A-AB13-4AE2-ACB4-B0E08D7677AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,14 @@ Global
 		{40298AD9-3CA1-4816-81E4-D3B788FDF352}.Release|Any CPU.Build.0 = Release|Any CPU
 		{40298AD9-3CA1-4816-81E4-D3B788FDF352}.Release|x86.ActiveCfg = Release|Any CPU
 		{40298AD9-3CA1-4816-81E4-D3B788FDF352}.Release|x86.Build.0 = Release|Any CPU
+		{8EC9BE4A-AB13-4AE2-ACB4-B0E08D7677AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EC9BE4A-AB13-4AE2-ACB4-B0E08D7677AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EC9BE4A-AB13-4AE2-ACB4-B0E08D7677AE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8EC9BE4A-AB13-4AE2-ACB4-B0E08D7677AE}.Debug|x86.Build.0 = Debug|Any CPU
+		{8EC9BE4A-AB13-4AE2-ACB4-B0E08D7677AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EC9BE4A-AB13-4AE2-ACB4-B0E08D7677AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EC9BE4A-AB13-4AE2-ACB4-B0E08D7677AE}.Release|x86.ActiveCfg = Release|Any CPU
+		{8EC9BE4A-AB13-4AE2-ACB4-B0E08D7677AE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,5 @@
 ﻿using System;
-using MazeGenerator.MazeLogic;
+using MazeGenerator.Logic;
 
 namespace MazeGenerator.Database
 {

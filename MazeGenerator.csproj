@@ -90,7 +90,7 @@
     <Compile Include="Models\LobbyRules.cs" />
     <Compile Include="GameGenerator\LobbyGenerator.cs" />
     <Compile Include="TeleBot\Bot.cs" />
-    <Compile Include="Tools\Extentions.cs" />
+    <Compile Include="Tools\Extensions.cs" />
     <Compile Include="TeleBot\FormatAnswers.cs" />
     <Compile Include="Tools\JsonManager.cs" />
     <Compile Include="TeleBot\LobbyControl.cs" />

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using MazeGenerator.GameGenerator;
-using MazeGenerator.MazeLogic;
 using MazeGenerator.Models;
 using MazeGenerator.Tools;
 
@@ -8,7 +7,10 @@ namespace MazeGenerator.Logic
 {
     public static class MazeLogic
     {
-        public static MazeObjectType TryMove(Lobby lobby, Player player, Direction direction) // возвращает можно ли идти в направлении
+        /// <summary>  
+        /// Возвращает можно ли идти в направлении
+        /// </summary>  
+        public static MazeObjectType TryMove(Lobby lobby, Player player, Direction direction)
         {
             var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
             if ((player.UserCoordinate - coord).X != -1 || (player.UserCoordinate - coord).Y != -1 || (player.UserCoordinate - coord).X != lobby.Maze.GetLength(1)+1 || (player.UserCoordinate - coord).Y != lobby.Maze.GetLength(0) + 1)
@@ -19,15 +21,14 @@ namespace MazeGenerator.Logic
                 {
                     player.UserCoordinate.X -= coord.X;
                     player.UserCoordinate.Y -= coord.Y;
-                    if (player.chest != null)
+                    if (player.Chest != null)
                     {
-                        player.chest.Position = player.UserCoordinate;
+                        player.Chest.Position = player.UserCoordinate;
                     }
-                    //костыль, переделать под бота
                     if (res == MazeObjectType.Event)
                     {
                         var events = LobbyService.WhatsEvent(player.UserCoordinate, lobby);
-                        if (events == "A ")
+                        if (events == EventTypeEnum.Arsenal)
                         {
                             player.Bombs = 3;
                             player.Guns = 2;
@@ -37,19 +38,20 @@ namespace MazeGenerator.Logic
                         //  {
 
                         //  }
-                        if (events == "+ ")
+                        if (events == EventTypeEnum.Hospital)
                         {
                             player.Health = 3;
                         }
 
-                        if (events == "C " || events == "C|")
+                        //TODO: think about C and C|
+                        if (events == EventTypeEnum.Chest)
                         {
                             //TODO:переделать что б можно было ронять на евенты
-                            if (player.chest == null)
+                            if (player.Chest == null)
                             {
                                 if (player.Health >= 3)
                                 {
-                                    player.chest = LobbyService.CheckChest(player.UserCoordinate, lobby);
+                                    player.Chest = LobbyService.CheckChest(player.UserCoordinate, lobby);
                                     var tr = lobby.Events.Find(e => Equals(player.UserCoordinate, e.Position));
                                     lobby.Events.Remove(tr);
                                 }
@@ -67,13 +69,21 @@ namespace MazeGenerator.Logic
             }
         }
 
-        public static bool TryShoot(Lobby lobby, Player player, Direction direction) //  проверка может ли игрок выстрелить
+        /// <summary>
+        /// проверка может ли игрок выстрелить
+        /// </summary>
+        public static bool TryShoot(Lobby lobby, Player player, Direction direction)
         {
             if (player.Health > 1 && player.Guns > 1)
                 Shoot(lobby, player, direction);
             return false;
         }
-        public static Player Shoot(Lobby lobby, Player player, Direction direction) //  проверка может ли пуля попасть в игрока, если да возвращакт игрока
+
+        //TODO: А зачем оно возвращает игрока?
+        /// <summary>
+        /// проверка может ли пуля попасть в игрока, если да возвращакт игрока
+        /// </summary>
+        public static Player Shoot(Lobby lobby, Player player, Direction direction)
         {
             var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
             var bulletPosition = new Coordinate(player.UserCoordinate.X, player.UserCoordinate.Y);
@@ -100,10 +110,10 @@ namespace MazeGenerator.Logic
                     p.Health--;
                 }
 
-                if (p.chest != null)
+                if (p.Chest != null)
                 {
                     lobby.Events.Add(new GameEvent(EventTypeEnum.Chest, p.UserCoordinate));
-                    p.chest = null;
+                    p.Chest = null;
                 }
 
                 return p;

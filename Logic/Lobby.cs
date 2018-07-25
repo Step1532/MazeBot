@@ -4,12 +4,12 @@ using System.IO;
 using MazeGenerator.Models;
 using Newtonsoft.Json;
 
-namespace MazeGenerator.MazeLogic
+namespace MazeGenerator.Logic
 {
     public class Lobby
     {
         public int GameId { get; }
-        public List<GameEvent> Events { get; private set; }
+        public List<GameEvent> Events { get; set; }
         public List<Treasure>  Chests { get; set; }
         public Byte[,] Maze { get; set; }
         public List<Player> Players { get; private set; }

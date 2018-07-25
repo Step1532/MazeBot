@@ -1,5 +1,4 @@
 ﻿using System;
-using MazeGenerator.MazeLogic;
 using Telegram.Bot;
 using Telegram.Bot.Args;
 using Telegram.Bot.Types.Enums;
