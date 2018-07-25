@@ -43,8 +43,15 @@ namespace MazeGenerator.Logic
             if (res.Type == EventTypeEnum.Exit)
                 return "E ";
             if (res.Type == EventTypeEnum.Chest)
-                return "C ";
-
+            {
+                var r = lobby.Chests.Find(e => Equals(e.Position, coord));
+                if (r.IsTrue)
+                    return "C ";
+                else
+                {
+                    return "C|";
+                }
+            }
 
 
             throw new Exception("WhatsEvent");

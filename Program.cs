@@ -53,10 +53,13 @@ namespace MazeGenerator
                         var res  = Logic.MazeLogic.TryMove(lobby, lobby.Players[stroke], act.Item2);
                         if (res == MazeObjectType.Exit)
                         {
-                            if (lobby.Players[stroke].chest.IsTrue == true)
+                            if (lobby.Players[stroke].chest.IsTrue)
                                 break;
                             else
                             {
+                                var r = lobby.Chests.Find(e =>
+                                    Equals(lobby.Players[stroke].UserCoordinate, e.Position));
+                                lobby.Chests.Remove(r);
                                 lobby.Players[stroke].chest = null;
                             }
                         }
