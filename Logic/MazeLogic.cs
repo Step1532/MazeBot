@@ -1,4 +1,5 @@
-﻿using MazeGenerator.GameGenerator;
+﻿using System.Linq;
+using MazeGenerator.GameGenerator;
 using MazeGenerator.MazeLogic;
 using MazeGenerator.Models;
 using MazeGenerator.Tools;
@@ -39,7 +40,13 @@ namespace MazeGenerator.Logic
 
                         if (events == "C ")
                         {
-                            player.chest = LobbyService.CheckChest(player.UserCoordinate, lobby);
+                            //TODO:переделать что б можно было ронять на евенты
+                            if (player.chest == null)
+                            {
+                                player.chest = LobbyService.CheckChest(player.UserCoordinate, lobby);
+                                var tr = lobby.Events.Find(e => Equals(player.chest.Position, e.Position));
+                                lobby.Events.Remove(tr);
+                            }
                         }
                     }
 
@@ -78,9 +85,19 @@ namespace MazeGenerator.Logic
             {
                 var p = lobby.Players.Find(e => Equals(e.UserCoordinate, bulletPosition));
                 if (p.Health == 1)
+                {
                     lobby.Players.Remove(p);
+                }
                 else
+                {
                     p.Health--;
+                }
+
+                if (p.chest != null)
+                {
+                    lobby.Events.Add(new GameEvent(EventTypeEnum.Chest, p.UserCoordinate));
+                }
+
                 return p;
             }
 
@@ -88,18 +105,23 @@ namespace MazeGenerator.Logic
         }
         public static bool Bomb(Lobby lobby, Player player, Direction direction) //  взрыв стены
         {
-            var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
-            if (lobby.Maze[player.UserCoordinate.X - coord.X, player.UserCoordinate.Y - coord.Y] == 1)
+            if (player.Bombs > 0)
             {
-                lobby.Maze[player.UserCoordinate.X - coord.X, player.UserCoordinate.Y - coord.Y] = 0;
-                player.Bombs--;
-                return true;
+                var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
+                if (lobby.Maze[player.UserCoordinate.X - coord.X, player.UserCoordinate.Y - coord.Y] == 1)
+                {
+                    lobby.Maze[player.UserCoordinate.X - coord.X, player.UserCoordinate.Y - coord.Y] = 0;
+                    player.Bombs--;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
-            {
-                return false;
-            }
-                
+
+            return false;
+
         }
     }
 }
