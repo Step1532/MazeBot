@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using MazeGenerator.Enums;
 using MazeGenerator.GameGenerator;
 using MazeGenerator.Models;
 using MazeGenerator.Tools;

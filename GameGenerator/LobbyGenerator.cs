@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MazeGenerator.Enums;
 using MazeGenerator.Logic;
 using MazeGenerator.Models;
 using MazeGenerator.Tools;
@@ -17,12 +18,7 @@ namespace MazeGenerator.GameGenerator
 
         private static void CreateNewMaze(Lobby lobby)
         {
-            var newMaze = new Maze((ushort) lobby.Rules.Size.X, (ushort) lobby.Rules.Size.Y);
-            newMaze.GenerateTWMaze_GrowingTree();
-
-            var bytesMaze = newMaze.LineToBlock();
-
-            lobby.Maze = bytesMaze;
+            lobby.Maze = Maze.CreateMaze((ushort)lobby.Rules.Size.X, (ushort)lobby.Rules.Size.Y);
         }
 
         private static void GenerateEvents(Lobby lobby)

@@ -1,4 +1,5 @@
-﻿using MazeGenerator.GameGenerator;
+﻿using MazeGenerator.Enums;
+using MazeGenerator.GameGenerator;
 
 namespace MazeGenerator.Models
 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using MazeGenerator.Enums;
 using MazeGenerator.GameGenerator;
 using MazeGenerator.Models;
 
@@ -30,6 +31,23 @@ namespace MazeGenerator.Tools
                 case Direction.East:  return new Coordinate(1,  0);                 
             }
             throw new Exception("GetCoordinate");
+        }
+
+        public static Direction OppositeDirection(this Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.North:
+                    return Direction.South;
+                case Direction.South:
+                    return Direction.North;
+                case Direction.East:
+                    return Direction.West;
+                case Direction.West:
+                    return Direction.East;
+            }
+
+            throw new ArgumentException();
         }
     }
 }

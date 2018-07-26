@@ -1,4 +1,5 @@
 ﻿using System;
+using MazeGenerator.Enums;
 using MazeGenerator.GameGenerator;
 using MazeGenerator.Tools;
 
@@ -28,12 +29,12 @@ namespace MazeGenerator.Models
                 case Direction.North:
                     return rotate.GetCoordinate();
                 case Direction.South:
-                    return Maze.OppositeDirection(rotate).GetCoordinate();
+                    return rotate.OppositeDirection().GetCoordinate();
                 case Direction.East:
                     byte route = (byte)(((byte)rotate) << 1);
                     return ((Direction)(route == 16 ? 1 : route)).GetCoordinate();
                 case Direction.West:
-                    return TargetCoordinate(Maze.OppositeDirection(rotate), Direction.East);
+                    return TargetCoordinate(rotate.OppositeDirection(), Direction.East);
                
             }
             throw new Exception("TargetCoordinate");

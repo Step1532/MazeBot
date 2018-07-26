@@ -1,4 +1,6 @@
-﻿namespace MazeGenerator.Models
+﻿using MazeGenerator.Enums;
+
+namespace MazeGenerator.Models
 {
     public class GameEvent
     {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using MazeGenerator.Enums;
 using MazeGenerator.GameGenerator;
 using MazeGenerator.Logic;
 using MazeGenerator.Models;

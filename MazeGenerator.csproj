@@ -79,13 +79,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\Direction.cs" />
+    <Compile Include="Enums\PickMethod.cs" />
     <Compile Include="Logic\LobbyService.cs" />
-    <Compile Include="Models\MazeObjectType.cs" />
+    <Compile Include="Enums\MazeObjectType.cs" />
     <Compile Include="Models\Treasure.cs" />
     <Compile Include="TeleBot\Answers.cs" />
     <Compile Include="Models\Coordinate.cs" />
     <Compile Include="Models\GameEvent.cs" />
-    <Compile Include="Models\EventTypeEnum.cs" />
+    <Compile Include="Enums\EventTypeEnum.cs" />
     <Compile Include="Logic\Lobby.cs" />
     <Compile Include="Models\LobbyRules.cs" />
     <Compile Include="GameGenerator\LobbyGenerator.cs" />
