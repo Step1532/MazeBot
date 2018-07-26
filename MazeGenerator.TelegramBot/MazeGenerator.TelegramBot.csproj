@@ -1,20 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.2.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.2.1" />
+    <PackageReference Include="Telegram.Bot" Version="14.6.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MazeGenerator.Core\MazeGenerator.Core.csproj" />
     <ProjectReference Include="..\MazeGenerator.Models\MazeGenerator.Models.csproj" />
+    <ProjectReference Include="..\MazeGenerator.Database\MazeGenerator.Database.csproj" />
   </ItemGroup>
 
 </Project>

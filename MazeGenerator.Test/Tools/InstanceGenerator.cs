@@ -1,6 +1,5 @@
 ﻿using System;
-using MazeGenerator.GameGenerator;
-using MazeGenerator.Logic;
+using MazeGenerator.Models;
 
 namespace MazeGenerator.Test.Tools
 {
