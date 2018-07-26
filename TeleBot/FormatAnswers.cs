@@ -57,5 +57,26 @@ namespace MazeGenerator.TeleBot
                     throw new ArgumentOutOfRangeException();
             }
         }
-    } 
+
+        public static void PlayerStat(Lobby lobby)
+        {
+            for (int i = 0; i < lobby.Players.Count; i++)
+            {
+                Console.Write($"{lobby.Players[i].PlayerId} | " +
+                              $"{lobby.Players[i].UserCoordinate.X}, {lobby.Players[i].UserCoordinate.Y} | " +
+                              $"{lobby.Players[i].Bombs} | {lobby.Players[i].Guns} | {lobby.Players[i].Health} | {lobby.Players[i].Rotate} | ");
+                if (lobby.Players[i].Chest == null)
+                {
+                    Console.WriteLine("null");
+                }
+                else
+                    Console.WriteLine($"{lobby.Players[i].Chest.IsReal}");
+            }
+
+            for (int i = 0; i < lobby.Chests.Count; i++)
+            {
+                Console.WriteLine($"{lobby.Chests[i].Position.X}, {lobby.Chests[i].Position.Y} | {lobby.Chests[i].IsReal}");
+            }
+        }
+    }
 }

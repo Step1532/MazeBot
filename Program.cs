@@ -45,24 +45,28 @@ namespace MazeGenerator
             {
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
                 Rotate = Direction.North,
+                Health = 3,
                 PlayerId = 1
             };
             var player2 = new Player
             {
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
                 Rotate = Direction.North,
+                Health = 3,
                 PlayerId = 2
             };
             var player3 = new Player
             {
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
                 Rotate = Direction.North,
+                Health = 3,
                 PlayerId = 3
             };
             var player4 = new Player
             {
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
                 Rotate = Direction.North,
+                Health = 3,
                 PlayerId = 4
             };
 
@@ -75,28 +79,34 @@ namespace MazeGenerator
             while (true)
             {
                 FormatAnswers.ConsoleApp(lobby);
+                FormatAnswers.PlayerStat(lobby);
                 var act = MoveDirection();
                 if (act.Item1 == 1)
                     MazeLogic.TryShoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
-                if (act.Item1 == 2)
+                else if (act.Item1 == 2)
                 {
                     MazeLogic.Bomb(lobby, lobby.Players[stroke], MoveDirection().Item2);
                 }
                 else
                 {
                     var res = MazeLogic.TryMove(lobby, lobby.Players[stroke], act.Item2);
+                    Console.WriteLine($"{res}");
                     if (res == MazeObjectType.Exit)
                     {
-                        if (lobby.Players[stroke].Chest?.IsReal == false)
+                        var isReal = lobby.Players[stroke].Chest?? null;
+                        if (isReal != null)
                         {
-                            var r = lobby.Chests.Find(e =>
-                                Equals(lobby.Players[stroke].UserCoordinate, e.Position));
-                            lobby.Chests.Remove(r);
-                            lobby.Players[stroke].Chest = null;
-                        }
-                        else
-                        {
-                            //TODO: end game here
+                            if (lobby.Players[stroke].Chest.IsReal == false)
+                            {
+                                var r = lobby.Chests.Find(e =>
+                                    Equals(lobby.Players[stroke].UserCoordinate, e.Position));
+                                lobby.Chests.Remove(r);
+                                lobby.Players[stroke].Chest = null;
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
                     }
                 }
@@ -107,7 +117,7 @@ namespace MazeGenerator
                 Console.Clear();
             }
 
-            Console.WriteLine("игра закончена");
+            Console.WriteLine($"игра закончена, winner {lobby.Players[stroke].PlayerId}");
             Console.ReadLine();
             //bot.BotClient.StopReceiving();
         }

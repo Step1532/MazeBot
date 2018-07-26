@@ -22,10 +22,6 @@ namespace MazeGenerator.Logic
                 {
                     player.UserCoordinate.X -= coord.X;
                     player.UserCoordinate.Y -= coord.Y;
-                    if (player.Chest != null)
-                    {
-                        player.Chest.Position = player.UserCoordinate;
-                    }
                     if (res == MazeObjectType.Event)
                     {
                         var events = LobbyService.WhatsEvent(player.UserCoordinate, lobby);
@@ -100,7 +96,7 @@ namespace MazeGenerator.Logic
             if (type == MazeObjectType.Wall)
                 return null;
             if (type == MazeObjectType.Player)
-            {
+            { 
                 var p = lobby.Players.Find(e => Equals(e.UserCoordinate, bulletPosition));
                 if (p.Health == 1)
                 {
@@ -113,7 +109,7 @@ namespace MazeGenerator.Logic
 
                 if (p.Chest != null)
                 {
-                    lobby.Events.Add(new GameEvent(EventTypeEnum.Chest, p.UserCoordinate));
+                    lobby.Events.Add(new GameEvent(EventTypeEnum.Chest, new Coordinate(p.UserCoordinate.X, p.UserCoordinate.Y)));
                     p.Chest = null;
                 }
 
