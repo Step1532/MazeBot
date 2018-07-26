@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using MazeGenerator.Enums;
 using MazeGenerator.GameGenerator;
 using MazeGenerator.Models;
+using MazeGenerator.TeleBot;
 using MazeGenerator.Tools;
 
 namespace MazeGenerator.Logic
@@ -11,59 +14,93 @@ namespace MazeGenerator.Logic
         /// <summary>  
         /// Возвращает можно ли идти в направлении
         /// </summary>  
-        public static MazeObjectType TryMove(Lobby lobby, Player player, Direction direction)
+        public static string TryMove(Lobby lobby, Player player, Direction direction)
         {
+            string Answer = "";
             var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
             if ((player.UserCoordinate - coord).X != -1 || (player.UserCoordinate - coord).Y != -1 || (player.UserCoordinate - coord).X != lobby.Maze.GetLength(1)+1 || (player.UserCoordinate - coord).Y != lobby.Maze.GetLength(0) + 1)
             {
                 var res = LobbyService.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
-
-                if (res != MazeObjectType.Wall)
+                if (res[0] != MazeObjectType.Wall)
                 {
                     player.UserCoordinate.X -= coord.X;
                     player.UserCoordinate.Y -= coord.Y;
-                    if (res == MazeObjectType.Event)
+                    for (int i = 0; i < res.Count; i++)
                     {
-                        var events = LobbyService.WhatsEvent(player.UserCoordinate, lobby);
-                        if (events == EventTypeEnum.Arsenal)
+                        if (res[i] == MazeObjectType.Void)
+                            Answer += "прошел";
+                        if (res[i] == MazeObjectType.Event)
                         {
-                            player.Bombs = 3;
-                            player.Guns = 2;
-                        }
-                        //TODO: если будем делать пещеры
-                        //  if (events == "H ")
-                        //  {
-
-                        //  }
-                        if (events == EventTypeEnum.Hospital)
-                        {
-                            player.Health = 3;
-                        }
-
-                        //TODO: think about C and C|
-                        if (events == EventTypeEnum.Chest)
-                        {
-                            //TODO:переделать что б можно было ронять на евенты
-                            if (player.Chest == null)
+                            var events = LobbyService.WhatsEvent(player.UserCoordinate, lobby);
+                            if (events == EventTypeEnum.Arsenal)
                             {
-                                if (player.Health >= 3)
+                                player.Bombs = 3;
+                                player.Guns = 2;
+                                Answer += Answers.GenerateArsenalAnswer(player);
+                            }
+                            //TODO: если будем делать пещеры
+                            //  if (events == "H ")
+                            //  {
+
+                            //  }
+                            if (events == EventTypeEnum.Hospital)
+                            {
+                                player.Health = 3;
+                                Answer += Answers.GenerateHospitalAnswer(player);
+                            }
+
+                            //TODO: think about C and C|
+                            if (events == EventTypeEnum.Chest)
+                            {
+                                //TODO:переделать что б можно было ронять на евенты
+                                if (player.Chest == null)
                                 {
-                                    player.Chest = LobbyService.CheckChest(player.UserCoordinate, lobby);
-                                    var tr = lobby.Events.Find(e => Equals(player.UserCoordinate, e.Position));
-                                    lobby.Events.Remove(tr);
+                                    if (player.Health >= 3)
+                                    {
+                                        player.Chest = LobbyService.CheckChest(player.UserCoordinate, lobby);
+                                        var tr = lobby.Events.Find(e => Equals(player.UserCoordinate, e.Position));
+                                        lobby.Events.Remove(tr);
+                                       Answer += Answers.GenerateChestAnswer(player);
+                                    }
+                                }
+                            }
+                           
+                        }
+                        if (res[i] == MazeObjectType.Player)
+                        {
+                            var p = lobby.Players.Find(e => e.UserCoordinate == player.UserCoordinate && e.PlayerId != player.PlayerId);
+                            Answer += Answers.GeneratePlayerAnswer(player, p);
+                        }
+
+
+                        if (res[i] == MazeObjectType.Exit)
+                        {
+                            var isReal = player.Chest ?? null;
+                            if (isReal != null)
+                            {
+                                if (player.Chest.IsReal == false)
+                                {
+                                    var r = lobby.Chests.Find(e =>
+                                        Equals(player.UserCoordinate, e.Position));
+                                    lobby.Chests.Remove(r);
+                                    player.Chest = null;
+                                    Answer += Answers.GenerateChestAnswer(player);
+                                }
+                                else
+                                {
+                                    Answer += Answers.GenerateEndAnswer(player);
                                 }
                             }
                         }
                     }
-
                 }
-
-                return res;
             }
             else
             {
-                return MazeObjectType.Wall;
+                Answer += Answers.GenerateWallAnswer(player);
             }
+
+            return Answer;
         }
 
         /// <summary>
@@ -85,7 +122,7 @@ namespace MazeGenerator.Logic
             var coord = Coordinate.TargetCoordinate(player.Rotate, direction);
             var bulletPosition = new Coordinate(player.UserCoordinate.X, player.UserCoordinate.Y);
             var type = LobbyService.CheckLobbyCoordinate(bulletPosition - coord, lobby);
-            while (type == MazeObjectType.Void)
+            while (type[0] == MazeObjectType.Void)
             {
                 type = LobbyService.CheckLobbyCoordinate(bulletPosition - coord, lobby);
                 bulletPosition -= coord;
@@ -93,29 +130,31 @@ namespace MazeGenerator.Logic
 
             //TODO: fix return
             //TODO: create ActionType
-            if (type == MazeObjectType.Wall)
+            
+            if (type[0] == MazeObjectType.Wall)
                 return null;
-            if (type == MazeObjectType.Player)
-            { 
-                var p = lobby.Players.Find(e => Equals(e.UserCoordinate, bulletPosition));
-                if (p.Health == 1)
+            for (int i = 0; i < type.Count; i++)
+            {
+                if (type[i] == MazeObjectType.Player)
                 {
-                    lobby.Players.Remove(p);
-                }
-                else
-                {
-                    p.Health--;
-                }
+                    var p = lobby.Players.Find(e => Equals(e.UserCoordinate, bulletPosition));
+                    if (p.Health == 1)
+                    {
+                        lobby.Players.Remove(p);
+                    }
+                    else
+                    {
+                        p.Health--;
+                    }
 
-                if (p.Chest != null)
-                {
-                    lobby.Events.Add(new GameEvent(EventTypeEnum.Chest, new Coordinate(p.UserCoordinate.X, p.UserCoordinate.Y)));
-                    p.Chest = null;
+                    if (p.Chest != null)
+                    {
+                        lobby.Events.Add(new GameEvent(EventTypeEnum.Chest,
+                            new Coordinate(p.UserCoordinate.X, p.UserCoordinate.Y)));
+                        p.Chest = null;
+                    }
                 }
-
-                return p;
             }
-
             return null;
         }
         public static void Bomb(Lobby lobby, Player player, Direction direction) //  взрыв стены

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using MazeGenerator.Enums;
 using MazeGenerator.GameGenerator;
 using MazeGenerator.Logic;
@@ -76,39 +77,27 @@ namespace MazeGenerator
             lobby.Players.Add(player4);
 
             var stroke = 0;
+            string Answer = " ";
             while (true)
             {
                 FormatAnswers.ConsoleApp(lobby);
                 FormatAnswers.PlayerStat(lobby);
+                Console.WriteLine(Answer);
                 var act = MoveDirection();
                 if (act.Item1 == 1)
-                    MazeLogic.TryShoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
+                {}             //  Answer =  MazeLogic.Shoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
+                //MazeLogic.TryShoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
                 else if (act.Item1 == 2)
                 {
-                    MazeLogic.Bomb(lobby, lobby.Players[stroke], MoveDirection().Item2);
+               //     Answer = MazeLogic.Bomb(lobby, lobby.Players[stroke], MoveDirection().Item2);
+
                 }
                 else
                 {
                     var res = MazeLogic.TryMove(lobby, lobby.Players[stroke], act.Item2);
-                    Console.WriteLine($"{res}");
-                    if (res == MazeObjectType.Exit)
-                    {
-                        var isReal = lobby.Players[stroke].Chest?? null;
-                        if (isReal != null)
-                        {
-                            if (lobby.Players[stroke].Chest.IsReal == false)
-                            {
-                                var r = lobby.Chests.Find(e =>
-                                    Equals(lobby.Players[stroke].UserCoordinate, e.Position));
-                                lobby.Chests.Remove(r);
-                                lobby.Players[stroke].Chest = null;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                    }
+                    Answer = res;
+                    if (Answer.Contains("End"))
+                        break;
                 }
 
                 stroke++;

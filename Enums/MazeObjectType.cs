@@ -7,5 +7,6 @@
         Player,
         Event,
         Exit,
+        End
     }
 }

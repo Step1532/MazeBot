@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MazeGenerator.Models;
 
 namespace MazeGenerator.TeleBot
 {
@@ -35,6 +36,29 @@ namespace MazeGenerator.TeleBot
         //    "ПППООБЕДДА!",
         //    "УРРА!"
         //};
-
+        public static string GenerateArsenalAnswer(Player player)
+        {
+            return "Arsenal ";
+        }
+        public static string GeneratePlayerAnswer(Player player1, Player player2)
+        {
+            return "Player ";
+        }
+        public static string GenerateWallAnswer(Player player)
+        {
+            return "Wall ";
+        }
+        public static string GenerateHospitalAnswer(Player player)
+        {
+            return "Hospital ";
+        }
+        public static string GenerateChestAnswer(Player player)
+        {
+            return "Chest ";
+        }
+        public static string GenerateEndAnswer(Player player)
+        {
+            return "End ";
+        }
     }
 }
