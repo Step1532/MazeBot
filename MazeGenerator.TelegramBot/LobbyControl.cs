@@ -46,7 +46,7 @@ namespace MazeGenerator.TelegramBot
                 //                JsonManager.UpdateJson("onlineUsersId.json", (List<int> users) => { users.Add(userId); });   
             }
         }
-        public int GetLobbyId(long chatid)
+        public static int GetLobbyId(long chatid)
         {
             switch (chatid)
             {

@@ -82,12 +82,35 @@ namespace MazeGenerator.TelegramBot
                 Console.WriteLine(Answer);
                 var act = MoveDirection();
                 if (act.Item1 == 1)
-                { }             //  Answer =  MazeLogic.Shoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
-                //MazeLogic.TryShoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
+                {
+                    if (MazeLogic.TryShoot(lobby.Players[stroke]))
+                    {
+                        var res = MazeLogic.Shoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
+                        if (res.Item2 != null)
+                        {
+                            //TODO: генерирование месежа
+                        }
+                        else
+                        {
+                            //Todo: генерация месежа
+                        }
+                    }
+                }  
                 else if (act.Item1 == 2)
                 {
-                    //     Answer = MazeLogic.Bomb(lobby, lobby.Players[stroke], MoveDirection().Item2);
-
+                       var res =  MazeLogic.Bomb(lobby, lobby.Players[stroke], MoveDirection().Item2);
+                    if (res == ResultBomb.Wall)
+                    {
+                        //Todo генерация месежа
+                    }
+                    else if (res == ResultBomb.NoBomb)
+                    {
+                        //Todo: генерация месежа
+                    }
+                    else
+                    {
+                        //TOdo: генерация месежа
+                    }
                 }
                 else
                 {

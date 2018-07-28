@@ -7,6 +7,7 @@
         Player,
         Event,
         Exit,
-        End
+        End,
+        Space,
     }
 }

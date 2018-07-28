@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using MazeGenerator.Models;
 using MazeGenerator.Models.Enums;
 
@@ -63,6 +64,18 @@ namespace MazeGenerator.Core.Tools
 
             }
             throw new Exception("TargetCoordinate");
+        }
+        public static Byte On(this Byte[,] maze, Coordinate coord)
+        {
+            return maze[coord.X, coord.Y];
+        }
+        public static void Set(this Byte[,] maze, Coordinate coord, Byte value)
+        {
+            maze[coord.X, coord.Y] = value;
+        }
+        public static  string RandomAnswer(this List<string> answ)
+        {
+            return answ[Rnd.Next(0, answ.Count)];
         }
     }
 }

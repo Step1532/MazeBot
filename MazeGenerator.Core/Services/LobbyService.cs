@@ -17,7 +17,7 @@ namespace MazeGenerator.Core.Services
 
             if (coord.X < 0 || coord.Y < 0 || coord.X >= lobby.Maze.GetLength(1) || coord.Y >= lobby.Maze.GetLength(0))
             {
-                events.Add(MazeObjectType.Wall);
+                events.Add(MazeObjectType.Space);
                 return events;
             }
 
@@ -56,9 +56,12 @@ namespace MazeGenerator.Core.Services
         /// <summary>
         ///     Проверка что за клад
         /// </summary>
-        public static Treasure CheckChest(Coordinate coord, Lobby lobby)
+        public static Treasure PickChest(Coordinate coord, Lobby lobby,  Player player)
         {
             var res = lobby.Chests.Find(e => Equals(e.Position, coord));
+            res.Position = player.UserCoordinate;
+            var tr = lobby.Events.Find(e => Equals(player.UserCoordinate, e.Position));
+            lobby.Events.Remove(tr);
             return res;
         }
     }

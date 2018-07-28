@@ -11,6 +11,8 @@ namespace MazeGenerator.Models
         public Byte[,] Maze { get; set; }
         public List<Player> Players { get; set; }
         public LobbyRules Rules { get; private set; }
+        public int stroke { get; set; }
+        public bool IsActive { get; set; }
 
         public Lobby(int gameId)
         {
@@ -19,6 +21,13 @@ namespace MazeGenerator.Models
             Events = new List<GameEvent>();
             Players = new List<Player>();
             Chests = new List<Treasure>();
+            //TODO: isActive
+            IsActive = true;
+        }
+
+        public Lobby()
+        {
+            
         }
     }
 }

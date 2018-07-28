@@ -5,59 +5,80 @@ namespace MazeGenerator.TelegramBot
 {
     public class Answers
     {
-        public readonly List<string> AnswerId0 = new List<string>()
+        public static readonly List<string> MoveGo = new List<string>()
         {
             "прошел",
             "go"
         };
-        //public List<string> AnswerId1 = new List<string>()
-        //{
-        //    "wall",
-        //    "стена"
-        //};
-        //public List<string> AnswerId2 = new List<string>()
-        //{
-        //    "Арсенаал",
-        //    "arsenal"
-        //};
-        //public List<string> AnswerId3 = new List<string>()
-        //{
-        //    "попал",
-        //    "попадение"
-        //};
-        //public List<string> AnswerId4 = new List<string>()
-        //{
-        //    "увы",
-        //    "мимо"
-        //};
-        //public List<string> AnswerId5 = new List<string>()
-        //{
-        //    "ПППООБЕДДА!",
-        //    "УРРА!"
-        //};
-        public static string GenerateArsenalAnswer(Player player)
+        public static readonly List<string> MoveWall = new List<string>()
         {
-            return "Arsenal ";
-        }
-        public static string GeneratePlayerAnswer(Player player1, Player player2)
+            "wall",
+            "стена"
+        };
+        public static readonly List<string> MoveArs = new List<string>()
         {
-            return "Player ";
-        }
-        public static string GenerateWallAnswer(Player player)
+            "Арсенаал",
+            "arsenal"
+        };
+        public static readonly List<string> MoveHosp = new List<string>()
         {
-            return "Wall ";
-        }
-        public static string GenerateHospitalAnswer(Player player)
+            "hospital",
+            "госпиталь"
+        };
+        public static readonly List<string> MovePlayer = new List<string>()
         {
-            return "Hospital ";
-        }
-        public static string GenerateChestAnswer(Player player)
+            "Встретил игрока",
+            "Player"
+        };
+        public static readonly List<string> MoveChest = new List<string>()
         {
-            return "Chest ";
-        }
-        public static string GenerateEndAnswer(Player player)
+            "Арсенаал",
+            "arsenal"
+        };
+        public static readonly List<string> ExitFalseChest = new List<string>()
         {
-            return "End ";
-        }
+            "Арсенаал",
+            "arsenal"
+        };
+        public static readonly List<string> ShootWall = new List<string>()
+        {
+            "увы",
+            "мимо"
+        };
+        public static readonly List<string> ShootHit = new List<string>()
+        {
+            "ранил",
+            "поставил рану"
+        };
+        public static readonly List<string> ShootKill = new List<string>()
+        {
+            "да прольется кровь невинных",
+            "убил х_х"
+        };
+        public static readonly List<string> EndGame = new List<string>()
+        {
+            "ПППООБЕДДил!",
+            "УРРА!"
+        };
+        public static readonly List<string> NotBullet = new List<string>()
+        {
+            "Нет пуль!",
+            "Стрельба невозможна!"
+        };
+        public static readonly List<string> ResultBombVoid = new List<string>()
+        {
+            "Нет пуль!",
+            "Стрельба невозможна!"
+        };
+        public static readonly List<string> ResultBombNoBomb = new List<string>()
+        {
+            "Нет пуль!",
+            "Стрельба невозможна!"
+        };
+        public static readonly List<string> ResultBombWall = new List<string>()
+        {
+            "Нет пуль!",
+            "Стрельба невозможна!"
+        };
     }
 }

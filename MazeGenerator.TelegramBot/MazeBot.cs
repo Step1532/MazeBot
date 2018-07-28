@@ -36,7 +36,7 @@ namespace MazeGenerator.TelegramBot
 
             if (command == "/add")
             {
-                var lobbyId = _lobbyControl.GetLobbyId(chatId);
+//                var lobbyId = _lobbyControl.GetLobbyId(chatId);
                 //TODO: check if already in lobby
                 _lobbyControl.AddPlayer(fromId, lobbyId);
 
