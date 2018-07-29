@@ -38,7 +38,7 @@ namespace MazeGenerator.TelegramBot
             {
 //                var lobbyId = _lobbyControl.GetLobbyId(chatId);
                 //TODO: check if already in lobby
-                _lobbyControl.AddPlayer(fromId, lobbyId);
+//                _lobbyControl.AddPlayer(fromId, lobbyId);
 
                 //TODO: Вынести логику, добавть статические всему
                 //TODO переделать, ограничение, разбан чата

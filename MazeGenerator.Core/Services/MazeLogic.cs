@@ -30,7 +30,7 @@ namespace MazeGenerator.Core.Services
             if (res.Contains(MazeObjectType.Event))
             {
                 var events = LobbyService.WhatsEvent(player.UserCoordinate, lobby);
-                if (events == EventTypeEnum.Arsenal)
+                if (events.Contains(EventTypeEnum.Arsenal))
                 {
                     //TODO: move to rules
                     player.Bombs = 3;
@@ -38,13 +38,13 @@ namespace MazeGenerator.Core.Services
                     actions.Add(PlayerAction.OnArsenal);
                 }
 
-                if (events == EventTypeEnum.Hospital)
+                if (events.Contains(EventTypeEnum.Hospital))
                 {
                     player.Health = 3;
                     actions.Add(PlayerAction.OnHospital);
                 }
 
-                if (events == EventTypeEnum.Chest)
+                if (events.Contains(EventTypeEnum.Chest))
                 {
                     //TODO: Создать константу в правилах PlayerMaxHitpoint
                     if (player.Chest == null && player.Health >= 3)

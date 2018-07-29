@@ -44,13 +44,10 @@ namespace MazeGenerator.Core.Services
         /// <summary>
         ///     Проверка что находится в клетке
         /// </summary>
-        public static EventTypeEnum WhatsEvent(Coordinate coord, Lobby lobby)
+        /// //TODO rename EventsOnTale
+        public static List<EventTypeEnum> WhatsEvent(Coordinate coord, Lobby lobby)
         {
-            var res = lobby.Events.Find(e => Equals(e.Position, coord));
-            if (res != null) return res.Type;
-
-
-            throw new Exception("WhatsEvent");
+            return lobby.Events.Where(e => Equals(e.Position, coord)).Select(e => e.Type).ToList();
         }
 
         /// <summary>

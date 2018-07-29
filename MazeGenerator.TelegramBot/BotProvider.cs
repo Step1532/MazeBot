@@ -64,7 +64,8 @@ namespace MazeGenerator.TelegramBot
             LobbyRepository repository = new LobbyRepository();
             Lobby lobby = repository.Read(LobbyControl.GetLobbyId(chatId));
             var res = MazeLogic.TryMove(lobby, lobby.Players[lobby.stroke], direction);
-                List<string> ls = new List<string>();
+            List<string> ls = new List<string>();
+
             if (res.Contains(PlayerAction.GameEnd))
             {
                 lobby.IsActive = false;
