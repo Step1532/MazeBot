@@ -58,8 +58,9 @@ namespace MazeGenerator.TelegramBot
             return "";
         }
 
-        public static string MoveCommand(long chatId, Direction direction, string username)
+        public static (string, bool) MoveCommand(long chatId, Direction direction, string username)
         {
+            bool isArsenal = false;
             string answ = "";
             LobbyRepository repository = new LobbyRepository();
             Lobby lobby = repository.Read(LobbyControl.GetLobbyId(chatId));
@@ -92,6 +93,7 @@ namespace MazeGenerator.TelegramBot
                     }
                     if (item == PlayerAction.OnArsenal)
                     {
+                        isArsenal = true;
                         ls.Add(string.Format(Answers.MoveArs.RandomAnswer(), username));
                     }
                     if (item == PlayerAction.OnChest)
@@ -105,7 +107,8 @@ namespace MazeGenerator.TelegramBot
                 }
             }
             repository.Update(lobby);
-            return string.Join("\n", ls);
+            //Todo: вернуть наступил ли на арсенал?
+            return (string.Join("\n", ls), isArsenal);
         }
     }
 }

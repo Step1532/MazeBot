@@ -34,8 +34,8 @@ namespace MazeGenerator.TelegramBot
 
         private static void Main(string[] args)
         {
-            //var token = Console.ReadLine();
-            //var bot = new MazeBot(token);
+            var token = Console.ReadLine();
+            var bot = new MazeBot(token);
             var lobby = new Lobby(1);
             LobbyGenerator.GenerateLobbyMaze(lobby);
 
@@ -129,7 +129,7 @@ namespace MazeGenerator.TelegramBot
 
             Console.WriteLine($"игра закончена, winner {lobby.Players[stroke].PlayerId}");
             Console.ReadLine();
-            //bot.BotClient.StopReceiving();
+            bot.BotClient.StopReceiving();
         }
     }
 }

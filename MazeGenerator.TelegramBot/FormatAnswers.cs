@@ -21,7 +21,7 @@ namespace MazeGenerator.TelegramBot
                 {
                     if (LobbyService.CheckLobbyCoordinate(new Coordinate(j, i), lobby)[0] == MazeObjectType.Event)
                     {
-                        Console.Write(EventLetter(LobbyService.WhatsEvent(new Coordinate(j, i), lobby)));
+//                        Console.Write(EventLetter(LobbyService.WhatsEvent(new Coordinate(j, i), lobby)));
 
                     }
                     else
