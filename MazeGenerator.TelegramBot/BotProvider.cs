@@ -12,8 +12,9 @@ namespace MazeGenerator.TelegramBot
 {
     public static class BotProvider
     {
-        public static string ShootCommand(long chatId, Direction direction, string username)
+        public static string ShootCommand(int chatId, Direction direction, string username)
         {
+            //TODO: вернуть закончились ли пули
             LobbyRepository repository = new LobbyRepository();
             Lobby lobby = repository.Read(LobbyControl.GetLobbyId(chatId));
             if (MazeLogic.TryShoot(lobby.Players[lobby.stroke]))
@@ -33,6 +34,7 @@ namespace MazeGenerator.TelegramBot
                     return string.Format(Answers.ShootWall.RandomAnswer(), username);
                 }
             }
+            //TODO: возвращать игрока которого ранили или убили, тоесть 2 стринга + id игрока
             return string.Format(Answers.NotBullet.RandomAnswer(), username);
         }
         public static string BombCommand(long chatId, Direction direction, string username)

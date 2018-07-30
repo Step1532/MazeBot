@@ -30,12 +30,20 @@ namespace MazeGenerator.TelegramBot
             {
                 BotClient.SendChatActionAsync(e.Message.Chat.Id, ChatAction.Typing);
                 //TODO: тут должен быть туториал
-                var inlineKeyboard = BotTools.NewInlineKeyBoardForChooseDirection();
-                BotClient.SendTextMessageAsync(e.Message.Chat.Id, "Выбирай направление", replyMarkup: inlineKeyboard);
-                BotClient.OnCallbackQuery += BotClient_OnCallbackQuery;
+//                var inlineKeyboard = BotTools.NewInlineKeyBoardForChooseDirection();
+//                BotClient.SendTextMessageAsync(e.Message.Chat.Id, "Выбирай направление", replyMarkup: inlineKeyboard);
+//                BotClient.OnCallbackQuery += BotClient_OnCallbackQuery;
                 BotClient.SendTextMessageAsync(e.Message.Chat.Id, "123", ParseMode.Default, false, false, 0, BotTools.NewKeyBoardWithoutBombAndShoot());
             }
-
+            if (e.Message.Text == "/game")
+            {
+                BotClient.SendChatActionAsync(e.Message.Chat.Id, ChatAction.Typing);
+                //TODO: найти лобби, добавить игрока, разослать всем
+                //                var inlineKeyboard = BotTools.NewInlineKeyBoardForChooseDirection();
+                //                BotClient.SendTextMessageAsync(e.Message.Chat.Id, "Выбирай направление", replyMarkup: inlineKeyboard);
+                //                BotClient.OnCallbackQuery += BotClient_OnCallbackQuery;
+                BotClient.SendTextMessageAsync(e.Message.Chat.Id, "123", ParseMode.Default, false, false, 0, BotTools.NewKeyBoardWithoutBombAndShoot());
+            }
             if (e.Message.Text == "Вверх")
             {
                 BotClient.SendChatActionAsync(e.Message.Chat.Id, ChatAction.Typing);
@@ -69,36 +77,41 @@ namespace MazeGenerator.TelegramBot
             if (e.Message.Text == "Выстрел")
             {
                 BotClient.SendChatActionAsync(e.Message.Chat.Id, ChatAction.Typing);
-                //TODO: тут должен быть туториал
                 var inlineKeyboard = BotTools.NewInlineKeyBoardForChooseDirection();
                 BotClient.SendTextMessageAsync(e.Message.Chat.Id, "Выбирай направление", replyMarkup: inlineKeyboard);
-                BotClient.OnCallbackQuery += BotClient_OnCallbackQuery;
+                BotClient.OnCallbackQuery += BotClient_OnCallbackQueryShoot;
 
 
             }
             if (e.Message.Text == "Взрыв стены")
             {
                 BotClient.SendChatActionAsync(e.Message.Chat.Id, ChatAction.Typing);
-
+                var inlineKeyboard = BotTools.NewInlineKeyBoardForChooseDirection();
+                BotClient.SendTextMessageAsync(e.Message.Chat.Id, "Выбирай направление", replyMarkup: inlineKeyboard);
+                BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
             }
 
         }
 
-        private void BotClient_OnCallbackQuery(object sender, CallbackQueryEventArgs e)
+        private void BotClient_OnCallbackQueryShoot(object sender, CallbackQueryEventArgs e)
         {
             if (e.CallbackQuery.Data != "0")
             {
-                BotClient.OnCallbackQuery -= BotClient_OnCallbackQuery;
+                BotClient.OnCallbackQuery -= BotClient_OnCallbackQueryShoot;
                 switch (e.CallbackQuery.Data)
                 {
                     case "1":
-                        return Direction.North;
+                        SComm(e, Direction.North);
+                        break;
                     case "2":
-                        return Direction.West;
+                        SComm(e, Direction.West);
+                        break;
                     case "3":
-                        return Direction.East;
+                        SComm(e, Direction.East);
+                        break;
                     case "4":
-                        return Direction.South;
+                        SComm(e, Direction.South);
+                        break;
                 }
             }
             else
@@ -107,13 +120,40 @@ namespace MazeGenerator.TelegramBot
                     "Выбирайте направление а не пустые кнопки");
             }
         }
-
+        private void BotClient_OnCallbackQueryBomb(object sender, CallbackQueryEventArgs e)
+        {
+            if (e.CallbackQuery.Data != "0")
+            {
+                BotClient.OnCallbackQuery -= BotClient_OnCallbackQueryBomb;
+                switch (e.CallbackQuery.Data)
+                {
+                    case "1":
+                        BComm(e, Direction.North);
+                        break;
+                    case "2":
+                        BComm(e, Direction.West);
+                        break;
+                    case "3":
+                        BComm(e, Direction.East);
+                        break;
+                    case "4":
+                        BComm(e, Direction.South);
+                        break;
+                }
+            }
+            else
+            {
+                BotClient.SendTextMessageAsync(e.CallbackQuery.Message.Chat.Id,
+                    "Выбирайте направление а не пустые кнопки");
+            }
+        }
+        //TODO: следующим методам добавить, что б отправляли всем игрокам
         public void MComm(MessageEventArgs e, Direction direction)
         {
             var s = BotProvider.MoveCommand(e.Message.From.Id, direction, e.Message.From.Username);
             if (s.Item2)
             {
-                    BotClient.SendTextMessageAsync(e.Message.Chat.Id, s.Item1, ParseMode.Default, false, false, 0,
+                BotClient.SendTextMessageAsync(e.Message.Chat.Id, s.Item1, ParseMode.Default, false, false, 0,
                     BotTools.NewKeyBoard());
             }
             else
@@ -121,8 +161,18 @@ namespace MazeGenerator.TelegramBot
                 BotClient.SendTextMessageAsync(e.Message.Chat.Id, s.Item1, ParseMode.Markdown);
             }
         }
-
-
+        public void SComm(CallbackQueryEventArgs e, Direction direction)
+        {
+            var s = BotProvider.ShootCommand(e.CallbackQuery.From.Id, direction, e.CallbackQuery.From.Username);
+            BotClient.SendTextMessageAsync(e.CallbackQuery.From.Id, s, ParseMode.Default, false, false, 0,
+            BotTools.NewKeyBoard());
+        }
+        public void BComm(CallbackQueryEventArgs e, Direction direction)
+        {
+            var s = BotProvider.BombCommand(e.CallbackQuery.From.Id, direction, e.CallbackQuery.From.Username);
+            BotClient.SendTextMessageAsync(e.CallbackQuery.From.Id, s, ParseMode.Default, false, false, 0,
+                BotTools.NewKeyBoard());
+        }
     }
     //public class MazeBot
     //{
