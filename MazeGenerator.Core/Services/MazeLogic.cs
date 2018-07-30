@@ -15,7 +15,6 @@ namespace MazeGenerator.Core.Services
         public static List<PlayerAction> TryMove(Lobby lobby, Player player, Direction direction)
         {
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
-
             var types = LobbyService.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
 
             if (types.Contains(MazeObjectType.Wall) || types.Contains(MazeObjectType.Space))
@@ -28,7 +27,7 @@ namespace MazeGenerator.Core.Services
             
             if (types.Contains(MazeObjectType.Event))
             {
-                var events = LobbyService.EventsOnTale(player.UserCoordinate, lobby);
+                var events = LobbyService.EventsOnCell(player.UserCoordinate, lobby);
                 if (events.Contains(EventTypeEnum.Arsenal))
                 {
                     player.Bombs = lobby.Rules.PlayerMaxBombs;

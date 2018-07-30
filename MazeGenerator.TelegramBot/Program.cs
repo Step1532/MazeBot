@@ -37,7 +37,7 @@ namespace MazeGenerator.TelegramBot
             var token = Console.ReadLine();
             var bot = new MazeBot(token);
             var lobby = new Lobby(1);
-            LobbyGenerator.GenerateLobbyMaze(lobby);
+            LobbyGenerator.InitializeLobby(lobby);
 
             var player1 = new Player
             {

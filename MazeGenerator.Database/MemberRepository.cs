@@ -28,9 +28,12 @@ namespace MazeGenerator.Database
             JsonManager.UpdateJson(UsersFilePath, (List<Member> members) => {members.Add(member);});
         }
 
-        public List<int> Read(int lobbyId)
+        public List<Member> Read(int lobbyId)
         {
-            throw new NotImplementedException();
+            var res = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath))
+                .Where(e => e.LobbyId == lobbyId)
+                .ToList();
+            return res;
         }
 
         public int ReadLobbyId(int userId)

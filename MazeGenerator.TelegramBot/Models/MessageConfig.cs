@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MazeGenerator.TelegramBot
+﻿namespace MazeGenerator.TelegramBot.Models
 {
     public class MessageConfig
     {

@@ -1,4 +1,4 @@
-﻿namespace MazeGenerator.TelegramBot
+﻿namespace MazeGenerator.TelegramBot.Models
 {
     public enum KeyBoardEnum
     {

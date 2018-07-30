@@ -8,10 +8,24 @@ namespace MazeGenerator.Core.GameGenerator
 {
     public static class LobbyGenerator
     {
-        public static void GenerateLobbyMaze(Lobby lobby)
+        public static void InitializeLobby(Lobby lobby)
         {
             CreateNewMaze(lobby);
             GenerateEvents(lobby);
+            GeneratePlayers(lobby);
+        }
+        private static void GeneratePlayers(Lobby lobby)
+        {
+            foreach (var p in lobby.Players)
+            {
+                Coordinate coordinate;
+                do
+                {
+                    coordinate = lobby.Maze.GenerateRandomPosition();
+                } while (CheckCoordinateEvents(lobby, coordinate));
+
+                p.UserCoordinate = coordinate;
+            }
         }
 
         private static void CreateNewMaze(Lobby lobby)

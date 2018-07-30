@@ -11,5 +11,10 @@ namespace MazeGenerator.Models
         public int Health { get; set; }
         public int Guns { get; set; }
         public int Bombs { get; set; }
+
+        public Player()
+        {
+
+        }
     }
 }

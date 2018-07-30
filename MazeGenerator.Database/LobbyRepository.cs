@@ -26,7 +26,7 @@ namespace MazeGenerator.Database
             File.WriteAllText(MazeFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Maze));
             File.WriteAllText(EventFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Events));
             File.WriteAllText(PlayerFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Players));
-            File.WriteAllText(StrokeFile(lobby.GameId), JsonConvert.SerializeObject(lobby.stroke));
+            File.WriteAllText(StrokeFile(lobby.GameId), JsonConvert.SerializeObject(lobby.CurrentTurn));
             File.WriteAllText(ChestsFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Chests));
         }
 
@@ -38,7 +38,7 @@ namespace MazeGenerator.Database
                 Players = JsonConvert.DeserializeObject<List<Player>>(File.ReadAllText(PlayerFile(lobbyId))) ?? new List<Player>(),
                 Events = JsonConvert.DeserializeObject<List<GameEvent>>(File.ReadAllText(EventFile(lobbyId))),
                 Chests = JsonConvert.DeserializeObject<List<Treasure>>(File.ReadAllText(ChestsFile(lobbyId))),
-                stroke = JsonConvert.DeserializeObject<int>(File.ReadAllText(StrokeFile(lobbyId))),
+                CurrentTurn = JsonConvert.DeserializeObject<int>(File.ReadAllText(StrokeFile(lobbyId))),
             };
         }
 

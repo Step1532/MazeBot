@@ -1,5 +1,6 @@
 ﻿using System;
 using MazeGenerator.Models.Enums;
+using MazeGenerator.TelegramBot.Models;
 using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -29,6 +30,7 @@ namespace MazeGenerator.TelegramBot
             //TODO: при начале игры говорить всем куда игрок попал
             if (e.Message.Type != MessageType.Text)
                 return;
+
             if (e.Message.Text == "/start")
             {
                 BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
@@ -48,18 +50,19 @@ namespace MazeGenerator.TelegramBot
                 {
                     if (LobbyControl.EmptyPlaceCount(playerId) == 0)
                     {
-
+                        BotService.StartGame(playerId);
+                        BotClient.SendTextMessageAsync(playerId, "Игра начата");
                     }
                     else
                     {
-
-
                         string m =
                             $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyControl.EmptyPlaceCount(playerId)}";
                         BotClient.SendTextMessageAsync(playerId, m);
                     }
                 }
             }
+            if (!LobbyControl.CheckLobby(playerId))
+                return;
             if (e.Message.Text == "Вверх")
             {
                 BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
@@ -166,15 +169,15 @@ namespace MazeGenerator.TelegramBot
         //TODO: следующим методам добавить, что б отправляли всем игрокам
         public void MComm(MessageEventArgs e, Direction direction)
         {
-            var s = BotService.MoveCommand(playerId, direction, e.Message.From.Username);
+            var s = BotService.MoveCommand(e.Message.From.Id, direction, e.Message.From.Username);
             if (s.KeyBoardId != KeyBoardEnum.Move)
             {
-                BotClient.SendTextMessageAsync(playerId, s.Answer, ParseMode.Default, false, false, 0,
+                BotClient.SendTextMessageAsync(e.Message.From.Id, s.Answer, ParseMode.Default, false, false, 0,
                     KeybordConfiguration.NewKeyBoard());
             }
             else
             {
-                BotClient.SendTextMessageAsync(playerId, s.Answer, ParseMode.Markdown);
+                BotClient.SendTextMessageAsync(e.Message.From.Id, s.Answer, ParseMode.Markdown);
             }
         }
         public void SComm(CallbackQueryEventArgs e, Direction direction)

@@ -44,14 +44,15 @@ namespace MazeGenerator.Core.Services
         /// <summary>
         ///     Проверка что находится в клетке
         /// </summary>
-        public static List<EventTypeEnum> EventsOnTale(Coordinate coord, Lobby lobby)
+        public static List<EventTypeEnum> EventsOnCell(Coordinate coord, Lobby lobby)
         {
-            return lobby.Events.Where(e => Equals(e.Position, coord)).Select(e => e.Type).ToList();
+            return lobby
+                .Events
+                .Where(e => Equals(e.Position, coord))
+                .Select(e => e.Type)
+                .ToList();
         }
 
-        /// <summary>
-        ///     Проверка что за клад
-        /// </summary>
         public static Treasure PickChest(Coordinate coord, Lobby lobby,  Player player)
         {
             var res = lobby.Chests.Find(e => Equals(e.Position, coord));

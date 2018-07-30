@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Linq;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace MazeGenerator.TelegramBot
+namespace MazeGenerator.TelegramBot.Models
 {
     public static class KeybordConfiguration
     {
@@ -129,34 +127,16 @@ namespace MazeGenerator.TelegramBot
             rkm.Keyboard =
                 new KeyboardButton[][]
                 {
-                    new KeyboardButton[]
-                    {
-                        new KeyboardButton("Выстрел"),
-                        new KeyboardButton("Вверх"),
-                        new KeyboardButton("Взрыв стены"),
-                    },
-
-                    new KeyboardButton[]
-                    {
-                        new KeyboardButton("Влево"),
-                        new KeyboardButton("Вправо")
-                    },
-
-                    new KeyboardButton[]
-                    {
-                        new KeyboardButton("Пропуск хода"),
-                        new KeyboardButton("Вниз"),
-                        new KeyboardButton("Удар кинжалом"),
-                    }
+                    CreateButtonList("Выстрел", "Вверх", "Взрыв стены"),
+                    CreateButtonList("Влево", "Вправо"),
+                    CreateButtonList("Пропуск хода", "Вниз", "Удар кинжалом"),
                 };
             return rkm;
         }
 
-        private static KeyboardButton[] CreateButtonList(List<string> textList)
+        private static KeyboardButton[] CreateButtonList(params string[] textList)
         {
-            //TODO: реализовать этот метод и юзать всюду
-
-            return null;
+            return textList.Select(s => new KeyboardButton(s)).ToArray();
         }
     }
 }
