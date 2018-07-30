@@ -10,69 +10,96 @@ using MazeGenerator.Models.Enums;
 
 namespace MazeGenerator.TelegramBot
 {
-    public static class BotProvider
+    public static class BotService
     {
-        public static string ShootCommand(int chatId, Direction direction, string username)
+        public static MessageConfig ShootCommand(int chatId, Direction direction, string username)
         {
-            //TODO: вернуть закончились ли пули
             LobbyRepository repository = new LobbyRepository();
             Lobby lobby = repository.Read(LobbyControl.GetLobbyId(chatId));
-            if (MazeLogic.TryShoot(lobby.Players[lobby.stroke]))
+            MessageConfig msg = new MessageConfig();
+            var shootResult = MazeLogic.TryShoot(lobby, lobby.Players[lobby.stroke], direction);
+            if (shootResult == null)
             {
-                var res = MazeLogic.Shoot(lobby, lobby.Players[lobby.stroke], direction);
+                msg.Answer = string.Format(Answers.NotBullet.RandomAnswer(), username);
+                msg.AnswerForOther = string.Format(Answers.NotBullet.RandomAnswer(), username);
+                msg.KeyBoardId = KeyBoardEnum.Bomb;
+                return msg;
+            }
+            else
+            {
                 repository.Update(lobby);
-                if (res.Item2 != null)
+                if (shootResult.Player != null)
                 {
-                    if (res.Item1 == ResultShoot.Kill)
+                    if (shootResult.Result == ResultShoot.Kill)
                     {
-                        return string.Format(Answers.ShootKill.RandomAnswer(), username);
+                        msg.Answer = string.Format(Answers.ShootKill.RandomAnswer(), username);
+                        msg.AnswerForOther = string.Format(Answers.ShootKill.RandomAnswer(), username);
+                        if (shootResult.ShootCount == false)
+                        {
+                            msg.KeyBoardId = KeyBoardEnum.Bomb;
+                        }
                     }
-                    return string.Format(Answers.ShootHit.RandomAnswer(), username);
+
+                    msg.Answer = string.Format(Answers.ShootHit.RandomAnswer(), username);
+                    msg.AnswerForOther = string.Format(Answers.ShootHit.RandomAnswer(), username);
+                    if (shootResult.ShootCount == false)
+                    {
+                        msg.KeyBoardId = KeyBoardEnum.Bomb;
+                    }
                 }
                 else
                 {
-                    return string.Format(Answers.ShootWall.RandomAnswer(), username);
+                    msg.Answer = string.Format(Answers.ShootWall.RandomAnswer(), username);
+                    msg.AnswerForOther = string.Format(Answers.ShootWall.RandomAnswer(), username);
+                    if (shootResult.ShootCount == false)
+                    {
+                        msg.KeyBoardId = KeyBoardEnum.Bomb;
+                    }
                 }
             }
-            //TODO: возвращать игрока которого ранили или убили, тоесть 2 стринга + id игрока
-            return string.Format(Answers.NotBullet.RandomAnswer(), username);
+            return msg;
         }
-        public static string BombCommand(long chatId, Direction direction, string username)
+
+        public static MessageConfig BombCommand(long chatId, Direction direction, string username)
         {
             LobbyRepository repository = new LobbyRepository();
             Lobby lobby = repository.Read(LobbyControl.GetLobbyId(chatId));
             var res = MazeLogic.Bomb(lobby, lobby.Players[lobby.stroke], direction);
+            repository.Update(lobby);
+
             if (res == ResultBomb.Wall)
             {
-                repository.Update(lobby);
-                return string.Format(Answers.ResultBombWall.RandomAnswer(), username);
+//                return string.Format(Answers.ResultBombWall.RandomAnswer(), username);
             }
             if (res == ResultBomb.NoBomb)
             {
-                repository.Update(lobby);
-                return string.Format(Answers.ResultBombNoBomb.RandomAnswer(), username);
+//                return string.Format(Answers.ResultBombNoBomb.RandomAnswer(), username);
             }
             if (res == ResultBomb.Void)
             {
-                repository.Update(lobby);
-                return string.Format(Answers.ResultBombVoid.RandomAnswer(), username);
+//                return string.Format(Answers.ResultBombVoid.RandomAnswer(), username);
             }
-            return "";
+
+            throw new Exception();
         }
 
-        public static (string, bool) MoveCommand(long chatId, Direction direction, string username)
+        public static MessageConfig MoveCommand(long chatId, Direction direction, string username)
         {
-            bool isArsenal = false;
-            string answ = "";
+            
+
             LobbyRepository repository = new LobbyRepository();
             Lobby lobby = repository.Read(LobbyControl.GetLobbyId(chatId));
             var res = MazeLogic.TryMove(lobby, lobby.Players[lobby.stroke], direction);
-            List<string> ls = new List<string>();
+            MessageConfig msg = new MessageConfig();
 
+            bool isArsenal = false;
+            List<string> ls = new List<string>();
+            msg.KeyBoardId  = KeyBoardEnum.Move;
             if (res.Contains(PlayerAction.GameEnd))
             {
                 lobby.IsActive = false;
                 ls.Add(string.Format(Answers.EndGame.RandomAnswer(), username));
+                return null;
             }
             else
             {
@@ -95,7 +122,8 @@ namespace MazeGenerator.TelegramBot
                     }
                     if (item == PlayerAction.OnArsenal)
                     {
-                        isArsenal = true;
+                        //TODO:
+                        msg.KeyBoardId = KeyBoardEnum.ShootwithBomb;
                         ls.Add(string.Format(Answers.MoveArs.RandomAnswer(), username));
                     }
                     if (item == PlayerAction.OnChest)
@@ -109,8 +137,9 @@ namespace MazeGenerator.TelegramBot
                 }
             }
             repository.Update(lobby);
-            //Todo: вернуть наступил ли на арсенал?
-            return (string.Join("\n", ls), isArsenal);
+            msg.Answer = string.Join("\n", ls);
+            msg.AnswerForOther = msg.Answer;
+            return msg;
         }
     }
 }

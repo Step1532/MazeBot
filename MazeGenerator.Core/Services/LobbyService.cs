@@ -44,8 +44,7 @@ namespace MazeGenerator.Core.Services
         /// <summary>
         ///     Проверка что находится в клетке
         /// </summary>
-        /// //TODO rename EventsOnTale
-        public static List<EventTypeEnum> WhatsEvent(Coordinate coord, Lobby lobby)
+        public static List<EventTypeEnum> EventsOnTale(Coordinate coord, Lobby lobby)
         {
             return lobby.Events.Where(e => Equals(e.Position, coord)).Select(e => e.Type).ToList();
         }

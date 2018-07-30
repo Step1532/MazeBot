@@ -21,7 +21,6 @@ namespace MazeGenerator.Models
             Events = new List<GameEvent>();
             Players = new List<Player>();
             Chests = new List<Treasure>();
-            //TODO: isActive
             IsActive = true;
         }
 

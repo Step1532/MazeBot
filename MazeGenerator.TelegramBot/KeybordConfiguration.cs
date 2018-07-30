@@ -5,9 +5,9 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace MazeGenerator.TelegramBot
 {
-    public static class BotTools
+    public static class KeybordConfiguration
     {
-        public static InlineKeyboardMarkup NewInlineKeyBoardForChooseDirection()
+        public static InlineKeyboardMarkup ChooseDirectionKeyboard()
         {
             var inlineKeyboard = new InlineKeyboardMarkup(new[]
             {
@@ -33,7 +33,8 @@ namespace MazeGenerator.TelegramBot
             return inlineKeyboard;
         }
 
-        public static ReplyKeyboardMarkup NewKeyBoardWithoutBombAndShoot()
+
+        public static ReplyKeyboardMarkup WithoutBombAndShootKeyboard()
         {
             var rkm = new ReplyKeyboardMarkup();
 
@@ -61,7 +62,8 @@ namespace MazeGenerator.TelegramBot
 
           return rkm;
         }
-        public static ReplyKeyboardMarkup NewKeyBoardWithoutBomb()
+
+        public static ReplyKeyboardMarkup WithoutBombKeyBoard()
         {
             var rkm = new ReplyKeyboardMarkup();
 
@@ -90,7 +92,8 @@ namespace MazeGenerator.TelegramBot
 
             return rkm;
         }
-        public static ReplyKeyboardMarkup NewKeyBoardWithoutShoot()
+
+        public static ReplyKeyboardMarkup WithoutShootKeyBoard()
         {
             var rkm = new ReplyKeyboardMarkup();
 
@@ -118,6 +121,7 @@ namespace MazeGenerator.TelegramBot
                 };
             return rkm;
         }
+
         public static ReplyKeyboardMarkup NewKeyBoard()
         {
             var rkm = new ReplyKeyboardMarkup();
@@ -146,6 +150,13 @@ namespace MazeGenerator.TelegramBot
                     }
                 };
             return rkm;
+        }
+
+        private static KeyboardButton[] CreateButtonList(List<string> textList)
+        {
+            //TODO: реализовать этот метод и юзать всюду
+
+            return null;
         }
     }
 }

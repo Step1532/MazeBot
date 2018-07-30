@@ -16,10 +16,9 @@ namespace MazeGenerator.Core.Services
         {
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
 
-            //TODO: rename 
-            var res = LobbyService.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
+            var types = LobbyService.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
 
-            if (res.Contains(MazeObjectType.Wall) || res.Contains(MazeObjectType.Space))
+            if (types.Contains(MazeObjectType.Wall) || types.Contains(MazeObjectType.Space))
             {
                 return new List<PlayerAction> { PlayerAction.OnWall };
             }
@@ -27,27 +26,25 @@ namespace MazeGenerator.Core.Services
             var actions = new List<PlayerAction>();
             player.UserCoordinate -= coord;
             
-            if (res.Contains(MazeObjectType.Event))
+            if (types.Contains(MazeObjectType.Event))
             {
-                var events = LobbyService.WhatsEvent(player.UserCoordinate, lobby);
+                var events = LobbyService.EventsOnTale(player.UserCoordinate, lobby);
                 if (events.Contains(EventTypeEnum.Arsenal))
                 {
-                    //TODO: move to rules
-                    player.Bombs = 3;
-                    player.Guns = 2;
+                    player.Bombs = lobby.Rules.PlayerMaxBombs;
+                    player.Guns = lobby.Rules.PlayerMaxGuns;
                     actions.Add(PlayerAction.OnArsenal);
                 }
 
                 if (events.Contains(EventTypeEnum.Hospital))
                 {
-                    player.Health = 3;
+                    player.Health = lobby.Rules.PlayerMaxHealth;
                     actions.Add(PlayerAction.OnHospital);
                 }
 
                 if (events.Contains(EventTypeEnum.Chest))
                 {
-                    //TODO: Создать константу в правилах PlayerMaxHitpoint
-                    if (player.Chest == null && player.Health >= 3)
+                    if (player.Chest == null && player.Health == lobby.Rules.PlayerMaxHealth)
                     {
                         player.Chest = LobbyService.PickChest(player.UserCoordinate, lobby, player);
                         actions.Add(PlayerAction.OnChest);
@@ -55,7 +52,7 @@ namespace MazeGenerator.Core.Services
                 }
             }
 
-            if (res.Contains(MazeObjectType.Player))
+            if (types.Contains(MazeObjectType.Player))
             {
                 //TODO: think about it
                 var p = lobby.Players.Find(e =>
@@ -63,7 +60,7 @@ namespace MazeGenerator.Core.Services
                 actions.Add(PlayerAction.MeetPlayer);
             }
 
-            if (res.Contains(MazeObjectType.Exit))
+            if (types.Contains(MazeObjectType.Exit))
             {
                 if (player.Chest != null)
                 {
@@ -78,6 +75,7 @@ namespace MazeGenerator.Core.Services
                     else
                     {
                         actions.Add(PlayerAction.GameEnd);
+
                     }
                 }
             }
@@ -89,18 +87,19 @@ namespace MazeGenerator.Core.Services
         /// <summary>
         /// проверка может ли игрок выстрелить
         /// </summary>
-        public static bool TryShoot(Player player)
+        public static ShootResult TryShoot(Lobby lobby, Player player, Direction direction)
         {
             if (player.Health > 1 && player.Guns >= 1)
-                return true;
-            return false;
+                return Shoot(lobby, player, direction);
+            return null;
         }
 
         /// <summary>
         /// проверка может ли пуля попасть в игрока, если да возвращакт игрока
         /// </summary>
-        public static (ResultShoot, Player) Shoot(Lobby lobby, Player player, Direction direction)
+        private static ShootResult Shoot(Lobby lobby, Player player, Direction direction)
         {
+            ShootResult res =new ShootResult();
             player.Guns--;
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
             var bulletPosition = new Coordinate(player.UserCoordinate.X, player.UserCoordinate.Y);
@@ -110,10 +109,20 @@ namespace MazeGenerator.Core.Services
                 type = LobbyService.CheckLobbyCoordinate(bulletPosition - coord, lobby);
                 bulletPosition -= coord;
             } while (!type.Contains(MazeObjectType.Player) && !type.Contains(MazeObjectType.Wall));
-            
+
 
             if (type.Contains(MazeObjectType.Wall))
-                return (ResultShoot.Wall, null);
+            {
+                res.Result = ResultShoot.Wall;
+                res.Player = null;
+                res.ShootCount = true;
+                if (player.Guns == 0)
+                {
+                    res.ShootCount = false;
+                }
+                return res;
+
+            }
 
             if (type.Any(t => t == MazeObjectType.Player))
             {
@@ -128,12 +137,26 @@ namespace MazeGenerator.Core.Services
                 if (p.Health == 1)
                 {
                     lobby.Players.Remove(p);
-                    return (ResultShoot.Kill, p);
+                    res.Result = ResultShoot.Kill;
+                    res.Player = p;
+                    res.ShootCount = true;
+                    if (player.Guns == 0)
+                    {
+                        res.ShootCount = false;
+                    }
+                    return res;
                 }
                 else
                 {
                     p.Health--;
-                    return (ResultShoot.Hit, p);
+                    res.Result = ResultShoot.Hit;
+                    res.Player = p;
+                    res.ShootCount = true;
+                    if (player.Guns == 0)
+                    {
+                        res.ShootCount = false;
+                    }
+                    return res;
                 }
             }
 

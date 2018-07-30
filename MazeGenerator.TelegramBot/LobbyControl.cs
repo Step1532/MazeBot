@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MazeGenerator.Core.Tools;
 using MazeGenerator.Database;
 using MazeGenerator.Models;
@@ -10,31 +11,19 @@ namespace MazeGenerator.TelegramBot
 {
     public class LobbyControl
     {
-        public string GenerateLink(int userId)
+        public static bool CheckLobby(int userId)
         {
-            if (Validation(userId))
-            {
-                return "https://t.me/joinchat/EoabPk5DPTqJ231LveIF0g";
-            }
-
-            //if (Validation(userId))
-            //{
-            //    //TODO: ссылки на лобби, сделать лобби
-            //     switch (CheckLobby())
-            //    {
-            //        case 1: return "https://t.me/joinchat/EoabPk5DPTqJ231LveIF0g";
-            //        case 2: return "https://ссыль_на-2-лобби";
-            //        case 3: return "https://ссыль-на-3--обби";
-            //        case 4: return "https://ссыль-на-4-лобби";
-            //        case 5: return "https://ссыль-на-5--обби";
-            //        default: return null;
-            //    }
-            //}
-
-            return null;
+            MemberRepository repo = new MemberRepository();
+            var users = repo.ReadLobbyAll();
+            return users.Any(e => e.UserId == userId);
         }
-
-        //TODO: создать файл users
+        public static int EmptyPlaceCount(int userId)
+        {
+            MemberRepository repo = new MemberRepository();
+            var lastuser = repo.ReadLobbyAll().Last();
+            var users = repo.ReadLobbyAll().Where(e => e.LobbyId == lastuser.LobbyId);
+            return 4-users.Count();
+        }
         public bool Validation(int userId)
         {
             return true;

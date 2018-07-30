@@ -32,7 +32,6 @@ namespace MazeGenerator.Database
 
         public Lobby Read(int lobbyId)
         {
-            //TODO: chests?
             return new Lobby(lobbyId)
             {
                 Maze = JsonConvert.DeserializeObject<Byte[,]>(File.ReadAllText(MazeFile(lobbyId))),
@@ -48,7 +47,6 @@ namespace MazeGenerator.Database
             Create(lobby);
         }
 
-        //TODO: delete/clean?
         public void Delete(int lobbyId)
         {
             throw new NotImplementedException();

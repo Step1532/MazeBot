@@ -83,19 +83,19 @@ namespace MazeGenerator.TelegramBot
                 var act = MoveDirection();
                 if (act.Item1 == 1)
                 {
-                    if (MazeLogic.TryShoot(lobby.Players[stroke]))
-                    {
-                        var res = MazeLogic.Shoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
-                        if (res.Item2 != null)
-                        {
-                            //TODO: генерирование месежа
-                        }
-                        else
+//                    if (MazeLogic.TryShoot(lobby.Players[stroke]))
+//                    {
+//                        var res = MazeLogic.Shoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
+//                        if (res.Player != null)
+//                       {
+//                            //TODO: генерирование месежа
+//                       }
+//                        else
                         {
                             //Todo: генерация месежа
                         }
                     }
-                }  
+//                }  
                 else if (act.Item1 == 2)
                 {
                        var res =  MazeLogic.Bomb(lobby, lobby.Players[stroke], MoveDirection().Item2);

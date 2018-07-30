@@ -7,6 +7,9 @@
         public int FalseGoldCount;
         public int HolesCount;
         public int HospitalCount;
+        public int PlayerMaxHealth;
+        public int PlayerMaxGuns;
+        public int PlayerMaxBombs;
         public Coordinate Size;
 
         public static LobbyRules GenerateTemplateRules()
@@ -18,7 +21,10 @@
                 ArsenalCount = 1,
                 HospitalCount = 1,
                 HolesCount = 1,
-                FalseGoldCount = 1
+                FalseGoldCount = 1,
+                PlayerMaxHealth = 3,
+                PlayerMaxGuns = 2,
+                PlayerMaxBombs = 3,
             };
         }
     }

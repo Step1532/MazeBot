@@ -1,20 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using MazeGenerator.Models;
+using Newtonsoft.Json;
 
 namespace MazeGenerator.Database
 {
     public class MemberRepository
     {
         private readonly string _connectionString;
+        private string UsersFilePath = @"\users.json";
 
         public MemberRepository()
         {
             _connectionString = Config.ConnectionString;
         }
 
-        public void Create(int lobbyId, int playerId)
+        public void Create(int lobbyId, int userId)
         {
-            throw new NotImplementedException();
+            Member member = new Member
+            {
+                LobbyId = lobbyId,
+                UserId = userId,
+                LanguageId = 0
+            };
+            JsonManager.UpdateJson(UsersFilePath, (List<Member> members) => {members.Add(member);});
         }
 
         public List<int> Read(int lobbyId)
@@ -22,9 +33,20 @@ namespace MazeGenerator.Database
             throw new NotImplementedException();
         }
 
-        public void Delete(int lobbyId, int playerId)
+        public int ReadLobbyId(int userId)
         {
-            throw new NotImplementedException();
+            var res = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath)).Find(e => e.UserId == userId);
+            return res.LobbyId;
+        }
+        public List<Member> ReadLobbyAll()
+        {
+            var res = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
+            return res;
+        }
+
+        public void Delete(int lobbyId)
+        {
+            JsonManager.UpdateJson(UsersFilePath, (List<Member> members) => { members.RemoveAll(e => e.LobbyId == lobbyId); });
         }
     }
 }
