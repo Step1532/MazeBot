@@ -21,6 +21,8 @@ namespace MazeGenerator.TelegramBot
             Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
             MessageConfig msg = new MessageConfig();
             var shootResult = MazeLogic.TryShoot(lobby, lobby.Players[lobby.CurrentTurn], direction);
+            //TODO
+
             repository.Update(lobby);
 
             if (shootResult == null)
@@ -114,8 +116,12 @@ namespace MazeGenerator.TelegramBot
             
 
             LobbyRepository repository = new LobbyRepository();
+            //TODO: совпадает ли ид пользователя с индксом в списке
             Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
             var res = MazeLogic.TryMove(lobby, lobby.Players[lobby.CurrentTurn], direction);
+            lobby.CurrentTurn++;
+            if (lobby.CurrentTurn == 2)
+                lobby.CurrentTurn = 0;
             repository.Update(lobby);
             //TODO: удалить это говно
             FormatAnswers.ConsoleApp(lobby);

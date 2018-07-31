@@ -58,7 +58,7 @@ namespace MazeGenerator.TelegramBot
                     {
                         string m =
                             $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyControl.EmptyPlaceCount(playerId)}";
-                        BotClient.SendTextMessageAsync(playerId, m);
+                        BotClient.SendTextMessageAsync(playerId, m, ParseMode.Default, false, false, 0, KeybordConfiguration.NewKeyBoard());
                     }
                 }
             }

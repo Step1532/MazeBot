@@ -14,6 +14,7 @@ namespace MazeGenerator.Core.GameGenerator
             GenerateEvents(lobby);
             GeneratePlayers(lobby);
         }
+
         private static void GeneratePlayers(Lobby lobby)
         {
             foreach (var p in lobby.Players)

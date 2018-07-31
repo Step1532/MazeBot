@@ -45,7 +45,7 @@ namespace MazeGenerator.TelegramBot
             Member lastuser;
             if (players.Count == 0)
             {
-                return 1;
+                return 2;
             }
             else
             {
@@ -53,7 +53,7 @@ namespace MazeGenerator.TelegramBot
                 var users = repo.ReadLobbyAll().Where(e => e.LobbyId == lastuser.LobbyId);
 
                 //TODO: <3-
-                return 1-users.Count();
+                return 2-users.Count();
 
             } 
 
