@@ -4,13 +4,14 @@ using MazeGenerator.Models;
 
 namespace MazeGenerator.Database
 {
-    public class PlayerRepository
+    public class 
+        Repository
     {
         private readonly string _connectionString;
 
-        public PlayerRepository()
+        public void PlayerRepository()
         {
-            _connectionString = Config.ConnectionString;
+      //      _connectionString = Config.ConnectionString;
         }
 
         public void Create(Player player)

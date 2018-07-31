@@ -59,6 +59,10 @@ namespace MazeGenerator.TelegramBot
         {
             "ПППООБЕДДил!",
             "УРРА!"
+        }; public static readonly List<string> NoTurn = new List<string>()
+        {
+            "Не твой ход!",
+            "ход не ваш"
         };
         public static readonly List<string> NotBullet = new List<string>()
         {

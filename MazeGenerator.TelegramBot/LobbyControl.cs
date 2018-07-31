@@ -51,7 +51,7 @@ namespace MazeGenerator.TelegramBot
             {
                 lastuser = players.Last();
                 var users = repo.ReadLobbyAll().Where(e => e.LobbyId == lastuser.LobbyId);
-
+                //TODO: чет не понял где добавление игрков
                 //TODO: <3-
                 return 2-users.Count();
 

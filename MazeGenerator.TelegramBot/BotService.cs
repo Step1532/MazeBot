@@ -9,6 +9,7 @@ using MazeGenerator.Database;
 using MazeGenerator.Models;
 using MazeGenerator.Models.Enums;
 using MazeGenerator.TelegramBot.Models;
+using Telegram.Bot.Requests;
 
 namespace MazeGenerator.TelegramBot
 {
@@ -116,9 +117,18 @@ namespace MazeGenerator.TelegramBot
             
 
             LobbyRepository repository = new LobbyRepository();
-            //TODO: совпадает ли ид пользователя с индксом в списке
+            
+
             Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
+            if (lobby.Players.FindIndex(e => e.PlayerId == chatId) != lobby.CurrentTurn)
+            {
+                return new MessageConfig
+                {
+                    Answer = string.Format(Answers.NoTurn.RandomAnswer(), username)
+                };
+            }
             var res = MazeLogic.TryMove(lobby, lobby.Players[lobby.CurrentTurn], direction);
+            Player CurrentPlayer = lobby.Players[lobby.CurrentTurn];
             lobby.CurrentTurn++;
             if (lobby.CurrentTurn == 2)
                 lobby.CurrentTurn = 0;
@@ -146,6 +156,19 @@ namespace MazeGenerator.TelegramBot
                 return msg;
             }
             ls.Add(string.Format(Answers.MoveGo.RandomAnswer(), username));
+
+            if (res.Contains(PlayerAction.MeetPlayer))
+            {
+                //TODO:
+                List<int> playersOnCell = new List<int>();
+                playersOnCell = LobbyService.PlayersOnCell(CurrentPlayer, lobby);
+                foreach (var e in playersOnCell)
+                {
+                    GetChatMemberRequest a = new GetChatMemberRequest(e, e);
+                    ls.Add(string.Format(Answers.MovePlayer.RandomAnswer(), username, a.ChatId.Username));
+                }
+            }
+
             foreach (var item in res)
             {
 
@@ -154,11 +177,6 @@ namespace MazeGenerator.TelegramBot
                     ls.Add(string.Format(Answers.ExitFalseChest.RandomAnswer(), username));
                 }
 
-                if (item == PlayerAction.MeetPlayer)
-                {
-                    //TODO:
-                    ls.Add(string.Format(Answers.ExitFalseChest.RandomAnswer(), username));
-                }
                 if (item == PlayerAction.OnArsenal)
                 {
                     msg.KeyBoardId = KeyBoardEnum.ShootwithBomb;

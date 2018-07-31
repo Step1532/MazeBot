@@ -52,6 +52,14 @@ namespace MazeGenerator.Core.Services
                 .Select(e => e.Type)
                 .ToList();
         }
+        public static List<int> PlayersOnCell(Player currentPlayer, Lobby lobby)
+        {
+            return lobby
+                .Players
+                .Where(e => Equals(e.UserCoordinate, currentPlayer.UserCoordinate) && e.PlayerId != currentPlayer.PlayerId)
+                .Select(e => e.PlayerId)
+                .ToList();
+        }
 
         public static Treasure PickChest(Coordinate coord, Lobby lobby,  Player player)
         {
