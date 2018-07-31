@@ -21,14 +21,14 @@ namespace MazeGenerator.TelegramBot
                 {
                     if (LobbyService.CheckLobbyCoordinate(new Coordinate(j, i), lobby)[0] == MazeObjectType.Event)
                     {
-//                        Console.Write(EventLetter(LobbyService.WhatsEvent(new Coordinate(j, i), lobby)));
-
+  //                      Console.Write(EventLetter(LobbyService.W(new Coordinate(j, i), lobby)));
+                          Console.Write("  ");
                     }
                     else
                     {
                         var p = lobby.Players.Find(e => Equals(e.UserCoordinate, new Coordinate(j, i)));
                         if (p != null)
-                            Console.Write("p" + p.PlayerId);
+                            Console.Write("p1");
                         else
                             Console.Write(lobby.Maze[j, i] == 0 ? "  " : "0 ");
                     }
@@ -36,7 +36,7 @@ namespace MazeGenerator.TelegramBot
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine(lobby.Events[1].Position.X + " " + lobby.Events[1].Position.Y);
+   //         Console.WriteLine(lobby.Events[1].Position.X + " " + lobby.Events[1].Position.Y);
         }
 
         public static string EventLetter(EventTypeEnum type)

@@ -10,7 +10,7 @@ namespace MazeGenerator.Database
     public class MemberRepository
     {
         private readonly string _connectionString;
-        private string UsersFilePath = @"\users.json";
+        private string UsersFilePath = @"users.json";
 
         public MemberRepository()
         {
@@ -25,7 +25,14 @@ namespace MazeGenerator.Database
                 UserId = userId,
                 LanguageId = 0
             };
-            JsonManager.UpdateJson(UsersFilePath, (List<Member> members) => {members.Add(member);});
+            if (lobbyId == 1)
+            {
+                Console.WriteLine(JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath)));
+            }
+
+            var ls = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
+            ls.Add(member);
+            File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(ls));
         }
 
         public List<Member> Read(int lobbyId)
@@ -49,7 +56,8 @@ namespace MazeGenerator.Database
 
         public void Delete(int lobbyId)
         {
-            JsonManager.UpdateJson(UsersFilePath, (List<Member> members) => { members.RemoveAll(e => e.LobbyId == lobbyId); });
+            //TODO:
+//            JsonManager.UpdateJsonList(UsersFilePath, (List<Member> members) => { members.RemoveAll(e => e.LobbyId == lobbyId); });
         }
     }
 }

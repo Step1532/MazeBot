@@ -98,6 +98,7 @@ namespace MazeGenerator.TelegramBot
                     Rotate = Direction.North,
                     Health = lobby.Rules.PlayerMaxHealth,
                     PlayerId = p.UserId
+                    
                 };
                 lobby.Players.Add(player);
             }
@@ -116,7 +117,8 @@ namespace MazeGenerator.TelegramBot
             Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
             var res = MazeLogic.TryMove(lobby, lobby.Players[lobby.CurrentTurn], direction);
             repository.Update(lobby);
-
+            //TODO: удалить это говно
+            FormatAnswers.ConsoleApp(lobby);
             if (res.Contains(PlayerAction.GameEnd))
             {
                 lobby.IsActive = false;
@@ -132,13 +134,14 @@ namespace MazeGenerator.TelegramBot
             };
 
             List<string> ls = new List<string>();
-
+            if (res.Contains(PlayerAction.OnWall))
+            {
+                msg.Answer = (string.Format(Answers.MoveWall.RandomAnswer(), username));
+                return msg;
+            }
+            ls.Add(string.Format(Answers.MoveGo.RandomAnswer(), username));
             foreach (var item in res)
             {
-                if (item == PlayerAction.OnWall)
-                {
-                    ls.Add(string.Format(Answers.MoveWall.RandomAnswer(), username));
-                }
 
                 if (item == PlayerAction.FakeChest)
                 {

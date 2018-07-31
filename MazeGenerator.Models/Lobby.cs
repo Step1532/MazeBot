@@ -22,6 +22,7 @@ namespace MazeGenerator.Models
             Players = new List<Player>();
             Chests = new List<Treasure>();
             IsActive = true;
+            CurrentTurn = 0;
         }
 
         public Lobby()

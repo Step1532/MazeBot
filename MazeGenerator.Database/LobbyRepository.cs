@@ -8,11 +8,11 @@ namespace MazeGenerator.Database
 {
     public class LobbyRepository
     {
-        private string MazeFile(int id) => $@"\Game{id}\maze.json";
-        private string EventFile(int id) => $@"\Game{id}\CoordinateEvents.json";
-        private string PlayerFile(int id) => $@"\Game{id}\Players.json";
-        private string ChestsFile(int id) => $@"\Game{id}\Chests.json";
-        private string StrokeFile(int id) => $@"\Game{id}\Stroke.json";
+        private string MazeFile(int id) => $@"Game{id}\maze.json";
+        private string EventFile(int id) => $@"Game{id}\CoordinateEvents.json";
+        private string PlayerFile(int id) => $@"Game{id}\Players.json";
+        private string ChestsFile(int id) => $@"Game{id}\Chests.json";
+        private string StrokeFile(int id) => $@"Game{id}\Stroke.json";
 
         private readonly string _connectionString;
         public LobbyRepository()
@@ -22,7 +22,7 @@ namespace MazeGenerator.Database
 
         public void Create(Lobby lobby)
         {
-            Directory.CreateDirectory($@"\Game{lobby.GameId}");
+            Directory.CreateDirectory($@"Game{lobby.GameId}");
             File.WriteAllText(MazeFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Maze));
             File.WriteAllText(EventFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Events));
             File.WriteAllText(PlayerFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Players));

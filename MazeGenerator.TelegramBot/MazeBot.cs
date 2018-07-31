@@ -26,7 +26,6 @@ namespace MazeGenerator.TelegramBot
         {
             int playerId = e.Message.From.Id;
 
-
             //TODO: при начале игры говорить всем куда игрок попал
             if (e.Message.Type != MessageType.Text)
                 return;
@@ -39,6 +38,7 @@ namespace MazeGenerator.TelegramBot
 //                BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
 //                BotClient.OnCallbackQuery += BotClient_OnCallbackQuery;
                 BotClient.SendTextMessageAsync(playerId, "проверка связи");
+                return;
             }
             if (e.Message.Text == "/game")
             {
@@ -48,6 +48,7 @@ namespace MazeGenerator.TelegramBot
                 }
                 else
                 {
+                    LobbyControl.AddUser(playerId);
                     if (LobbyControl.EmptyPlaceCount(playerId) == 0)
                     {
                         BotService.StartGame(playerId);

@@ -16,7 +16,8 @@ namespace MazeGenerator.Core.Services
         {
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
             var types = LobbyService.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
-
+            Console.Clear();
+            Console.WriteLine(player.UserCoordinate.X+ " " + player.UserCoordinate.Y);
             if (types.Contains(MazeObjectType.Wall) || types.Contains(MazeObjectType.Space))
             {
                 return new List<PlayerAction> { PlayerAction.OnWall };
