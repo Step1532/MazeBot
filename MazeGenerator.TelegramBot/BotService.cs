@@ -15,27 +15,30 @@ namespace MazeGenerator.TelegramBot
 {
     public static class BotService
     {
-        public static LobbyRepository repository = new LobbyRepository();
-        public static MemberRepository repo = new MemberRepository();
+        public static readonly LobbyRepository LobbyRepository = new LobbyRepository();
+        public static readonly MemberRepository MemberRepository = new MemberRepository();
+
         public static MessageConfig ShootCommand(int chatId, Direction direction, string username)
         {
-            Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
-            MessageConfig msg = new MessageConfig();
+            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
             var shootResult = MazeLogic.TryShoot(lobby, lobby.Players[lobby.CurrentTurn], direction);
             //TODO
-
-            repository.Update(lobby);
+            LobbyRepository.Update(lobby);
 
             if (shootResult == null)
             {
-                msg.Answer = string.Format(Answers.NotBullet.RandomAnswer(), username);
-                msg.AnswerForOther = string.Format(Answers.NotBullet.RandomAnswer(), username);
-                msg.KeyBoardId = KeyBoardEnum.Bomb;
-                return msg;
+                return new MessageConfig
+                {
+                    Answer = string.Format(Answers.NotBullet.RandomAnswer(), username),
+                    AnswerForOther = string.Format(Answers.NotBullet.RandomAnswer(), username),
+                    KeyBoardId = KeyBoardEnum.Bomb
+                };
             }
 
             if (shootResult.Player != null)
             {
+                var msg = new MessageConfig();
+
                 if (shootResult.Result == ResultShoot.Kill)
                 {
                     msg.Answer = string.Format(Answers.ShootKill.RandomAnswer(), username);
@@ -52,50 +55,57 @@ namespace MazeGenerator.TelegramBot
                 {
                     msg.KeyBoardId = KeyBoardEnum.Bomb;
                 }
+
+                return msg;
             }
             else
             {
+                MessageConfig msg = new MessageConfig();
+
                 msg.Answer = string.Format(Answers.ShootWall.RandomAnswer(), username);
                 msg.AnswerForOther = string.Format(Answers.ShootWall.RandomAnswer(), username);
                 if (shootResult.ShootCount == false)
                 {
                     msg.KeyBoardId = KeyBoardEnum.Bomb;
                 }
+                return msg;
             }
-            return msg;
         }
 
         public static MessageConfig BombCommand(int chatId, Direction direction, string username)
         {
-            LobbyRepository repository = new LobbyRepository();
-            Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
+            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
             var res = MazeLogic.Bomb(lobby, lobby.Players[lobby.CurrentTurn], direction);
  
             MessageConfig msg = new MessageConfig();
             if (lobby.Players[lobby.CurrentTurn].Bombs == 0)
+            {
                 msg.KeyBoardId = KeyBoardEnum.Bomb;
-                if (res == ResultBomb.Wall)
-                {
+            }
+
+            switch (res)
+            {
+                case ResultBomb.Wall:
                     msg.Answer =  string.Format(Answers.ResultBombWall.RandomAnswer(), username);
-                }
-                if (res == ResultBomb.NoBomb)
-                {
+                    break;
+                case ResultBomb.NoBomb:
                     msg.Answer = string.Format(Answers.ResultBombNoBomb.RandomAnswer(), username);
-                }
-                if (res == ResultBomb.Void)
-                {
+                    break;
+                case ResultBomb.Void:
                     msg.Answer =  string.Format(Answers.ResultBombVoid.RandomAnswer(), username);
-                }
+                    break;
+            }
+
             lobby.CurrentTurn++;
             if (lobby.CurrentTurn == lobby.Players.Count)
                 lobby.CurrentTurn = 0;
-            repository.Update(lobby);
+
+            LobbyRepository.Update(lobby);
             return msg;
         }
         public static MessageConfig StabCommand(int chatId)
         {
-            LobbyRepository repository = new LobbyRepository();
-            Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
+            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
             if (lobby.Players.FindIndex(e => e.TelegramUserId == chatId) != lobby.CurrentTurn)
             {
                 return new MessageConfig
@@ -108,7 +118,7 @@ namespace MazeGenerator.TelegramBot
             lobby.CurrentTurn++;
             if (lobby.CurrentTurn == lobby.Players.Count)
                 lobby.CurrentTurn = 0;
-            repository.Update(lobby);
+            LobbyRepository.Update(lobby);
 
             if (res != null)
             {
@@ -128,8 +138,7 @@ namespace MazeGenerator.TelegramBot
         }
         public static MessageConfig SkipTurn(int chatId)
         {
-            LobbyRepository repository = new LobbyRepository();
-            Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
+            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
             if (lobby.Players.FindIndex(e => e.TelegramUserId == chatId) != lobby.CurrentTurn)
             {
                 return new MessageConfig
@@ -153,7 +162,7 @@ namespace MazeGenerator.TelegramBot
         {
             MemberRepository repo = new MemberRepository();
             var gameid = repo.ReadLobbyId(playerId);
-            var players = repo.Read(gameid);
+            var players = repo.ReadMemberList(gameid);
             Lobby lobby = new Lobby(gameid);
             foreach (var p in players)
             {
@@ -174,12 +183,8 @@ namespace MazeGenerator.TelegramBot
 
         public static MessageConfig MoveCommand(int chatId, Direction direction, string username)
         {
-            
 
-            LobbyRepository repository = new LobbyRepository();
-            
-
-            Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
+            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
             if (lobby.Players.FindIndex(e => e.TelegramUserId == chatId) != lobby.CurrentTurn)
             {
                 return new MessageConfig
@@ -187,12 +192,14 @@ namespace MazeGenerator.TelegramBot
                     Answer = string.Format(Answers.NoTurn.RandomAnswer(), username)
                 };
             }
+
             var res = MazeLogic.TryMove(lobby, lobby.Players[lobby.CurrentTurn], direction);
-            Player CurrentPlayer = lobby.Players[lobby.CurrentTurn];
+            Player currentPlayer = lobby.Players[lobby.CurrentTurn];
             lobby.CurrentTurn++;
             if (lobby.CurrentTurn == lobby.Players.Count)
                 lobby.CurrentTurn = 0;
-            repository.Update(lobby);
+
+            LobbyRepository.Update(lobby);
             //TODO: удалить это говно
             FormatAnswers.ConsoleApp(lobby);
             if (res.Contains(PlayerAction.GameEnd))
@@ -220,7 +227,7 @@ namespace MazeGenerator.TelegramBot
             if (res.Contains(PlayerAction.MeetPlayer))
             {
                 //TODO:
-                var playersOnCell = LobbyService.PlayersOnCell(CurrentPlayer, lobby);
+                var playersOnCell = LobbyService.PlayersOnCell(currentPlayer, lobby);
                //TODO: переделать под cHARACTER
                 foreach (var e in playersOnCell)
                 {

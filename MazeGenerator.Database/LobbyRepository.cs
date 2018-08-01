@@ -49,6 +49,7 @@ namespace MazeGenerator.Database
 
         public void Delete(int lobbyId)
         {
+            //TODO: delete old files
             throw new NotImplementedException();
         }
     }

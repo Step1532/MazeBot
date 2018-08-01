@@ -45,6 +45,7 @@ namespace MazeGenerator.TelegramBot
             Member lastuser;
             if (players.Count == 0)
             {
+                //TODO: Это что?
                 return 1;
             }
             else

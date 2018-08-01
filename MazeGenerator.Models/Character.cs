@@ -6,9 +6,9 @@ namespace MazeGenerator.Models
 {
     class Character
     {
-        public int TelegramUserId;
-        public string CharacterName;
-        public int Experience;
+        public int TelegramUserId { get; set; }
+        public string CharacterName { get; set; }
+        public int Experience { get; set; }
 
         public Character()
         {

@@ -35,7 +35,7 @@ namespace MazeGenerator.Database
             File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(ls));
         }
 
-        public List<Member> Read(int lobbyId)
+        public List<Member> ReadMemberList(int lobbyId)
         {
             var res = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath))
                 .Where(e => e.LobbyId == lobbyId)

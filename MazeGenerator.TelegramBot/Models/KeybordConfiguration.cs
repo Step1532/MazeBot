@@ -5,6 +5,7 @@ namespace MazeGenerator.TelegramBot.Models
 {
     public static class KeybordConfiguration
     {
+        //TODO: refactoring , use CreateButtonList method
         public static InlineKeyboardMarkup ChooseDirectionKeyboard()
         {
             var inlineKeyboard = new InlineKeyboardMarkup(new[]

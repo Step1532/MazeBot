@@ -6,11 +6,11 @@ namespace MazeGenerator.Database
 {
     public class CharacterRepository
     {
-        private readonly string _connectionString;
+        private string _connectionString;
 
-        public void PlayerRepository()
+        public CharacterRepository()
         {
-      //      _connectionString = Config.ConnectionString;
+            _connectionString = Config.ConnectionString;
         }
 
         public void Create()
