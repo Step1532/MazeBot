@@ -52,12 +52,11 @@ namespace MazeGenerator.Core.Services
                 .Select(e => e.Type)
                 .ToList();
         }
-        public static List<int> PlayersOnCell(Player currentPlayer, Lobby lobby)
+        public static List<Player> PlayersOnCell(Player currentPlayer, Lobby lobby)
         {
             return lobby
                 .Players
-                .Where(e => Equals(e.UserCoordinate, currentPlayer.UserCoordinate) && e.PlayerId != currentPlayer.PlayerId)
-                .Select(e => e.PlayerId)
+                .Where(e => Equals(e.UserCoordinate, currentPlayer.UserCoordinate) && e.TelegramUserId != currentPlayer.TelegramUserId)
                 .ToList();
         }
 

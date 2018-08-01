@@ -56,9 +56,10 @@ namespace MazeGenerator.Core.Services
             {
                 //TODO: think about it
                 var p = lobby.Players.Find(e =>
-                    Equals(e.UserCoordinate, player.UserCoordinate) && e.PlayerId != player.PlayerId);
+                    Equals(e.UserCoordinate, player.UserCoordinate) && e.TelegramUserId != player.TelegramUserId);
                 actions.Add(PlayerAction.MeetPlayer);
             }
+            
 
             if (types.Contains(MazeObjectType.Exit))
             {
@@ -181,6 +182,18 @@ namespace MazeGenerator.Core.Services
                 return ResultBomb.Wall;
             }
             return ResultBomb.Void;
+        }
+        //TODO: stabresult
+        public static Player Stab(Lobby lobby, Player player)
+        {
+            var res = LobbyService.PlayersOnCell(player, lobby)?.FirstOrDefault();
+            if (res != null)
+                res.Health--;
+            if (res.Health == 1)
+            {
+                lobby.Players.Remove(res);
+            }
+            return res;
         }
     }
 }

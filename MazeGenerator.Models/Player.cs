@@ -1,10 +1,12 @@
-﻿using MazeGenerator.Models.Enums;
+﻿using System;
+using MazeGenerator.Models.Enums;
 
 namespace MazeGenerator.Models
 {
     public class Player
     {
-        public int PlayerId { get; set; }
+        public int TelegramUserId { get; set; }
+        public string HeroName { get; set; }
         public Direction Rotate { get; set; }
         public Coordinate UserCoordinate { get; set; }
         public Treasure Chest { get; set; }

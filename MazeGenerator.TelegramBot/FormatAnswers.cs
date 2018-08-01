@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using MazeGenerator.Core.Services;
 using MazeGenerator.Models;
 using MazeGenerator.Models.Enums;
@@ -21,8 +22,7 @@ namespace MazeGenerator.TelegramBot
                 {
                     if (LobbyService.CheckLobbyCoordinate(new Coordinate(j, i), lobby)[0] == MazeObjectType.Event)
                     {
-  //                      Console.Write(EventLetter(LobbyService.W(new Coordinate(j, i), lobby)));
-                          Console.Write("  ");
+                          Console.Write(EventLetter(LobbyService.EventsOnCell(new Coordinate(j, i), lobby).First()));
                     }
                     else
                     {
@@ -62,7 +62,7 @@ namespace MazeGenerator.TelegramBot
         {
             for (int i = 0; i < lobby.Players.Count; i++)
             {
-                Console.Write($"{lobby.Players[i].PlayerId} | " +
+                Console.Write($"{lobby.Players[i].TelegramUserId} | " +
                               $"{lobby.Players[i].UserCoordinate.X}, {lobby.Players[i].UserCoordinate.Y} | " +
                               $"{lobby.Players[i].Bombs} | {lobby.Players[i].Guns} | {lobby.Players[i].Health} | {lobby.Players[i].Rotate} | ");
                 if (lobby.Players[i].Chest == null)

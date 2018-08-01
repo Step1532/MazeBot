@@ -37,7 +37,8 @@ namespace MazeGenerator.TelegramBot
 //                var inlineKeyboard = BotTools.NewInlineKeyBoardForChooseDirection();
 //                BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
 //                BotClient.OnCallbackQuery += BotClient_OnCallbackQuery;
-                BotClient.SendTextMessageAsync(playerId, "проверка связи");
+                BotClient.SendTextMessageAsync(playerId, "Напишите имя персонажа");
+               //TODO: создание персонаже
                 return;
             }
             if (e.Message.Text == "/game")
@@ -52,7 +53,7 @@ namespace MazeGenerator.TelegramBot
                     if (LobbyControl.EmptyPlaceCount(playerId) == 0)
                     {
                         BotService.StartGame(playerId);
-                        BotClient.SendTextMessageAsync(playerId, "Игра начата");
+                        BotClient.SendTextMessageAsync(playerId, "Игра начата", ParseMode.Default, false, false, 0, KeybordConfiguration.NewKeyBoard());
                     }
                     else
                     {
@@ -88,11 +89,12 @@ namespace MazeGenerator.TelegramBot
             {
                 BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
                 //Todo: нет метода кинжала
+                StabComm(e);
             }
             if (e.Message.Text == "Пропуск хода")
             {
                 BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
-
+                SkipComm(e);
             }
             if (e.Message.Text == "Выстрел")
             {
@@ -168,6 +170,16 @@ namespace MazeGenerator.TelegramBot
             }
         }
         //TODO: следующим методам добавить, что б отправляли всем игрокам
+        public void StabComm(MessageEventArgs e)
+        {
+            var s = BotService.StabCommand(e.Message.From.Id);
+            BotClient.SendTextMessageAsync(e.Message.From.Id, s.Answer);
+        }
+        public void SkipComm(MessageEventArgs e)
+        {
+            var s = BotService.SkipTurn(e.Message.From.Id);
+            BotClient.SendTextMessageAsync(e.Message.From.Id, s.Answer);
+        }
         public void MComm(MessageEventArgs e, Direction direction)
         {
             var s = BotService.MoveCommand(e.Message.From.Id, direction, e.Message.From.Username);

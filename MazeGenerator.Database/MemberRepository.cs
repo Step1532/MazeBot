@@ -10,7 +10,7 @@ namespace MazeGenerator.Database
     public class MemberRepository
     {
         private readonly string _connectionString;
-        private string UsersFilePath = @"users.json";
+        private string UsersFilePath = @"usersinLobby.json";
 
         public MemberRepository()
         {

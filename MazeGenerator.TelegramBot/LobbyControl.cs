@@ -45,15 +45,15 @@ namespace MazeGenerator.TelegramBot
             Member lastuser;
             if (players.Count == 0)
             {
-                return 2;
+                return 1;
             }
             else
             {
                 lastuser = players.Last();
                 var users = repo.ReadLobbyAll().Where(e => e.LobbyId == lastuser.LobbyId);
                 //TODO: чет не понял где добавление игрков
-                //TODO: <3-
-                return 2-users.Count();
+                //TODO: <3
+                return 1-users.Count();
 
             } 
 

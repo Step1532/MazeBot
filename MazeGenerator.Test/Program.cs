@@ -45,28 +45,28 @@ namespace MazeGenerator.Test
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
                 Rotate = Direction.North,
                 Health = 3,
-                PlayerId = 1
+                TelegramUserId = 1
             };
             var player2 = new Player
             {
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
                 Rotate = Direction.North,
                 Health = 3,
-                PlayerId = 2
+                TelegramUserId = 2
             };
             var player3 = new Player
             {
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
                 Rotate = Direction.North,
                 Health = 3,
-                PlayerId = 3
+                TelegramUserId = 3
             };
             var player4 = new Player
             {
                 UserCoordinate = lobby.Maze.GenerateRandomPosition(),
                 Rotate = Direction.North,
                 Health = 3,
-                PlayerId = 4
+                TelegramUserId = 4
             };
 
             lobby.Players.Add(player1);
@@ -128,7 +128,7 @@ namespace MazeGenerator.Test
                 Console.Clear();
             }
 
-            Console.WriteLine($"игра закончена, winner {lobby.Players[stroke].PlayerId}");
+            Console.WriteLine($"игра закончена, winner {lobby.Players[stroke].TelegramUserId}");
         }
     }
 }
