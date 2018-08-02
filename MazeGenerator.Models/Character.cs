@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MazeGenerator.Models
 {
-    class Character
+    public class Character
     {
         public int TelegramUserId { get; set; }
         public string CharacterName { get; set; }

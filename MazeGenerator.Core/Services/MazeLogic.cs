@@ -54,7 +54,6 @@ namespace MazeGenerator.Core.Services
 
             if (types.Contains(MazeObjectType.Player))
             {
-                //TODO: think about it
                 var p = lobby.Players.Find(e =>
                     Equals(e.UserCoordinate, player.UserCoordinate) && e.TelegramUserId != player.TelegramUserId);
                 actions.Add(PlayerAction.MeetPlayer);

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.RegularExpressions;
+using MazeGenerator.Database;
 using MazeGenerator.Models;
 using MazeGenerator.Models.Enums;
 using MazeGenerator.TelegramBot.Models;
@@ -13,6 +15,7 @@ namespace MazeGenerator.TelegramBot
     public class MazeBot
     {
         public readonly TelegramBotClient BotClient;
+        CharacterRepository a = new CharacterRepository();
 
 
         public MazeBot(string _tMaze)
@@ -27,42 +30,71 @@ namespace MazeGenerator.TelegramBot
         {
             int playerId = e.Message.From.Id;
 
-            //TODO: при начале игры говорить всем куда игрок попал
             if (e.Message.Type != MessageType.Text)
                 return;
+            Regex login_regex = new Regex("^[a-zA-Zа-яА-Я][a-zA-Zа-яА-Я0-9]{2,9}$");
+            string source = "ivanov98";
 
+            if (login_regex.Match(source).Success)
+            {
+                //TODO:
+            }
+            else
+            {
+
+            }
             BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
             if (e.Message.Text == "/start")
             {
-                //TODO: тут будет турториал
-//                var inlineKeyboard = BotTools.NewInlineKeyBoardForChooseDirection();
-//                BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
-//                BotClient.OnCallbackQuery += BotClient_OnCallbackQuery;
-                BotClient.SendTextMessageAsync(playerId, "Напишите имя персонажа");
-               //TODO: создание персонаже
-                return;
-            }
-            if (e.Message.Text == "/game")
-            {
-                if(LobbyControl.CheckLobby(playerId))
+                if (a.Read(e.Message.From.Id) == null)
                 {
-                    BotClient.SendTextMessageAsync(playerId, "Вы уже находитесь в лобби");
+                    //TODO: тут будет турториал
+                    a.Create(e.Message.From.Id);
+                    //TODO: проверка
+                    BotClient.SendTextMessageAsync(playerId, "Напишите имя персонажа");
+                    //TODO: создание персонаже
+                    return;
                 }
                 else
                 {
-                    LobbyControl.AddUser(playerId);
-                    if (LobbyControl.EmptyPlaceCount(playerId) == 0)
+                    BotClient.SendTextMessageAsync(playerId, "Вы хотите удалить персонажа? Для удаления напишите *Удаляю* и нажмите /start", ParseMode.Markdown);
+                    return;
+                }
+            }
+
+            if (a.Read(e.Message.From.Id).CharacterName != null)
+            {
+                if (e.Message.Text == "/game")
+                {
+                    if (LobbyControl.CheckLobby(playerId))
                     {
-                        BotService.StartGame(playerId);
-                        BotClient.SendTextMessageAsync(playerId, "Игра начата", ParseMode.Default, false, false, 0, KeybordConfiguration.NewKeyBoard());
+                        BotClient.SendTextMessageAsync(playerId, "Вы уже находитесь в лобби");
                     }
                     else
                     {
-                        string m =
-                            $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyControl.EmptyPlaceCount(playerId)}";
-                        BotClient.SendTextMessageAsync(playerId, m, ParseMode.Default, false, false, 0, KeybordConfiguration.NewKeyBoard());
+                        LobbyControl.AddUser(playerId);
+                        if (LobbyControl.EmptyPlaceCount(playerId) == 0)
+                        {
+                            BotService.StartGame(playerId);
+                            BotClient.SendTextMessageAsync(playerId, "Игра начата", ParseMode.Default, false, false, 0,
+                                KeybordConfiguration.NewKeyBoard());
+                        }
+                        else
+                        {
+                            string m =
+                                $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyControl.EmptyPlaceCount(playerId)}";
+                            BotClient.SendTextMessageAsync(playerId, m, ParseMode.Default, false, false, 0,
+                                KeybordConfiguration.NewKeyBoard());
+                        }
                     }
                 }
+            }
+            else
+            {
+                var r = a.Read(e.Message.From.Id);
+                r.CharacterName = e.Message.Text;
+                a.Update(r);
+                BotClient.SendTextMessageAsync(playerId, "Имя задано", ParseMode.Markdown);
             }
 
             if (!LobbyControl.CheckLobby(playerId))
@@ -102,7 +134,6 @@ namespace MazeGenerator.TelegramBot
             {
                 var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
                 BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
-                //TODO: think about it)
                 BotClient.OnCallbackQuery += BotClient_OnCallbackQueryShoot;
 
 
