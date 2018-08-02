@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 using MazeGenerator.Core.GameGenerator;
 using MazeGenerator.Core.Services;
@@ -9,6 +10,7 @@ using MazeGenerator.Database;
 using MazeGenerator.Models;
 using MazeGenerator.Models.Enums;
 using MazeGenerator.TelegramBot.Models;
+using Telegram.Bot.Args;
 using Telegram.Bot.Requests;
 
 namespace MazeGenerator.TelegramBot
@@ -20,7 +22,9 @@ namespace MazeGenerator.TelegramBot
 
         public static MessageConfig ShootCommand(int chatId, Direction direction, string username)
         {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
+            Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
+            lobby.TimeLastMsg = DateTime.Now;
+            MessageConfig msg = new MessageConfig();
             var shootResult = MazeLogic.TryShoot(lobby, lobby.Players[lobby.CurrentTurn], direction);
             //TODO
             LobbyRepository.Update(lobby);
@@ -74,7 +78,9 @@ namespace MazeGenerator.TelegramBot
 
         public static MessageConfig BombCommand(int chatId, Direction direction, string username)
         {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
+            LobbyRepository repository = new LobbyRepository();
+            Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
+            lobby.TimeLastMsg = DateTime.Now;
             var res = MazeLogic.Bomb(lobby, lobby.Players[lobby.CurrentTurn], direction);
  
             MessageConfig msg = new MessageConfig();
@@ -105,7 +111,9 @@ namespace MazeGenerator.TelegramBot
         }
         public static MessageConfig StabCommand(int chatId)
         {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
+            LobbyRepository repository = new LobbyRepository();
+            Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
+            lobby.TimeLastMsg = DateTime.Now;
             if (lobby.Players.FindIndex(e => e.TelegramUserId == chatId) != lobby.CurrentTurn)
             {
                 return new MessageConfig
@@ -138,7 +146,9 @@ namespace MazeGenerator.TelegramBot
         }
         public static MessageConfig SkipTurn(int chatId)
         {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
+            LobbyRepository repository = new LobbyRepository();
+            Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
+            lobby.TimeLastMsg = DateTime.Now;
             if (lobby.Players.FindIndex(e => e.TelegramUserId == chatId) != lobby.CurrentTurn)
             {
                 return new MessageConfig
@@ -149,13 +159,38 @@ namespace MazeGenerator.TelegramBot
 
             var res = lobby.Players[lobby.CurrentTurn];
             lobby.CurrentTurn++;
-            if (lobby.CurrentTurn == 2)
+            if (lobby.CurrentTurn == lobby.Players.Count)
                 lobby.CurrentTurn = 0;
                 return new MessageConfig
                 {
                     Answer = string.Format(Answers.ShootHit.RandomAnswer(), res.HeroName),
                     AnswerForOther = null,
                 };
+        }
+        public static MessageConfig AfkCommand(MessageEventArgs e)
+        {
+            LobbyRepository repository = new LobbyRepository();
+            Lobby lobby = repository.Read(repo.ReadLobbyId(e.Message.From.Id));
+            var res = DateTime.Now.Subtract(lobby.TimeLastMsg);
+            //TODO: засчитывать ли игроку
+            if (TimeSpan.Compare(lobby.Rules.BanTime, res) == -1)
+            {
+                lobby.IsActive = false;
+                repo.Delete(lobby.GameId);
+                return new MessageConfig
+                {
+                    Answer = string.Format(Answers.AfkPlayer.RandomAnswer())
+                };
+            }
+            else
+            {
+                return new MessageConfig
+                {
+                    Answer = "Дождитесь 24 часа после последнего сообщения"
+                };
+            }
+
+
         }
 
         public static void StartGame(int playerId)
@@ -184,7 +219,9 @@ namespace MazeGenerator.TelegramBot
         public static MessageConfig MoveCommand(int chatId, Direction direction, string username)
         {
 
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
+            LobbyRepository repository = new LobbyRepository();
+            Lobby lobby = repository.Read(repo.ReadLobbyId(chatId));
+            lobby.TimeLastMsg = DateTime.Now;
             if (lobby.Players.FindIndex(e => e.TelegramUserId == chatId) != lobby.CurrentTurn)
             {
                 return new MessageConfig
@@ -205,6 +242,7 @@ namespace MazeGenerator.TelegramBot
             if (res.Contains(PlayerAction.GameEnd))
             {
                 lobby.IsActive = false;
+                repo.Delete(lobby.GameId);
                 return new MessageConfig
                 {
                     Answer = string.Format(Answers.EndGame.RandomAnswer(), username)

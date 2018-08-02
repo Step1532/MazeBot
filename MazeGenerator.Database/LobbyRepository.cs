@@ -8,11 +8,7 @@ namespace MazeGenerator.Database
 {
     public class LobbyRepository
     {
-        private string MazeFile(int id) => $@"Game{id}\maze.json";
-        private string EventFile(int id) => $@"Game{id}\CoordinateEvents.json";
-        private string PlayerFile(int id) => $@"Game{id}\Players.json";
-        private string ChestsFile(int id) => $@"Game{id}\Chests.json";
-        private string StrokeFile(int id) => $@"Game{id}\Stroke.json";
+        private string LobbyFile(int id) => $@"Game{id}\lobby.json";
 
         private readonly string _connectionString;
         public LobbyRepository()
@@ -23,23 +19,14 @@ namespace MazeGenerator.Database
         public void Create(Lobby lobby)
         {
             Directory.CreateDirectory($@"Game{lobby.GameId}");
-            File.WriteAllText(MazeFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Maze));
-            File.WriteAllText(EventFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Events));
-            File.WriteAllText(PlayerFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Players));
-            File.WriteAllText(StrokeFile(lobby.GameId), JsonConvert.SerializeObject(lobby.CurrentTurn));
-            File.WriteAllText(ChestsFile(lobby.GameId), JsonConvert.SerializeObject(lobby.Chests));
+            File.WriteAllText(LobbyFile(lobby.GameId), JsonConvert.SerializeObject(lobby));
         }
 
         public Lobby Read(int lobbyId)
         {
-            return new Lobby(lobbyId)
-            {
-                Maze = JsonConvert.DeserializeObject<Byte[,]>(File.ReadAllText(MazeFile(lobbyId))),
-                Players = JsonConvert.DeserializeObject<List<Player>>(File.ReadAllText(PlayerFile(lobbyId))) ?? new List<Player>(),
-                Events = JsonConvert.DeserializeObject<List<GameEvent>>(File.ReadAllText(EventFile(lobbyId))),
-                Chests = JsonConvert.DeserializeObject<List<Treasure>>(File.ReadAllText(ChestsFile(lobbyId))),
-                CurrentTurn = JsonConvert.DeserializeObject<int>(File.ReadAllText(StrokeFile(lobbyId))),
-            };
+            Lobby lobby = new Lobby(lobbyId);
+            lobby = JsonConvert.DeserializeObject<Lobby>(File.ReadAllText(LobbyFile(lobbyId)));
+            return lobby;
         }
 
         public void Update(Lobby lobby)

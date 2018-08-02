@@ -1,4 +1,5 @@
 ﻿using System;
+using MazeGenerator.Models;
 using MazeGenerator.Models.Enums;
 using MazeGenerator.TelegramBot.Models;
 using Newtonsoft.Json;
@@ -30,9 +31,9 @@ namespace MazeGenerator.TelegramBot
             if (e.Message.Type != MessageType.Text)
                 return;
 
+            BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
             if (e.Message.Text == "/start")
             {
-                BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
                 //TODO: тут будет турториал
 //                var inlineKeyboard = BotTools.NewInlineKeyBoardForChooseDirection();
 //                BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
@@ -63,51 +64,51 @@ namespace MazeGenerator.TelegramBot
                     }
                 }
             }
+
             if (!LobbyControl.CheckLobby(playerId))
+            {
+                BotClient.SendTextMessageAsync(playerId, "Вы не находитесь ни в одной из игр, воспользуйтесь командой /game для поиска игры");
                 return;
+            }
+            if (e.Message.Text == "/afk")
+            {
+                AfkComm(e);
+            }
             if (e.Message.Text == "Вверх")
             {
-                BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
                 MComm(e, Direction.North);
             }
             if (e.Message.Text == "Вниз")
             {
-                BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
                 MComm(e, Direction.South);
             }
             if (e.Message.Text == "Влево")
             {
-                BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
                 MComm(e, Direction.West);
             }
             if (e.Message.Text == "Вправо")
             {
-                BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
                 MComm(e, Direction.East);
             }
             if (e.Message.Text == "Удар кинжалом")
             {
-                BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
-                //Todo: нет метода кинжала
                 StabComm(e);
             }
             if (e.Message.Text == "Пропуск хода")
             {
-                BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
                 SkipComm(e);
             }
             if (e.Message.Text == "Выстрел")
             {
-                BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
                 var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
                 BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
+                //TODO: think about it)
                 BotClient.OnCallbackQuery += BotClient_OnCallbackQueryShoot;
 
 
             }
             if (e.Message.Text == "Взрыв стены")
             {
-                BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
                 var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
                 BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
                 BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
@@ -170,6 +171,15 @@ namespace MazeGenerator.TelegramBot
             }
         }
         //TODO: следующим методам добавить, что б отправляли всем игрокам
+
+        public void AfkComm(MessageEventArgs e)
+        {
+            var s = BotService.AfkCommand(e);
+            BotClient.SendTextMessageAsync(e.Message.From.Id, s.Answer);
+        }
+
+
+
         public void StabComm(MessageEventArgs e)
         {
             var s = BotService.StabCommand(e.Message.From.Id);

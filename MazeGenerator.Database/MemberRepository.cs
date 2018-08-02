@@ -56,8 +56,9 @@ namespace MazeGenerator.Database
 
         public void Delete(int lobbyId)
         {
-            //TODO:
-//            JsonManager.UpdateJsonList(UsersFilePath, (List<Member> members) => { members.RemoveAll(e => e.LobbyId == lobbyId); });
+            var res = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
+            var r = res.Where(e => e.LobbyId != lobbyId);
+            File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(r));
         }
     }
 }

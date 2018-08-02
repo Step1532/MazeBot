@@ -1,4 +1,6 @@
-﻿namespace MazeGenerator.Models
+﻿using System;
+
+namespace MazeGenerator.Models
 {
     public class LobbyRules
     {
@@ -11,6 +13,7 @@
         public int PlayerMaxGuns;
         public int PlayerMaxBombs;
         public Coordinate Size;
+        public TimeSpan BanTime;
 
         public static LobbyRules GenerateTemplateRules()
         {
@@ -25,6 +28,8 @@
                 PlayerMaxHealth = 3,
                 PlayerMaxGuns = 2,
                 PlayerMaxBombs = 3,
+                BanTime = TimeSpan.FromDays(1),
+                
             };
         }
     }
