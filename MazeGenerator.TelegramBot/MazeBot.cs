@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
+using MazeGenerator.Core;
+using MazeGenerator.Core.Services;
+using MazeGenerator.Core.Tools;
 using MazeGenerator.Database;
 using MazeGenerator.Models;
 using MazeGenerator.Models.Enums;
@@ -7,6 +11,7 @@ using MazeGenerator.TelegramBot.Models;
 using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Args;
+using Telegram.Bot.Requests;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -15,7 +20,7 @@ namespace MazeGenerator.TelegramBot
     public class MazeBot
     {
         public readonly TelegramBotClient BotClient;
-        CharacterRepository a = new CharacterRepository();
+        CharacterRepository _characterRepository = new CharacterRepository();
 
 
         public MazeBot(string _tMaze)
@@ -29,124 +34,65 @@ namespace MazeGenerator.TelegramBot
         public void OnNewMessage(object sender, MessageEventArgs e)
         {
             int playerId = e.Message.From.Id;
+            var character = _characterRepository.Read(playerId);
 
+
+			//TODO: вынести метод валидации
             if (e.Message.Type != MessageType.Text)
                 return;
-            Regex login_regex = new Regex("^[a-zA-Zа-яА-Я][a-zA-Zа-яА-Я0-9]{2,9}$");
-            string source = "ivanov98";
 
-            if (login_regex.Match(source).Success)
+            //=====
+
+            MessageConfig msg;
+            if (character == null)
             {
-                //TODO:
+                 msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
             }
             else
             {
-
+                 msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
             }
+            //TODO: move to new method 
+            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
+            if (msg.KeyBoardId == KeyBoardEnum.Bomb)
+            {
+                keyboard = KeybordConfiguration.WithoutShootKeyBoard();
+            }
+            else if (msg.KeyBoardId == KeyBoardEnum.Move)
+            {
+                keyboard = KeybordConfiguration.WithoutBombAndShootKeyboard();
+            }
+            else if (msg.KeyBoardId == KeyBoardEnum.Shoot)
+            {
+                keyboard = KeybordConfiguration.WithoutBombKeyBoard();
+            }
+            else if (msg.KeyBoardId == KeyBoardEnum.ShootwithBomb)
+            {
+                keyboard = KeybordConfiguration.NewKeyBoard();
+            }
+            if (msg.OtherPlayersId != null)
+            {
+                foreach (var playerid in msg.OtherPlayersId)
+                {
+                    BotClient.SendTextMessageAsync(playerid, msg.AnswerForOther, ParseMode.Markdown, false, false, 0, keyboard);
+                }
+                BotClient.SendTextMessageAsync(msg.NextPlayerId, "Ваш Ход");
+            }
+            BotClient.SendTextMessageAsync(msg.CurrentPlayerId, msg.Answer, ParseMode.Markdown);
+            return;
+            
+
+
             BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
-            if (e.Message.Text == "/start")
-            {
-                if (a.Read(e.Message.From.Id) == null)
-                {
-                    //TODO: тут будет турториал
-                    a.Create(e.Message.From.Id);
-                    //TODO: проверка
-                    BotClient.SendTextMessageAsync(playerId, "Напишите имя персонажа");
-                    //TODO: создание персонаже
-                    return;
-                }
-                else
-                {
-                    BotClient.SendTextMessageAsync(playerId, "Вы хотите удалить персонажа? Для удаления напишите *Удаляю* и нажмите /start", ParseMode.Markdown);
-                    return;
-                }
-            }
 
-            if (a.Read(e.Message.From.Id).CharacterName != null)
-            {
-                if (e.Message.Text == "/game")
-                {
-                    if (LobbyControl.CheckLobby(playerId))
-                    {
-                        BotClient.SendTextMessageAsync(playerId, "Вы уже находитесь в лобби");
-                    }
-                    else
-                    {
-                        LobbyControl.AddUser(playerId);
-                        if (LobbyControl.EmptyPlaceCount(playerId) == 0)
-                        {
-                            BotService.StartGame(playerId);
-                            BotClient.SendTextMessageAsync(playerId, "Игра начата", ParseMode.Default, false, false, 0,
-                                KeybordConfiguration.NewKeyBoard());
-                        }
-                        else
-                        {
-                            string m =
-                                $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyControl.EmptyPlaceCount(playerId)}";
-                            BotClient.SendTextMessageAsync(playerId, m, ParseMode.Default, false, false, 0,
-                                KeybordConfiguration.NewKeyBoard());
-                        }
-                    }
-                }
-            }
-            else
-            {
-                var r = a.Read(e.Message.From.Id);
-                r.CharacterName = e.Message.Text;
-                a.Update(r);
-                BotClient.SendTextMessageAsync(playerId, "Имя задано", ParseMode.Markdown);
-            }
-
-            if (!LobbyControl.CheckLobby(playerId))
-            {
-                BotClient.SendTextMessageAsync(playerId, "Вы не находитесь ни в одной из игр, воспользуйтесь командой /game для поиска игры");
-                return;
-            }
-            if (e.Message.Text == "/afk")
-            {
-                AfkComm(e);
-            }
-            if (e.Message.Text == "Вверх")
-            {
-                MComm(e, Direction.North);
-            }
-            if (e.Message.Text == "Вниз")
-            {
-                MComm(e, Direction.South);
-            }
-            if (e.Message.Text == "Влево")
-            {
-                MComm(e, Direction.West);
-            }
-            if (e.Message.Text == "Вправо")
-            {
-                MComm(e, Direction.East);
-            }
-            if (e.Message.Text == "Удар кинжалом")
-            {
-                StabComm(e);
-            }
-            if (e.Message.Text == "Пропуск хода")
-            {
-                SkipComm(e);
-            }
-            if (e.Message.Text == "Выстрел")
-            {
-                var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
-                BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
-                BotClient.OnCallbackQuery += BotClient_OnCallbackQueryShoot;
+			//TODO: вызов стейт машин
 
 
-            }
-            if (e.Message.Text == "Взрыв стены")
-            {
-                var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
-                BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
-                BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
-            }
 
         }
 
+        //TODO: проверить кто есть sender
+        //Если бот клиент, то можно упростить
         private void BotClient_OnCallbackQueryShoot(object sender, CallbackQueryEventArgs e)
         {
             if (e.CallbackQuery.Data != "0")
@@ -202,38 +148,7 @@ namespace MazeGenerator.TelegramBot
             }
         }
         //TODO: следующим методам добавить, что б отправляли всем игрокам
-
-        public void AfkComm(MessageEventArgs e)
-        {
-            var s = BotService.AfkCommand(e);
-            BotClient.SendTextMessageAsync(e.Message.From.Id, s.Answer);
-        }
-
-
-
-        public void StabComm(MessageEventArgs e)
-        {
-            var s = BotService.StabCommand(e.Message.From.Id);
-            BotClient.SendTextMessageAsync(e.Message.From.Id, s.Answer);
-        }
-        public void SkipComm(MessageEventArgs e)
-        {
-            var s = BotService.SkipTurn(e.Message.From.Id);
-            BotClient.SendTextMessageAsync(e.Message.From.Id, s.Answer);
-        }
-        public void MComm(MessageEventArgs e, Direction direction)
-        {
-            var s = BotService.MoveCommand(e.Message.From.Id, direction, e.Message.From.Username);
-            if (s.KeyBoardId != KeyBoardEnum.Move)
-            {
-                BotClient.SendTextMessageAsync(e.Message.From.Id, s.Answer, ParseMode.Default, false, false, 0,
-                    KeybordConfiguration.NewKeyBoard());
-            }
-            else
-            {
-                BotClient.SendTextMessageAsync(e.Message.From.Id, s.Answer, ParseMode.Markdown);
-            }
-        }
+		//TODO: переписать название и арнументы методов
         public void SComm(CallbackQueryEventArgs e, Direction direction)
         {
             var s = BotService.ShootCommand(e.CallbackQuery.From.Id, direction, e.CallbackQuery.From.Username);
@@ -242,9 +157,180 @@ namespace MazeGenerator.TelegramBot
         }
         public void BComm(CallbackQueryEventArgs e, Direction direction)
         {
-            var s = BotService.BombCommand(e.CallbackQuery.From.Id, direction, e.CallbackQuery.From.Username);
+            var s = BotService.BombCommand(e.CallbackQuery.From.Id, direction);
             BotClient.SendTextMessageAsync(e.CallbackQuery.From.Id, s.Answer, ParseMode.Default, false, false, 0,
                 KeybordConfiguration.NewKeyBoard());
+           
+        }
+
+        public MessageConfig StateMachine(CharacterState state, string command, int playerId)
+        {
+            switch (state)
+            {
+                case CharacterState.ChangeName:
+                    return TryChangeName(command, playerId);
+
+                case CharacterState.ChangeGameMode:
+                    if (command == "/game")
+                    {
+                        return StateMachineService.FindGameCommand(playerId);
+                    }
+                    else if (command == "/tutorial")
+                    {
+                        throw new NotImplementedException();
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+
+                case CharacterState.Tutorial:
+                    throw new NotImplementedException();
+                    if (command == "Вверх")
+                    {
+                        throw new NotImplementedException();
+                        //TODO: те же команды что и в Ingame, только по другому обработать
+                    }
+                    else if (command == "/skiptutorial")
+                    {
+                        throw new NotImplementedException();
+                        //TODO: выйти из туториала
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                        //TODO: сообщение, что неверная комманда
+                    }
+
+                case CharacterState.FindGame:
+                    if (command == "/help")
+                    {
+                        throw new NotImplementedException();
+                    }
+                    else if (command == "/stop")
+                    {
+                        throw new NotImplementedException();
+                        //TODO: прекратить поиск
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                        //TODO: сообщение, что неверная комманда
+                    }
+
+                case CharacterState.InGame:
+                    if (command == "Вверх")
+                    {
+                        return BotService.MoveCommand(playerId, Direction.North);
+                    }
+                    if (command == "Вниз")
+                    {
+                        return BotService.MoveCommand(playerId, Direction.South);
+                    }
+                    if (command == "Вправо")
+                    {
+                        return BotService.MoveCommand(playerId, Direction.East);
+                    }
+                    if (command == "Влево")
+                    {
+                        return BotService.MoveCommand(playerId, Direction.West);
+                    }
+                    if (command == "Удар кинжалом")
+                    {
+                        return BotService.StabCommand(playerId);
+                    }
+                    if (command == "Пропуск хода")
+                    {
+                        return BotService.SkipTurn(playerId);
+                    }
+
+                    if (command == "Выстрел")
+                    {
+                        var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
+                        BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
+                        BotClient.OnCallbackQuery += BotClient_OnCallbackQueryShoot;
+                        return null;
+                    }
+                    if (command == "Взрыв стены")
+                    {
+                        var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
+                        BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
+                        BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
+                        return null;
+                    }
+                    if (command == "/afk")
+                    {
+                        return BotService.AfkCommand(playerId);
+                    }
+                    return new MessageConfig()
+                    {
+                        Answer = Answers.UndefinedCommand.RandomAnswer()
+                    };
+
+                case CharacterState.NewCharacter:
+                    if (command == "/start")
+                    {
+                        if (_characterRepository.Read(playerId) == null)
+                        {
+                            _characterRepository.Create(playerId);
+                            return new MessageConfig()
+                            {
+                                Answer = "Напишите имя персонажа",
+                                CurrentPlayerId = playerId
+                            };
+                        }
+
+                        return new MessageConfig()
+                        {
+                            Answer = "Вы хотите удалить персонажа? Для удаления напишите *Удаляю* и нажмите /start",
+                            CurrentPlayerId = playerId
+                        };
+                    }
+                    return new MessageConfig()
+                    {
+                        Answer = "неверная команда",
+                        CurrentPlayerId = playerId
+                    };
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+               
+            }
+            throw new Exception();
+        }
+
+        //TODO: move to service
+        private MessageConfig TryChangeName(string username, int playerId)
+        {
+            Regex login_regex = new Regex("^[a-zA-Zа-яА-Я][a-zA-Zа-яА-Я0-9]{2,9}$");
+            if (login_regex.Match(username).Success == false)
+            {
+                return new MessageConfig()
+                {
+                    CurrentPlayerId = playerId,
+                    Answer = $"Используются неразрешенные символы"
+                };
+            }
+
+            if (_characterRepository.ReadAll().Any(e => e.CharacterName == username))
+            {
+                return new MessageConfig()
+                {
+                    CurrentPlayerId = playerId,
+                    Answer = $"Имя существует"
+                };
+            }
+
+            var r = _characterRepository.Read(playerId);
+            r.CharacterName = username;
+            r.State = CharacterState.ChangeGameMode;
+            _characterRepository.Update(r);
+
+            return new MessageConfig()
+            {
+                CurrentPlayerId = playerId,
+                Answer = $"Имя _{username}_задано"
+            };
         }
     }
 }

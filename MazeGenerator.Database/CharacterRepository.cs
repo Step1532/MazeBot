@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using MazeGenerator.Models;
+using MazeGenerator.Models.Enums;
 using Newtonsoft.Json;
 
 namespace MazeGenerator.Database
@@ -27,6 +28,7 @@ namespace MazeGenerator.Database
             var res = JsonConvert.DeserializeObject<List<Character>>(File.ReadAllText(CharacterFile)) ?? new List<Character>();
             Character character = new Character();
             character.TelegramUserId = telegramUserId;
+            character.State = CharacterState.ChangeName;
             res.Add(character);
             File.WriteAllText(CharacterFile, JsonConvert.SerializeObject(res));
         }
@@ -37,12 +39,13 @@ namespace MazeGenerator.Database
             {
                 return null;
             }
-            var res = JsonConvert.DeserializeObject<List<Character>>(File.ReadAllText(CharacterFile));
+            var res = JsonConvert.DeserializeObject<List<Character>>(File.ReadAllText(CharacterFile)) ?? new List<Character>();
             return res.Find(e => e.TelegramUserId == telegranUserId);
         }
+
         public List<Character> ReadAll()
         {
-            throw new NotImplementedException();
+            return JsonConvert.DeserializeObject<List<Character>>(File.ReadAllText(CharacterFile)) ?? new List<Character>();
         }
 
         public void Update(Character character)

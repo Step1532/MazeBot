@@ -10,6 +10,11 @@ namespace MazeGenerator.TelegramBot
             "прошел",
             "go"
         };
+        public static readonly List<string> UndefinedCommand = new List<string>()
+        {
+            "неизвестная команда",
+            "что ты написал?"
+        };
         public static readonly List<string> MoveWall = new List<string>()
         {
             "wall",

@@ -99,7 +99,7 @@ namespace MazeGenerator.Test
 //                }  
                 else if (act.Item1 == 2)
                 {
-                    var res = MazeLogic.Bomb(lobby, lobby.Players[stroke], MoveDirection().Item2);
+                    var res = PlayerLogic.Bomb(lobby, lobby.Players[stroke], MoveDirection().Item2);
                     if (res == ResultBomb.Wall)
                     {
                         //Todo генерация месежа
@@ -115,7 +115,7 @@ namespace MazeGenerator.Test
                 }
                 else
                 {
-                    var res = MazeLogic.TryMove(lobby, lobby.Players[stroke], act.Item2);
+                    var res = PlayerLogic.TryMove(lobby, lobby.Players[stroke], act.Item2);
                     if (res.Contains(PlayerAction.GameEnd))
                     {
                         break;

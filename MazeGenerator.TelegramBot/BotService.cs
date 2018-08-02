@@ -19,13 +19,14 @@ namespace MazeGenerator.TelegramBot
     {
         public static readonly LobbyRepository LobbyRepository = new LobbyRepository();
         public static readonly MemberRepository MemberRepository = new MemberRepository();
+        public static CharacterRepository characters = new CharacterRepository();
 
         public static MessageConfig ShootCommand(int chatId, Direction direction, string username)
         {
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
             lobby.TimeLastMsg = DateTime.Now;
             MessageConfig msg = new MessageConfig();
-            var shootResult = MazeLogic.TryShoot(lobby, lobby.Players[lobby.CurrentTurn], direction);
+            var shootResult = PlayerLogic.TryShoot(lobby, lobby.Players[lobby.CurrentTurn], direction);
             //TODO
             LobbyRepository.Update(lobby);
 
@@ -72,11 +73,11 @@ namespace MazeGenerator.TelegramBot
             }
         }
 
-        public static MessageConfig BombCommand(int chatId, Direction direction, string username)
+        public static MessageConfig BombCommand(int chatId, Direction direction)
         {
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
             lobby.TimeLastMsg = DateTime.Now;
-            var res = MazeLogic.Bomb(lobby, lobby.Players[lobby.CurrentTurn], direction);
+            var res = PlayerLogic.Bomb(lobby, lobby.Players[lobby.CurrentTurn], direction);
  
             MessageConfig msg = new MessageConfig();
             if (lobby.Players[lobby.CurrentTurn].Bombs == 0)
@@ -84,6 +85,7 @@ namespace MazeGenerator.TelegramBot
                 msg.KeyBoardId = KeyBoardEnum.Bomb;
             }
 
+            var username = lobby.Players[lobby.CurrentTurn].HeroName;
             switch (res)
             {
                 case ResultBomb.Wall:
@@ -113,20 +115,21 @@ namespace MazeGenerator.TelegramBot
                 return new MessageConfig
                 {
                     Answer = string.Format(Answers.NoTurn.RandomAnswer())
+                    
                 };
             }
 
-            var res = MazeLogic.Stab(lobby, lobby.Players[lobby.CurrentTurn]);
+            var stabResult = PlayerLogic.Stab(lobby, lobby.Players[lobby.CurrentTurn]);
             lobby.CurrentTurn++;
             if (lobby.CurrentTurn == lobby.Players.Count)
                 lobby.CurrentTurn = 0;
             LobbyRepository.Update(lobby);
 
-            if (res != null)
+            if (stabResult.Player != null)
             {
                 return new MessageConfig
                 {
-                    Answer = string.Format(Answers.ShootHit.RandomAnswer(), res.HeroName),
+                    Answer = string.Format(Answers.ShootHit.RandomAnswer(), stabResult.Player.HeroName),
                     AnswerForOther = null,
                 };
             }
@@ -160,9 +163,9 @@ namespace MazeGenerator.TelegramBot
                     AnswerForOther = null,
                 };
         }
-        public static MessageConfig AfkCommand(MessageEventArgs e)
+        public static MessageConfig AfkCommand(int playerid)
         {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(e.Message.From.Id));
+            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(playerid));
             var res = DateTime.Now.Subtract(lobby.TimeLastMsg);
             //TODO: засчитывать ли игроку
             if (TimeSpan.Compare(lobby.Rules.BanTime, res) == -1)
@@ -208,21 +211,21 @@ namespace MazeGenerator.TelegramBot
 
         }
 
-        public static MessageConfig MoveCommand(int chatId, Direction direction, string username)
+        public static MessageConfig MoveCommand(int chatId, Direction direction)
         {
-
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
             lobby.TimeLastMsg = DateTime.Now;
             if (lobby.Players.FindIndex(e => e.TelegramUserId == chatId) != lobby.CurrentTurn)
             {
                 return new MessageConfig
                 {
-                    Answer = string.Format(Answers.NoTurn.RandomAnswer(), username)
+                    Answer = string.Format(Answers.NoTurn.RandomAnswer())
                 };
             }
 
-            var res = MazeLogic.TryMove(lobby, lobby.Players[lobby.CurrentTurn], direction);
+            var res = PlayerLogic.TryMove(lobby, lobby.Players[lobby.CurrentTurn], direction);
             Player currentPlayer = lobby.Players[lobby.CurrentTurn];
+            var username = currentPlayer.HeroName;
             lobby.CurrentTurn++;
             if (lobby.CurrentTurn == lobby.Players.Count)
                 lobby.CurrentTurn = 0;
@@ -255,7 +258,7 @@ namespace MazeGenerator.TelegramBot
 
             if (res.Contains(PlayerAction.MeetPlayer))
             {
-                var playersOnCell = LobbyService.PlayersOnCell(currentPlayer, lobby);
+                var playersOnCell = MazeLogic.PlayersOnCell(currentPlayer, lobby);
                //TODO: переделать под cHARACTER
                 foreach (var e in playersOnCell)
                 {
@@ -291,5 +294,7 @@ namespace MazeGenerator.TelegramBot
             msg.AnswerForOther = msg.Answer;
             return msg;
         }
+
+        //TODO: ВЫнести проверку хода
     }
 }

@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MazeGenerator.Database\MazeGenerator.Database.csproj" />
     <ProjectReference Include="..\MazeGenerator.Models\MazeGenerator.Models.csproj" />
   </ItemGroup>
 

@@ -1,72 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using MazeGenerator.Database;
 using MazeGenerator.Models;
-using MazeGenerator.Models.Enums;
 
 namespace MazeGenerator.Core.Services
 {
-    public static class LobbyService
+	//TODO: Перенести в .Core
+    public class LobbyService
     {
-        /// <summary>
-        ///     Проверка что находится в клетке
-        /// </summary>
-        public static List<MazeObjectType> CheckLobbyCoordinate(Coordinate coord, Lobby lobby)
+        public static bool CheckLobby(int userId)
         {
-            var events = new List<MazeObjectType>();
-
-            if (coord.X < 0 || coord.Y < 0 || coord.X >= lobby.Maze.GetLength(1) || coord.Y >= lobby.Maze.GetLength(0))
+            MemberRepository repo = new MemberRepository();
+            var users = repo.ReadLobbyAll();
+            return Enumerable.Any<Member>(users, e => e.UserId == userId);
+        }
+        public static void AddUser(int userId)
+        {
+            MemberRepository repo = new MemberRepository();
+            var members = repo.ReadLobbyAll();
+            if (members.Count == 0)
             {
-                events.Add(MazeObjectType.Space);
-                return events;
+                repo.Create(1, userId);
+                return;
             }
-
-
-            if (lobby.Events.Any(e => Equals(e.Position, coord)))
-                events.Add(MazeObjectType.Event);
-
-            if (lobby.Players.Any(e => Equals(e.UserCoordinate, coord)))
-                events.Add(MazeObjectType.Player);
-
-            if (lobby.Maze[coord.X, coord.Y] == 1)
-                events.Add(MazeObjectType.Wall);
-
-            if ((coord.X == 0 || coord.Y == 0 || coord.X == lobby.Maze.GetLength(1) - 1 ||
-                 coord.Y == lobby.Maze.GetLength(0) - 1) && lobby.Maze[coord.X, coord.Y] == 0)
-                events.Add(MazeObjectType.Exit);
-
-            if (lobby.Maze[coord.X, coord.Y] == 0)
-                events.Add(MazeObjectType.Void);
-
-            return events;
+            var  member =  Enumerable.Last<Member>(members);
+            if (EmptyPlaceCount(member.UserId) == 0)
+            {
+                repo.Create(member.LobbyId+1, userId);
+            }
+            else
+            {
+                repo.Create(member.LobbyId, userId);
+            }
         }
 
-        /// <summary>
-        ///     Проверка что находится в клетке
-        /// </summary>
-        public static List<EventTypeEnum> EventsOnCell(Coordinate coord, Lobby lobby)
+        public static int EmptyPlaceCount(int userId)
         {
-            return lobby
-                .Events
-                .Where(e => Equals(e.Position, coord))
-                .Select(e => e.Type)
-                .ToList();
-        }
-        public static List<Player> PlayersOnCell(Player currentPlayer, Lobby lobby)
-        {
-            return lobby
-                .Players
-                .Where(e => Equals(e.UserCoordinate, currentPlayer.UserCoordinate) && e.TelegramUserId != currentPlayer.TelegramUserId)
-                .ToList();
-        }
+            MemberRepository repo = new MemberRepository();
+            var players = repo.ReadLobbyAll();
+            Member lastuser;
+            if (players.Count == 0)
+            {
+                //TODO: Это что?
+                return 1;
+            }
+            else
+            {
+                lastuser = Enumerable.Last<Member>(players);
+                var users = Enumerable.Where<Member>(repo.ReadLobbyAll(), e => e.LobbyId == lastuser.LobbyId);
+                //TODO: <3
+                return 1-users.Count();
 
-        public static Treasure PickChest(Coordinate coord, Lobby lobby,  Player player)
-        {
-            var res = lobby.Chests.Find(e => Equals(e.Position, coord));
-            res.Position = player.UserCoordinate;
-            var tr = lobby.Events.Find(e => Equals(player.UserCoordinate, e.Position));
-            lobby.Events.Remove(tr);
-            return res;
+            } 
+
         }
     }
 }

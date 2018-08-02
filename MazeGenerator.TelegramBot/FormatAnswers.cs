@@ -20,9 +20,9 @@ namespace MazeGenerator.TelegramBot
             {
                 for (int j = 0; j < lobby.Maze.GetLength(0); j++)
                 {
-                    if (LobbyService.CheckLobbyCoordinate(new Coordinate(j, i), lobby)[0] == MazeObjectType.Event)
+                    if (MazeLogic.CheckLobbyCoordinate(new Coordinate(j, i), lobby)[0] == MazeObjectType.Event)
                     {
-                          Console.Write(EventLetter(LobbyService.EventsOnCell(new Coordinate(j, i), lobby).First()));
+                          Console.Write(EventLetter(MazeLogic.EventsOnCell(new Coordinate(j, i), lobby).First()));
                     }
                     else
                     {
