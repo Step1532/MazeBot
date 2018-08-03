@@ -20,12 +20,12 @@ namespace MazeGenerator.TelegramBot
     public class MazeBot
     {
         public readonly TelegramBotClient BotClient;
-        CharacterRepository _characterRepository = new CharacterRepository();
+        private readonly CharacterRepository _characterRepository = new CharacterRepository();
 
 
-        public MazeBot(string _tMaze)
+        public MazeBot(string token)
         {
-            BotClient = new TelegramBotClient(_tMaze); //{"Timeout":"00:01:40","IsReceiving":true,"MessageOffset":0}
+            BotClient = new TelegramBotClient(token); //{"Timeout":"00:01:40","IsReceiving":true,"MessageOffset":0}
             BotClient.OnMessage += OnNewMessage;
             BotClient.StartReceiving();
             Console.ReadLine();
@@ -54,7 +54,7 @@ namespace MazeGenerator.TelegramBot
 
             if (msg != null)
             {
-                var keyboard = GetKeyboardMarkup(KeyBoardEnum.Move);
+                var keyboard = GetKeyboardMarkup(KeyboardType.Move);
 
                 if (msg.OtherPlayersId != null)
                 {
@@ -73,96 +73,80 @@ namespace MazeGenerator.TelegramBot
 
 
             BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
-
-
-
-
         }
 
         //TODO: проверить кто есть sender
         //Если бот клиент, то можно упростить
         private void BotClient_OnCallbackQueryShoot(object sender, CallbackQueryEventArgs e)
         {
-            
-            if (e.CallbackQuery.Data != "0")
+            var bot = (TelegramBotClient) sender;
+            bot.OnCallbackQuery -= BotClient_OnCallbackQueryShoot;
+            switch (e.CallbackQuery.Data)
             {
-                BotClient.OnCallbackQuery -= BotClient_OnCallbackQueryShoot;
-                switch (e.CallbackQuery.Data)
-                {
-                    case "1":
-                        SComm(e, Direction.North);
-                        break;
-                    case "2":
-                        SComm(e, Direction.West);
-                        break;
-                    case "3":
-                        SComm(e, Direction.East);
-                        break;
-                    case "4":
-                        SComm(e, Direction.South);
-                        break;
-                }
-            }
-            else
-            {
-                BotClient.SendTextMessageAsync(e.CallbackQuery.Message.Chat.Id,
-                    "Выбирайте направление а не пустые кнопки");
+                case "1":
+                    SComm(e, Direction.North);
+                    break;
+                case "2":
+                    SComm(e, Direction.West);
+                    break;
+                case "3":
+                    SComm(e, Direction.East);
+                    break;
+                case "4":
+                    SComm(e, Direction.South);
+                    break;
+                default:
+                    bot.SendTextMessageAsync(e.CallbackQuery.Message.Chat.Id,
+                        "Выбирайте направление а не пустые кнопки");
+                    break;
             }
         }
+
         private void BotClient_OnCallbackQueryBomb(object sender, CallbackQueryEventArgs e)
         {
-            if (e.CallbackQuery.Data != "0")
+            var bot = (TelegramBotClient) sender;
+            bot.OnCallbackQuery -= BotClient_OnCallbackQueryBomb;
+            switch (e.CallbackQuery.Data)
             {
-                BotClient.OnCallbackQuery -= BotClient_OnCallbackQueryBomb;
-                switch (e.CallbackQuery.Data)
-                {
-                    case "1":
-                        BComm(e, Direction.North);
-                        break;
-                    case "2":
-                        BComm(e, Direction.West);
-                        break;
-                    case "3":
-                        BComm(e, Direction.East);
-                        break;
-                    case "4":
-                        BComm(e, Direction.South);
-                        break;
-                }
-            }
-            else
-            {
-                BotClient.SendTextMessageAsync(e.CallbackQuery.Message.Chat.Id,
-                    "Выбирайте направление а не пустые кнопки");
+                case "1":
+                    BComm(e, Direction.North);
+                    break;
+                case "2":
+                    BComm(e, Direction.West);
+                    break;
+                case "3":
+                    BComm(e, Direction.East);
+                    break;
+                case "4":
+                    BComm(e, Direction.South);
+                    break;
+                default:
+                    bot.SendTextMessageAsync(e.CallbackQuery.Message.Chat.Id,
+                        "Выбирайте направление а не пустые кнопки");
+                    break;
             }
         }
-        //TODO: следующим методам добавить, что б отправляли всем игрокам
-		//TODO: переписать название и арнументы методов
-        public ReplyKeyboardMarkup GetKeyboardMarkup(KeyBoardEnum keyBoardId)
+        //TODO: переписать название и арнументы методов
+        public ReplyKeyboardMarkup GetKeyboardMarkup(KeyboardType keyBoardId)
         {
-            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
-            if (keyBoardId == KeyBoardEnum.Bomb)
+            switch (keyBoardId)
             {
-                keyboard = KeybordConfiguration.WithoutShootKeyBoard();
+                case KeyboardType.Bomb:
+                    return KeybordConfiguration.WithoutShootKeyBoard();
+                case KeyboardType.Move:
+                    return KeybordConfiguration.WithoutBombAndShootKeyboard();
+                case KeyboardType.Shoot:
+                    return KeybordConfiguration.WithoutBombKeyBoard();
+                case KeyboardType.ShootwithBomb:
+                    return KeybordConfiguration.NewKeyBoard();
+                default:
+                    throw new ArgumentException(keyBoardId.ToString());
             }
-            else if (keyBoardId == KeyBoardEnum.Move)
-            {
-                keyboard = KeybordConfiguration.WithoutBombAndShootKeyboard();
-            }
-            else if (keyBoardId == KeyBoardEnum.Shoot)
-            {
-                keyboard = KeybordConfiguration.WithoutBombKeyBoard();
-            }
-            else if (keyBoardId == KeyBoardEnum.ShootwithBomb)
-            {
-                keyboard = KeybordConfiguration.NewKeyBoard();
-            }
-
-            return keyboard;
         }
+
         public void SComm(CallbackQueryEventArgs e, Direction direction)
         {
-            var s = BotService.ShootCommand(e.CallbackQuery.From.Id, direction, e.CallbackQuery.From.Username);
+            var s = BotService.ShootCommand(e.CallbackQuery.From.Id, direction);
             BotClient.SendTextMessageAsync(e.CallbackQuery.From.Id, s.Answer, ParseMode.Default, false, false, 0,
             KeybordConfiguration.NewKeyBoard());
         }

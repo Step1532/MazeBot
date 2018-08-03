@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MazeGenerator.Core.Tools;
 using MazeGenerator.Models;
+using MazeGenerator.Models.ActionStatus;
 using MazeGenerator.Models.Enums;
 
 namespace MazeGenerator.Core.Services
@@ -56,20 +57,21 @@ namespace MazeGenerator.Core.Services
             }
 
 
-            if (types.Contains(MazeObjectType.Exit))
-                if (player.Chest != null)
-                    if (player.Chest.IsReal == false)
-                    {
-                        var r = lobby.Chests.Find(e =>
-                            Equals(player.UserCoordinate, e.Position));
-                        lobby.Chests.Remove(r);
-                        player.Chest = null;
-                        actions.Add(PlayerAction.FakeChest);
-                    }
-                    else
-                    {
-                        actions.Add(PlayerAction.GameEnd);
-                    }
+            if (types.Contains(MazeObjectType.Exit) && player.Chest != null)
+            {
+                if (player.Chest.IsReal == false)
+                {
+                    var r = lobby.Chests.Find(e =>
+                        Equals(player.UserCoordinate, e.Position));
+                    lobby.Chests.Remove(r);
+                    player.Chest = null;
+                    actions.Add(PlayerAction.FakeChest);
+                }
+                else
+                {
+                    actions.Add(PlayerAction.GameEnd);
+                }
+            }
 
             return actions;
         }
@@ -78,20 +80,24 @@ namespace MazeGenerator.Core.Services
         /// <summary>
         ///     проверка может ли игрок выстрелить
         /// </summary>
-        public static ShootResult TryShoot(Lobby lobby, Player player, Direction direction)
+        public static AttackStatus TryShoot(Lobby lobby, Player player, Direction direction)
         {
-            if (player.Health > 1 && player.Guns >= 1)
-                return Shoot(lobby, player, direction);
-            return null;
+            if (player.Health <= 1 || player.Guns < 1)
+                return new AttackStatus
+                {
+                    Result = AttackType.NoAttack,
+                    CurrentPlayer = player
+                };
+
+            return Shoot(lobby, player, direction);
+
         }
 
         /// <summary>
         ///     проверка может ли пуля попасть в игрока, если да возвращакт игрока
         /// </summary>
-        private static ShootResult Shoot(Lobby lobby, Player player, Direction direction)
+        private static AttackStatus Shoot(Lobby lobby, Player player, Direction direction)
         {
-            var res = new ShootResult();
-            player.Guns--;
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
             var bulletPosition = new Coordinate(player.UserCoordinate.X, player.UserCoordinate.Y);
             List<MazeObjectType> type;
@@ -101,86 +107,89 @@ namespace MazeGenerator.Core.Services
                 bulletPosition -= coord;
             } while (!type.Contains(MazeObjectType.Player) && !type.Contains(MazeObjectType.Wall));
 
+            player.Guns--;
 
             if (type.Contains(MazeObjectType.Wall))
             {
-                res.Result = ResultShoot.Wall;
-                res.Player = null;
-                res.ShootCount = true;
-                if (player.Guns == 0) res.ShootCount = false;
-                return res;
+                return new AttackStatus
+                {
+                    CurrentPlayer = player,
+                    Result = AttackType.NoTarget,
+                    Target = null,
+                    ShootCount = (player.Guns != 0)
+                };
             }
 
-            if (type.Any(t => t == MazeObjectType.Player))
+            if (type.All(t => t != MazeObjectType.Player))
+                throw new Exception("Shoot");
+
+            var target = lobby.Players.Find(e => Equals(e.UserCoordinate, bulletPosition));
+
+            if (target.Chest != null)
             {
-                var p = lobby.Players.Find(e => Equals(e.UserCoordinate, bulletPosition));
-                if (p.Chest != null)
-                {
-                    lobby.Events.Add(new GameEvent(EventTypeEnum.Chest,
-                        new Coordinate(p.UserCoordinate.X, p.UserCoordinate.Y)));
-                    p.Chest.Position = new Coordinate(p.UserCoordinate.X, p.UserCoordinate.Y);
-                    p.Chest = null;
-                }
-
-                if (p.Health == 1)
-                {
-                    lobby.Players.Remove(p);
-                    res.Result = ResultShoot.Kill;
-                    res.Player = p;
-                    res.ShootCount = true;
-                    if (player.Guns == 0) res.ShootCount = false;
-                    return res;
-                }
-
-                p.Health--;
-                res.Result = ResultShoot.Hit;
-                res.Player = p;
-                res.ShootCount = true;
-                if (player.Guns == 0) res.ShootCount = false;
-                return res;
+                //TODO: Вынести логику выпадания сундука
+                lobby.Events.Add(new GameEvent(EventTypeEnum.Chest,
+                    new Coordinate(target.UserCoordinate)));
+                target.Chest.Position = new Coordinate(target.UserCoordinate);
+                target.Chest = null;
             }
 
-            throw new Exception("Shoot");
+            //TODO: вынести логику убийства
+            if (target.Health == 1)
+                lobby.Players.Remove(target);
+            else
+                target.Health--;
+
+            return new AttackStatus
+            {
+                CurrentPlayer = player,
+                Result = AttackType.Hit,
+                Target = target,
+                ShootCount = (player.Guns != 0)
+            };
         }
 
         /// <summary>
         ///     Взрыв стены
         /// </summary>
-        public static ResultBomb Bomb(Lobby lobby, Player player, Direction direction)
+        public static BombResultType Bomb(Lobby lobby, Player player, Direction direction)
         {
-            if (player.Bombs <= 0) return ResultBomb.NoBomb;
+            if (player.Bombs <= 0) return BombResultType.NoBomb;
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
             player.Bombs--;
             if (MazeLogic.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby)
                 .Contains(MazeObjectType.Wall))
             {
                 lobby.Maze.Set(player.UserCoordinate - coord, 0);
-                return ResultBomb.Wall;
+                return BombResultType.Wall;
             }
 
-            return ResultBomb.Void;
+            return BombResultType.Void;
         }
 
-        public static StabResult Stab(Lobby lobby, Player player)
+        public static AttackStatus Stab(Lobby lobby, Player player)
         {
-            var stabResult = new StabResult();
-            var playeronCell = MazeLogic.PlayersOnCell(player, lobby)?.FirstOrDefault();
-            if (playeronCell != null)
+            var stabResult = new AttackStatus
             {
-                playeronCell.Health--;
-                if (playeronCell.Health == 0)
-                {
-                    stabResult.Result = ResultShoot.Kill;
-                    stabResult.Player = playeronCell;
-                    lobby.Players.Remove(playeronCell);
-                }
-                else
-                {
-                    stabResult.Player = playeronCell;
-                    stabResult.Result = ResultShoot.Hit;
-                }
+                CurrentPlayer = player
+            };
+            var target = MazeLogic.PlayersOnCell(player, lobby)?.FirstOrDefault();
+            if (target == null)
+            {
+                stabResult.Result = AttackType.NoAttack;
+                return stabResult;
             }
 
+            stabResult.Target = target;
+            if (target.Health > 1)
+            {
+                target.Health--;
+                stabResult.Result = AttackType.Hit;
+                return stabResult;
+            }
+
+            lobby.Players.Remove(target);
+            stabResult.Result = AttackType.Kill;
             return stabResult;
         }
     }

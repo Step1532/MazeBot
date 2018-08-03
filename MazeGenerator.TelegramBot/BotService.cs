@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization.Formatters;
-using System.Text;
 using System.Text.RegularExpressions;
-using MazeGenerator.Core;
 using MazeGenerator.Core.GameGenerator;
 using MazeGenerator.Core.Services;
 using MazeGenerator.Core.Tools;
 using MazeGenerator.Database;
 using MazeGenerator.Models;
+using MazeGenerator.Models.ActionStatus;
 using MazeGenerator.Models.Enums;
-using MazeGenerator.TelegramBot.Models;
-using Telegram.Bot.Args;
-using Telegram.Bot.Requests;
 
 namespace MazeGenerator.TelegramBot
 {
@@ -21,192 +16,120 @@ namespace MazeGenerator.TelegramBot
     {
         public static readonly LobbyRepository LobbyRepository = new LobbyRepository();
         public static readonly MemberRepository MemberRepository = new MemberRepository();
-        public static readonly CharacterRepository characters = new CharacterRepository();
+        public static readonly CharacterRepository CharacterRepository = new CharacterRepository();
 
-        public static MessageConfig ShootCommand(int chatId, Direction direction, string username)
+        public static MessageConfig ShootCommand(int userId, Direction direction)
         {
-            MessageConfig msg = new MessageConfig();
-            if (CheckTurn(chatId))
-            {
+            var status = GameCommandService.ShootCommand(userId, direction);
+            if (status.IsOtherTurn)
                 return new MessageConfig
                 {
                     Answer = string.Format(Answers.NoTurn.RandomAnswer()),
-                    CurrentPlayerId = chatId
+                    CurrentPlayerId = userId
                 };
-            }
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
-            lobby.TimeLastMsg = DateTime.Now;
 
-            var shootResult = PlayerLogic.TryShoot(lobby, lobby.Players[lobby.CurrentTurn], direction);
-
-            LobbyRepository.Update(lobby);
-           // var shootResult = GameCommandService.ShootCommand(chatId, direction);
-
-            if (shootResult == null)
-            {
-
+            var username = status.CurrentPlayer.HeroName;
+            if (status.Result == AttackType.NoAttack)
                 return new MessageConfig
                 {
+                    //TODO: сделать нормально
                     Answer = string.Format(Answers.NotBullet.RandomAnswer(), username),
                     AnswerForOther = string.Format(Answers.NotBullet.RandomAnswer(), username),
-                    OtherPlayersId = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(chatId))
+                    OtherPlayersId = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(userId))
                         .Select(e => e.UserId)
-                        .ToList(),
-                    NextPlayerId = lobby.Players[lobby.CurrentTurn].TelegramUserId,
-                    KeyBoardId = KeyBoardEnum.Bomb
+                        .ToList()
+                    //NextPlayerId = lobby.Players[lobby.CurrentTurn].TelegramUserId,
+                    //KeyBoardId = KeyboardType.Bomb
                 };
 
-            }
+            var config = StatusToMessage.MessageOnShoot(status.Result, username);
 
-            if (shootResult.Player != null)
-            {
-                if (shootResult.Result == ResultShoot.Kill)
-                {
-                    msg.Answer = string.Format(Answers.ShootKill.RandomAnswer(), username);
-                    msg.AnswerForOther = string.Format(Answers.ShootKill.RandomAnswer(), username);
-                    if (shootResult.ShootCount == false)
-                    {
-                        msg.KeyBoardId = KeyBoardEnum.Bomb;
-                    }
-                }
-
-                msg.Answer = string.Format(Answers.ShootHit.RandomAnswer(), username);
-                msg.AnswerForOther = string.Format(Answers.ShootHit.RandomAnswer(), username);
-                if (shootResult.ShootCount == false)
-                {
-                    msg.KeyBoardId = KeyBoardEnum.Bomb;
-                }
-
-                return msg;
-            }
-            else
-            {
-                msg.Answer = string.Format(Answers.ShootWall.RandomAnswer(), username);
-                msg.AnswerForOther = string.Format(Answers.ShootWall.RandomAnswer(), username);
-                if (shootResult.ShootCount == false)
-                {
-                    msg.KeyBoardId = KeyBoardEnum.Bomb;
-                }
-                return msg;
-            }
+            //TODO: ??
+            if (status.ShootCount == false) config.KeyBoardId = KeyboardType.Bomb;
+            return config;
         }
 
-        public static MessageConfig BombCommand(int chatId, Direction direction)
+        public static MessageConfig BombCommand(int userId, Direction direction)
         {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
-            lobby.TimeLastMsg = DateTime.Now;
-            var res = PlayerLogic.Bomb(lobby, lobby.Players[lobby.CurrentTurn], direction);
- 
-            MessageConfig msg = new MessageConfig();
-            if (lobby.Players[lobby.CurrentTurn].Bombs == 0)
-            {
-                msg.KeyBoardId = KeyBoardEnum.Bomb;
-            }
+            var status = GameCommandService.BombCommand(userId, direction);
+            if (status.IsOtherTurn)
+                return new MessageConfig
+                {
+                    Answer = string.Format(Answers.NoTurn.RandomAnswer()),
+                    CurrentPlayerId = userId
+                };
 
-            var username = lobby.Players[lobby.CurrentTurn].HeroName;
-            switch (res)
+            var username = status.CurrentPlayer.HeroName;
+            var msg = new MessageConfig
             {
-                case ResultBomb.Wall:
-                    msg.Answer =  string.Format(Answers.ResultBombWall.RandomAnswer(), username);
+                CurrentPlayerId = userId
+            };
+            switch (status.Result)
+            {
+                case BombResultType.Wall:
+                    msg.Answer = string.Format(Answers.ResultBombWall.RandomAnswer(), username);
                     break;
-                case ResultBomb.NoBomb:
+                case BombResultType.NoBomb:
                     msg.Answer = string.Format(Answers.ResultBombNoBomb.RandomAnswer(), username);
                     break;
-                case ResultBomb.Void:
-                    msg.Answer =  string.Format(Answers.ResultBombVoid.RandomAnswer(), username);
+                case BombResultType.Void:
+                    msg.Answer = string.Format(Answers.ResultBombVoid.RandomAnswer(), username);
                     break;
             }
 
-            lobby.CurrentTurn++;
-            if (lobby.CurrentTurn == lobby.Players.Count)
-                lobby.CurrentTurn = 0;
-
-            LobbyRepository.Update(lobby);
             return msg;
         }
+
         public static MessageConfig StabCommand(int playerId)
         {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(playerId));
-            lobby.TimeLastMsg = DateTime.Now;
+            //TODO: Назвать все userId и playerId в одном стиле
+            var status = GameCommandService.StabCommand(playerId);
 
-            if (CheckTurn(playerId))
-            {
+            if (status.IsOtherTurn)
                 return new MessageConfig
                 {
                     Answer = string.Format(Answers.NoTurn.RandomAnswer()),
                     CurrentPlayerId = playerId
                 };
-            }
 
-            var stabResult = PlayerLogic.Stab(lobby, lobby.Players[lobby.CurrentTurn]);
-            lobby.NextTurn();
-            LobbyRepository.Update(lobby);
-
-            if (stabResult.Player == null)
-            {
+            var username = status.CurrentPlayer.HeroName;
+            if (status.Result == AttackType.NoAttack)
                 return new MessageConfig
                 {
-                    Answer = string.Format(Answers.ShootWall.RandomAnswer()),
-                    AnswerForOther = string.Format(Answers.ShootWall.RandomAnswer()),
+                    //TODO: сделать нормально
+                    //TODO: NoBullet => OnEnemy
+                    Answer = string.Format(Answers.NotBullet.RandomAnswer(), username),
+                    AnswerForOther = string.Format(Answers.NotBullet.RandomAnswer(), username),
                     OtherPlayersId = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(playerId))
                         .Select(e => e.UserId)
-                        .ToList(),
-                    NextPlayerId = lobby.Players[lobby.CurrentTurn].TelegramUserId
+                        .ToList()
+                    //NextPlayerId = lobby.Players[lobby.CurrentTurn].TelegramUserId,
+                    //KeyBoardId = KeyboardType.Bomb
                 };
-            }
 
-            if (stabResult.Result == ResultShoot.Hit)
-            {
-                return new MessageConfig
-                {
-                    Answer = string.Format(Answers.ShootHit.RandomAnswer(), stabResult.Player.HeroName),
-                    AnswerForOther = string.Format(Answers.ShootHit.RandomAnswer(), stabResult.Player.HeroName),
-                    OtherPlayersId = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(playerId))
-                        .Select(e => e.UserId)
-                        .ToList(),
-                    NextPlayerId = lobby.Players[lobby.CurrentTurn].TelegramUserId
-                };
-            }
-
-            return new MessageConfig
-            {
-                Answer = string.Format(Answers.ShootKill.RandomAnswer(), stabResult.Player.HeroName),
-                AnswerForOther = string.Format(Answers.ShootKill.RandomAnswer(), stabResult.Player.HeroName),
-                OtherPlayersId = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(playerId))
-                    .Select(e => e.UserId)
-                    .ToList(),
-                NextPlayerId = lobby.Players[lobby.CurrentTurn].TelegramUserId
-            };
-
-
+            var config = StatusToMessage.MessageOnStab(status.Result, username);
+            return config;
         }
 
         public static MessageConfig SkipTurn(int chatId)
         {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
-            lobby.TimeLastMsg = DateTime.Now;
-            if (lobby.Players.FindIndex(e => e.TelegramUserId == chatId) != lobby.CurrentTurn)
+            var res = GameCommandService.SkipTurn(chatId);
+            if (res)
+                return new MessageConfig
+                {
+                    //TODO: написать тип SkipStatus
+                    //Answer = string.Format(Answers.SkipTurn.RandomAnswer(), res.HeroName),
+                    AnswerForOther = null
+                };
+            return new MessageConfig
             {
-                return new MessageConfig
-                {
-                    Answer = string.Format(Answers.NoTurn.RandomAnswer())
-                };
-            }
-
-            var res = lobby.Players[lobby.CurrentTurn];
-            lobby.CurrentTurn++;
-            if (lobby.CurrentTurn == lobby.Players.Count)
-                lobby.CurrentTurn = 0;
-
-                return new MessageConfig
-                {
-                    Answer = string.Format(Answers.SkipTurn.RandomAnswer(), res.HeroName),
-                    AnswerForOther = null,
-                };
+                Answer = string.Format(Answers.NoTurn.RandomAnswer())
+            };
         }
+
         public static MessageConfig AfkCommand(int playerid)
         {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(playerid));
+            var lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(playerid));
             var res = DateTime.Now.Subtract(lobby.TimeLastMsg);
             //TODO: засчитывать игроку бан
             if (TimeSpan.Compare(lobby.Rules.BanTime, res) == -1)
@@ -218,160 +141,105 @@ namespace MazeGenerator.TelegramBot
                     Answer = string.Format(Answers.AfkPlayer.RandomAnswer())
                 };
             }
-            else
+
+            return new MessageConfig
             {
-                return new MessageConfig
-                {
-                    Answer = "Дождитесь 24 часа после последнего сообщения"
-                };
-            }
-
-
+                Answer = "Дождитесь 24 часа после последнего сообщения"
+            };
         }
 
         public static void StartGame(int playerId)
         {
-            MemberRepository repo = new MemberRepository();
+            var repo = new MemberRepository();
             var gameid = repo.ReadLobbyId(playerId);
             var players = repo.ReadMemberList(gameid);
-            Lobby lobby = new Lobby(gameid);
+            var lobby = new Lobby(gameid);
             foreach (var p in players)
             {
-                Player player = new Player
+                var player = new Player
                 {
                     Rotate = Direction.North,
                     Health = lobby.Rules.PlayerMaxHealth,
-                    TelegramUserId = p.UserId,
+                    TelegramUserId = p.UserId
                 };
                 lobby.Players.Add(player);
             }
 
             LobbyGenerator.InitializeLobby(lobby);
-            LobbyRepository repository = new LobbyRepository();
+            var repository = new LobbyRepository();
             repository.Create(lobby);
-
         }
 
         public static MessageConfig MoveCommand(int chatId, Direction direction)
         {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
-            lobby.TimeLastMsg = DateTime.Now;
-            if (CheckTurn(chatId))
-            {
+            var status = GameCommandService.MoveCommand(chatId, direction);
+            var username = status.CurrentPlayer?.HeroName;
+
+            if (status.IsOtherTurn)
                 return new MessageConfig
                 {
                     Answer = string.Format(Answers.NoTurn.RandomAnswer())
                 };
-            }
 
-            var res = PlayerLogic.TryMove(lobby, lobby.Players[lobby.CurrentTurn], direction);
-            Player currentPlayer = lobby.Players[lobby.CurrentTurn];
-            var username = currentPlayer.HeroName;
-            lobby.CurrentTurn++;
-            if (lobby.CurrentTurn == lobby.Players.Count)
-                lobby.CurrentTurn = 0;
-
-            LobbyRepository.Update(lobby);
-            //TODO: удалить это говно
-            FormatAnswers.ConsoleApp(lobby);
-            if (res.Contains(PlayerAction.GameEnd))
-            {
-                lobby.IsActive = false;
-                MemberRepository.Delete(lobby.GameId);
+            if (status.IsGameEnd)
                 return new MessageConfig
                 {
                     Answer = string.Format(Answers.EndGame.RandomAnswer(), username)
                 };
+
+            if (status.PlayerActions.Contains(PlayerAction.OnWall))
+                return new MessageConfig
+                {
+                    KeyBoardId = KeyboardType.Move,
+                    Answer = string.Format(Answers.MoveWall.RandomAnswer(), username)
+                };
+
+
+            var messageList = new List<string>();
+            messageList.Add(string.Format(Answers.MoveGo.RandomAnswer(), username));
+
+            if (status.PlayersOnSameCell != null)
+                foreach (var player in status.PlayersOnSameCell)
+                    messageList.Add(string.Format(Answers.MovePlayer.RandomAnswer(), username, player.HeroName));
+
+            foreach (var item in status.PlayerActions)
+            {
+                var newString = StatusToMessage.MessageOnMoveAction(item, username);
+                if (newString != null) messageList.Add(newString);
             }
 
-            MessageConfig msg = new MessageConfig
-            {
-                KeyBoardId = KeyBoardEnum.Move
-            };
-
-            List<string> ls = new List<string>();
-            if (res.Contains(PlayerAction.OnWall))
-            {
-                msg.Answer = (string.Format(Answers.MoveWall.RandomAnswer(), username));
-                return msg;
-            }
-            ls.Add(string.Format(Answers.MoveGo.RandomAnswer(), username));
-
-            if (res.Contains(PlayerAction.MeetPlayer))
-            {
-                var playersOnCell = MazeLogic.PlayersOnCell(currentPlayer, lobby);
-                foreach (var e in playersOnCell)
-                {
-                    ls.Add(string.Format(Answers.MovePlayer.RandomAnswer(), username, e.HeroName));
-                }
-            }
-
-            foreach (var item in res)
-            {
-
-                if (item == PlayerAction.FakeChest)
-                {
-                    ls.Add(string.Format(Answers.ExitFalseChest.RandomAnswer(), username));
-                }
-
-                if (item == PlayerAction.OnArsenal)
-                {
-                    msg.KeyBoardId = KeyBoardEnum.ShootwithBomb;
-                    ls.Add(string.Format(Answers.MoveArs.RandomAnswer(), username));
-                }
-                if (item == PlayerAction.OnChest)
-                {
-                    ls.Add(string.Format(Answers.MoveChest.RandomAnswer(), username));
-                }
-                if (item == PlayerAction.OnHospital)
-                {
-                    ls.Add(string.Format(Answers.MoveHosp.RandomAnswer(), username));
-                }
-            }
             //TODO: реализовать нормально
-            msg.Answer = string.Join("\n", ls);
-            msg.AnswerForOther = msg.Answer;
-            return msg;
-        }
-
-        private static bool CheckTurn(int chatId)
-        {
-            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
-            if (lobby.Players.FindIndex(e => e.TelegramUserId == chatId) != lobby.CurrentTurn)
+            return new MessageConfig
             {
-                return true;
-            }
-
-            return false;
+                KeyBoardId = KeyboardType.Move,
+                Answer = string.Join("\n", messageList),
+                AnswerForOther = string.Join("\n", messageList)
+            };
         }
 
         public static MessageConfig TryChangeName(string username, int playerId)
         {
-            Regex login_regex = new Regex("^[a-zA-Zа-яА-Я][a-zA-Zа-яА-Я0-9]{2,9}$");
-            if (login_regex.Match(username).Success == false)
-            {
-                return new MessageConfig()
+            var loginRegex = new Regex("^[a-zA-Zа-яА-Я][a-zA-Zа-яА-Я0-9]{2,9}$");
+            if (loginRegex.Match(username).Success == false)
+                return new MessageConfig
                 {
                     CurrentPlayerId = playerId,
                     Answer = $"Используются неразрешенные символы"
                 };
-            }
 
-            if (characters.ReadAll().Any(e => e.CharacterName == username))
-            {
-                return new MessageConfig()
+            if (CharacterRepository.ReadAll().Any(e => e.CharacterName == username))
+                return new MessageConfig
                 {
                     CurrentPlayerId = playerId,
                     Answer = $"Имя существует"
                 };
-            }
 
-            var r = characters.Read(playerId);
+            var r = CharacterRepository.Read(playerId);
             r.CharacterName = username;
             r.State = CharacterState.ChangeGameMode;
-            characters.Update(r);
+            CharacterRepository.Update(r);
 
-            return new MessageConfig()
+            return new MessageConfig
             {
                 CurrentPlayerId = playerId,
                 Answer = $"Имя _{username}_задано"

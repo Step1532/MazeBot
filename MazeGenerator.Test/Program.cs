@@ -5,6 +5,7 @@ using MazeGenerator.Core.GameGenerator;
 using MazeGenerator.Core.Services;
 using MazeGenerator.Core.Tools;
 using MazeGenerator.Models;
+using MazeGenerator.Models.ActionStatus;
 using MazeGenerator.Models.Enums;
 
 namespace MazeGenerator.Test
@@ -87,7 +88,7 @@ namespace MazeGenerator.Test
 //                    if (MazeLogic.TryShoot(lobby.Players[stroke]))
 //                    {
 //                        var res = MazeLogic.Shoot(lobby, lobby.Players[stroke], MoveDirection().Item2);
-//                        if (res.Player != null)
+//                        if (res.Target != null)
 //                       {
 //                            //TODO: генерирование месежа
 //                       }
@@ -100,11 +101,11 @@ namespace MazeGenerator.Test
                 else if (act.Item1 == 2)
                 {
                     var res = PlayerLogic.Bomb(lobby, lobby.Players[stroke], MoveDirection().Item2);
-                    if (res == ResultBomb.Wall)
+                    if (res == BombResultType.Wall)
                     {
                         //Todo генерация месежа
                     }
-                    else if (res == ResultBomb.NoBomb)
+                    else if (res == BombResultType.NoBomb)
                     {
                         //Todo: генерация месежа
                     }
