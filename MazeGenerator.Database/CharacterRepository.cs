@@ -59,7 +59,10 @@ namespace MazeGenerator.Database
 
         public void Delete(int playerId)
         {
-            //TODO: сброс прогресса
+            var res = JsonConvert.DeserializeObject<List<Character>>(File.ReadAllText(CharacterFile)) ?? new List<Character>();
+            var r = res.Find(e => e.TelegramUserId == playerId);
+            res.Remove(r);
+            File.WriteAllText(CharacterFile, JsonConvert.SerializeObject(res));
         }
     }
 }

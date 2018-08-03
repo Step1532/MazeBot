@@ -53,7 +53,12 @@ namespace MazeGenerator.Database
             var res = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
             return res;
         }
-
+        public void DeleteOne(int userId)
+        {
+            var res = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
+            var r = res.Where(e => e.UserId != userId);
+            File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(r));
+        }
         public void Delete(int lobbyId)
         {
             var res = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));

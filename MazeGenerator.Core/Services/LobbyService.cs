@@ -4,14 +4,13 @@ using MazeGenerator.Models;
 
 namespace MazeGenerator.Core.Services
 {
-	//TODO: Перенести в .Core
     public class LobbyService
     {
         public static bool CheckLobby(int userId)
         {
             MemberRepository repo = new MemberRepository();
             var users = repo.ReadLobbyAll();
-            return Enumerable.Any<Member>(users, e => e.UserId == userId);
+            return users.Any(e => e.UserId == userId);
         }
         public static void AddUser(int userId)
         {
@@ -22,7 +21,7 @@ namespace MazeGenerator.Core.Services
                 repo.Create(1, userId);
                 return;
             }
-            var  member =  Enumerable.Last<Member>(members);
+            var  member =  members.Last();
             if (EmptyPlaceCount(member.UserId) == 0)
             {
                 repo.Create(member.LobbyId+1, userId);
@@ -45,8 +44,8 @@ namespace MazeGenerator.Core.Services
             }
             else
             {
-                lastuser = Enumerable.Last<Member>(players);
-                var users = Enumerable.Where<Member>(repo.ReadLobbyAll(), e => e.LobbyId == lastuser.LobbyId);
+                lastuser = players.Last();
+                var users = repo.ReadLobbyAll().Where(e => e.LobbyId == lastuser.LobbyId);
                 //TODO: <3
                 return 1-users.Count();
 

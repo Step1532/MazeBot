@@ -37,7 +37,6 @@ namespace MazeGenerator.TelegramBot
             var character = _characterRepository.Read(playerId);
 
 
-			//TODO: вынести метод валидации
             if (e.Message.Type != MessageType.Text)
                 return;
 
@@ -52,40 +51,29 @@ namespace MazeGenerator.TelegramBot
             {
                  msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
             }
-            //TODO: move to new method 
-            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
-            if (msg.KeyBoardId == KeyBoardEnum.Bomb)
+
+            if (msg != null)
             {
-                keyboard = KeybordConfiguration.WithoutShootKeyBoard();
-            }
-            else if (msg.KeyBoardId == KeyBoardEnum.Move)
-            {
-                keyboard = KeybordConfiguration.WithoutBombAndShootKeyboard();
-            }
-            else if (msg.KeyBoardId == KeyBoardEnum.Shoot)
-            {
-                keyboard = KeybordConfiguration.WithoutBombKeyBoard();
-            }
-            else if (msg.KeyBoardId == KeyBoardEnum.ShootwithBomb)
-            {
-                keyboard = KeybordConfiguration.NewKeyBoard();
-            }
-            if (msg.OtherPlayersId != null)
-            {
-                foreach (var playerid in msg.OtherPlayersId)
+                var keyboard = GetKeyboardMarkup(KeyBoardEnum.Move);
+
+                if (msg.OtherPlayersId != null)
                 {
-                    BotClient.SendTextMessageAsync(playerid, msg.AnswerForOther, ParseMode.Markdown, false, false, 0, keyboard);
+                    foreach (var playerid in msg.OtherPlayersId)
+                    {
+                        BotClient.SendTextMessageAsync(playerid, msg.AnswerForOther, ParseMode.Markdown, false, false,
+                            0, keyboard);
+                    }
+
+                    BotClient.SendTextMessageAsync(msg.NextPlayerId, "Ваш Ход");
                 }
-                BotClient.SendTextMessageAsync(msg.NextPlayerId, "Ваш Ход");
+
+                BotClient.SendTextMessageAsync(msg.CurrentPlayerId, msg.Answer, ParseMode.Markdown);
+                return;
             }
-            BotClient.SendTextMessageAsync(msg.CurrentPlayerId, msg.Answer, ParseMode.Markdown);
-            return;
-            
 
 
             BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
 
-			//TODO: вызов стейт машин
 
 
 
@@ -95,6 +83,7 @@ namespace MazeGenerator.TelegramBot
         //Если бот клиент, то можно упростить
         private void BotClient_OnCallbackQueryShoot(object sender, CallbackQueryEventArgs e)
         {
+            
             if (e.CallbackQuery.Data != "0")
             {
                 BotClient.OnCallbackQuery -= BotClient_OnCallbackQueryShoot;
@@ -149,6 +138,28 @@ namespace MazeGenerator.TelegramBot
         }
         //TODO: следующим методам добавить, что б отправляли всем игрокам
 		//TODO: переписать название и арнументы методов
+        public ReplyKeyboardMarkup GetKeyboardMarkup(KeyBoardEnum keyBoardId)
+        {
+            ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
+            if (keyBoardId == KeyBoardEnum.Bomb)
+            {
+                keyboard = KeybordConfiguration.WithoutShootKeyBoard();
+            }
+            else if (keyBoardId == KeyBoardEnum.Move)
+            {
+                keyboard = KeybordConfiguration.WithoutBombAndShootKeyboard();
+            }
+            else if (keyBoardId == KeyBoardEnum.Shoot)
+            {
+                keyboard = KeybordConfiguration.WithoutBombKeyBoard();
+            }
+            else if (keyBoardId == KeyBoardEnum.ShootwithBomb)
+            {
+                keyboard = KeybordConfiguration.NewKeyBoard();
+            }
+
+            return keyboard;
+        }
         public void SComm(CallbackQueryEventArgs e, Direction direction)
         {
             var s = BotService.ShootCommand(e.CallbackQuery.From.Id, direction, e.CallbackQuery.From.Username);
@@ -168,7 +179,7 @@ namespace MazeGenerator.TelegramBot
             switch (state)
             {
                 case CharacterState.ChangeName:
-                    return TryChangeName(command, playerId);
+                    return BotService.TryChangeName(command, playerId);
 
                 case CharacterState.ChangeGameMode:
                     if (command == "/game")
@@ -181,7 +192,11 @@ namespace MazeGenerator.TelegramBot
                     }
                     else
                     {
-                        throw new NotImplementedException();
+                        return new MessageConfig()
+                        {
+                            Answer = "неверная команда",
+                            CurrentPlayerId = playerId
+                        };
                     }
 
                 case CharacterState.Tutorial:
@@ -209,8 +224,14 @@ namespace MazeGenerator.TelegramBot
                     }
                     else if (command == "/stop")
                     {
-                        throw new NotImplementedException();
-                        //TODO: прекратить поиск
+                        _characterRepository.Read(playerId);
+                        MemberRepository repo =new MemberRepository();
+                        repo.DeleteOne(playerId);
+                        return new MessageConfig()
+                        {
+                            Answer = "Вы удалены из очереди",
+                            CurrentPlayerId = playerId
+                        };
                     }
                     else
                     {
@@ -297,40 +318,6 @@ namespace MazeGenerator.TelegramBot
                
             }
             throw new Exception();
-        }
-
-        //TODO: move to service
-        private MessageConfig TryChangeName(string username, int playerId)
-        {
-            Regex login_regex = new Regex("^[a-zA-Zа-яА-Я][a-zA-Zа-яА-Я0-9]{2,9}$");
-            if (login_regex.Match(username).Success == false)
-            {
-                return new MessageConfig()
-                {
-                    CurrentPlayerId = playerId,
-                    Answer = $"Используются неразрешенные символы"
-                };
-            }
-
-            if (_characterRepository.ReadAll().Any(e => e.CharacterName == username))
-            {
-                return new MessageConfig()
-                {
-                    CurrentPlayerId = playerId,
-                    Answer = $"Имя существует"
-                };
-            }
-
-            var r = _characterRepository.Read(playerId);
-            r.CharacterName = username;
-            r.State = CharacterState.ChangeGameMode;
-            _characterRepository.Update(r);
-
-            return new MessageConfig()
-            {
-                CurrentPlayerId = playerId,
-                Answer = $"Имя _{username}_задано"
-            };
         }
     }
 }

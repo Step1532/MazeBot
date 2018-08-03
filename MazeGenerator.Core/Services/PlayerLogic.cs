@@ -9,23 +9,21 @@ namespace MazeGenerator.Core.Services
 {
     public static class PlayerLogic
     {
-        /// <summary>  
-        /// Возвращает можно ли идти в направлении
-        /// </summary>  
+        /// <summary>
+        ///     Возвращает можно ли идти в направлении
+        /// </summary>
         public static List<PlayerAction> TryMove(Lobby lobby, Player player, Direction direction)
         {
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
             var types = MazeLogic.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
             Console.Clear();
-            Console.WriteLine(player.UserCoordinate.X+ " " + player.UserCoordinate.Y);
+            Console.WriteLine(player.UserCoordinate.X + " " + player.UserCoordinate.Y);
             if (types.Contains(MazeObjectType.Wall) || types.Contains(MazeObjectType.Space))
-            {
-                return new List<PlayerAction> { PlayerAction.OnWall };
-            }
+                return new List<PlayerAction> {PlayerAction.OnWall};
 
             var actions = new List<PlayerAction>();
             player.UserCoordinate -= coord;
-            
+
             if (types.Contains(MazeObjectType.Event))
             {
                 var events = MazeLogic.EventsOnCell(player.UserCoordinate, lobby);
@@ -43,13 +41,11 @@ namespace MazeGenerator.Core.Services
                 }
 
                 if (events.Contains(EventTypeEnum.Chest))
-                {
                     if (player.Chest == null && player.Health == lobby.Rules.PlayerMaxHealth)
                     {
                         player.Chest = MazeLogic.PickChest(player.UserCoordinate, lobby, player);
                         actions.Add(PlayerAction.OnChest);
                     }
-                }
             }
 
             if (types.Contains(MazeObjectType.Player))
@@ -58,12 +54,10 @@ namespace MazeGenerator.Core.Services
                     Equals(e.UserCoordinate, player.UserCoordinate) && e.TelegramUserId != player.TelegramUserId);
                 actions.Add(PlayerAction.MeetPlayer);
             }
-            
+
 
             if (types.Contains(MazeObjectType.Exit))
-            {
                 if (player.Chest != null)
-                {
                     if (player.Chest.IsReal == false)
                     {
                         var r = lobby.Chests.Find(e =>
@@ -75,17 +69,14 @@ namespace MazeGenerator.Core.Services
                     else
                     {
                         actions.Add(PlayerAction.GameEnd);
-
                     }
-                }
-            }
 
             return actions;
         }
 
 
         /// <summary>
-        /// проверка может ли игрок выстрелить
+        ///     проверка может ли игрок выстрелить
         /// </summary>
         public static ShootResult TryShoot(Lobby lobby, Player player, Direction direction)
         {
@@ -95,11 +86,11 @@ namespace MazeGenerator.Core.Services
         }
 
         /// <summary>
-        /// проверка может ли пуля попасть в игрока, если да возвращакт игрока
+        ///     проверка может ли пуля попасть в игрока, если да возвращакт игрока
         /// </summary>
         private static ShootResult Shoot(Lobby lobby, Player player, Direction direction)
         {
-            ShootResult res =new ShootResult();
+            var res = new ShootResult();
             player.Guns--;
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
             var bulletPosition = new Coordinate(player.UserCoordinate.X, player.UserCoordinate.Y);
@@ -116,12 +107,8 @@ namespace MazeGenerator.Core.Services
                 res.Result = ResultShoot.Wall;
                 res.Player = null;
                 res.ShootCount = true;
-                if (player.Guns == 0)
-                {
-                    res.ShootCount = false;
-                }
+                if (player.Guns == 0) res.ShootCount = false;
                 return res;
-
             }
 
             if (type.Any(t => t == MazeObjectType.Player))
@@ -134,44 +121,34 @@ namespace MazeGenerator.Core.Services
                     p.Chest.Position = new Coordinate(p.UserCoordinate.X, p.UserCoordinate.Y);
                     p.Chest = null;
                 }
+
                 if (p.Health == 1)
                 {
                     lobby.Players.Remove(p);
                     res.Result = ResultShoot.Kill;
                     res.Player = p;
                     res.ShootCount = true;
-                    if (player.Guns == 0)
-                    {
-                        res.ShootCount = false;
-                    }
+                    if (player.Guns == 0) res.ShootCount = false;
                     return res;
                 }
-                else
-                {
-                    p.Health--;
-                    res.Result = ResultShoot.Hit;
-                    res.Player = p;
-                    res.ShootCount = true;
-                    if (player.Guns == 0)
-                    {
-                        res.ShootCount = false;
-                    }
-                    return res;
-                }
+
+                p.Health--;
+                res.Result = ResultShoot.Hit;
+                res.Player = p;
+                res.ShootCount = true;
+                if (player.Guns == 0) res.ShootCount = false;
+                return res;
             }
 
             throw new Exception("Shoot");
         }
 
         /// <summary>
-        /// Взрыв стены
+        ///     Взрыв стены
         /// </summary>
         public static ResultBomb Bomb(Lobby lobby, Player player, Direction direction)
         {
-            if (player.Bombs <= 0)
-            {
-                return ResultBomb.NoBomb;
-            }
+            if (player.Bombs <= 0) return ResultBomb.NoBomb;
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
             player.Bombs--;
             if (MazeLogic.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby)
@@ -180,11 +157,13 @@ namespace MazeGenerator.Core.Services
                 lobby.Maze.Set(player.UserCoordinate - coord, 0);
                 return ResultBomb.Wall;
             }
+
             return ResultBomb.Void;
         }
+
         public static StabResult Stab(Lobby lobby, Player player)
         {
-            StabResult stabResult = new StabResult();
+            var stabResult = new StabResult();
             var playeronCell = MazeLogic.PlayersOnCell(player, lobby)?.FirstOrDefault();
             if (playeronCell != null)
             {
@@ -201,6 +180,7 @@ namespace MazeGenerator.Core.Services
                     stabResult.Result = ResultShoot.Hit;
                 }
             }
+
             return stabResult;
         }
     }
