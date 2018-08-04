@@ -19,21 +19,17 @@ namespace MazeGenerator.Database
 
         public void Create(int lobbyId, int userId)
         {
+            List<Member> ls = new List<Member>();
+            if (File.Exists(UsersFilePath))
+            {
+                ls = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
+            }
             Member member = new Member
             {
                 LobbyId = lobbyId,
                 UserId = userId,
                 LanguageId = 0
             };
-            if (lobbyId == 1)
-            {
-   //             Console.WriteLine(JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath)));
-            }
-            List<Member> ls = new List<Member>();
-            if (File.Exists(UsersFilePath))
-            {
-                ls = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
-            }
             ls.Add(member);
 
             File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(ls));

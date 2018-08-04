@@ -26,12 +26,6 @@ namespace MazeGenerator.Models
             CurrentTurn = 0;
         }
 
-        public void NextTurn()
-        {
-            CurrentTurn++;
-            if (CurrentTurn == Players.Count)
-                CurrentTurn = 0;
-        }
         public Lobby()
         {
             

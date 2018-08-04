@@ -127,16 +127,11 @@ namespace MazeGenerator.Core.Services
 
             if (target.Chest != null)
             {
-                //TODO: Вынести логику выпадания сундука
-                lobby.Events.Add(new GameEvent(EventTypeEnum.Chest,
-                    new Coordinate(target.UserCoordinate)));
-                target.Chest.Position = new Coordinate(target.UserCoordinate);
-                target.Chest = null;
+                DropChest(lobby, target);
             }
 
-            //TODO: вынести логику убийства
             if (target.Health == 1)
-                lobby.Players.Remove(target);
+                KillPlayer(lobby, target);
             else
                 target.Health--;
 
@@ -191,6 +186,20 @@ namespace MazeGenerator.Core.Services
             lobby.Players.Remove(target);
             stabResult.Result = AttackType.Kill;
             return stabResult;
+        }
+
+        private static void DropChest(Lobby lobby, Player target)
+        {
+            lobby.Events.Add(new GameEvent(EventTypeEnum.Chest,
+                new Coordinate(target.UserCoordinate)));
+            target.Chest.Position = new Coordinate(target.UserCoordinate);
+            target.Chest = null;
+        }
+
+        //TODO: Дописать логику при убийстве
+        private static void KillPlayer(Lobby lobby, Player target)
+        {
+            lobby.Players.Remove(target);
         }
     }
 }

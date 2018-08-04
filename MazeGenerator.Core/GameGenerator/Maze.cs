@@ -27,7 +27,7 @@ namespace MazeGenerator.Core.GameGenerator
 
             while (cells.Count > 0)
             {
-                var index = (short) ChooseIndex((ushort) cells.Count, PickMethod.Newest);
+                var index = (short) ChooseIndex((ushort) cells.Count);
                 var cellPicked = cells[index];
 
                 x = cellPicked[0];
@@ -57,35 +57,14 @@ namespace MazeGenerator.Core.GameGenerator
         }
 
 
-        private static ushort ChooseIndex(ushort max, PickMethod pickMethod)
+        private static ushort ChooseIndex(ushort max)
         {
             ushort index = 0;
-            ushort cyclePick = 0;
 
-            switch (pickMethod)
-            {
-                case PickMethod.Cyclic:
-                    cyclePick = (ushort) ((cyclePick + 1) % max);
-                    index = cyclePick;
-                    break;
-
-                case PickMethod.Random:
-                    index = (ushort) Random.Next(max - 1);
-                    break;
-
-                case PickMethod.Oldest:
-                    index = 0;
-                    break;
-
-                case PickMethod.Newest:
-                default:
-                    if (max >= 1)
-                        index = (ushort) (max - 1);
-                    else
-                        index = 0;
-
-                    break;
-            }
+            if (max >= 1)
+                index = (ushort)(max - 1);
+            else
+                index = 0;
 
             return index;
         }

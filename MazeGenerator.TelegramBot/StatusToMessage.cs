@@ -7,6 +7,7 @@ using MazeGenerator.TelegramBot.Models;
 
 namespace MazeGenerator.TelegramBot
 {
+    //TODO: Реализовать ввиде конвертора Enum => String
     public static class StatusToMessage
     {
         public static string MessageOnMoveAction(PlayerAction action, string username)

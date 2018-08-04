@@ -200,7 +200,7 @@ namespace MazeGenerator.TelegramBot
                 case CharacterState.ChangeGameMode:
                     if (command == "/game")
                     {
-                        return StateMachineService.FindGameCommand(playerId);
+                        return BotService.FindGameCommand(playerId);
                     }
                     else if (command == "/tutorial")
                     {

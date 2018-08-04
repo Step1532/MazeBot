@@ -24,9 +24,7 @@ namespace MazeGenerator.Database
 
         public Lobby Read(int lobbyId)
         {
-            Lobby lobby = new Lobby(lobbyId);
-            lobby = JsonConvert.DeserializeObject<Lobby>(File.ReadAllText(LobbyFile(lobbyId)));
-            return lobby;
+            return JsonConvert.DeserializeObject<Lobby>(File.ReadAllText(LobbyFile(lobbyId)));
         }
 
         public void Update(Lobby lobby)

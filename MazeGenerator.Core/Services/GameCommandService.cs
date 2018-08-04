@@ -18,7 +18,7 @@ namespace MazeGenerator.Core.Services
         {
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
      
-            if (CanMakeTurn(lobby, userId) == false)
+            if (LobbyService.CanMakeTurn(lobby, userId) == false)
             {
                 return new MoveStatus()
                 {
@@ -28,9 +28,8 @@ namespace MazeGenerator.Core.Services
             }
 
             var currentPlayer = lobby.Players[lobby.CurrentTurn];
-            var username = currentPlayer.HeroName;
             var actionList = PlayerLogic.TryMove(lobby, currentPlayer, direction);
-            EndTurn(lobby);
+            LobbyService.EndTurn(lobby);
             FormatAnswers.ConsoleApp(lobby);
             //TODO: Вывод для дебага
             //FormatAnswers.ConsoleApp(lobby);
@@ -40,7 +39,7 @@ namespace MazeGenerator.Core.Services
                 lobby.IsActive = false;
                 MemberRepository.Delete(lobby.GameId);
 
-                EndTurn(lobby);
+                LobbyService.EndTurn(lobby);
                 return new MoveStatus
                 {
                     IsGameEnd = true,
@@ -66,7 +65,7 @@ namespace MazeGenerator.Core.Services
         public static AttackStatus ShootCommand(int userId, Direction direction)
         {
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
-            if (CanMakeTurn(lobby, userId) == false)
+            if (LobbyService.CanMakeTurn(lobby, userId) == false)
             {
                 return new AttackStatus
                 {
@@ -77,14 +76,14 @@ namespace MazeGenerator.Core.Services
             var currentPlayer = lobby.Players[lobby.CurrentTurn];
             var shootResult = PlayerLogic.TryShoot(lobby, currentPlayer, direction);
 
-            EndTurn(lobby);
+            LobbyService.EndTurn(lobby);
             return shootResult;
         }
 
         public static AttackStatus StabCommand(int userId)
         {
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
-            if (CanMakeTurn(lobby, userId) == false)
+            if (LobbyService.CanMakeTurn(lobby, userId) == false)
             {
                 return new AttackStatus
                 {
@@ -95,14 +94,14 @@ namespace MazeGenerator.Core.Services
             var currentPlayer = lobby.Players[lobby.CurrentTurn];
             var stabResult = PlayerLogic.Stab(lobby, currentPlayer);
 
-            EndTurn(lobby);
+            LobbyService.EndTurn(lobby);
             return stabResult;
         }
 
         public static BombStatus BombCommand(int userId, Direction direction)
         {
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
-            if (CanMakeTurn(lobby, userId) == false)
+            if (LobbyService.CanMakeTurn(lobby, userId) == false)
             {
                 return new BombStatus
                 {
@@ -114,7 +113,7 @@ namespace MazeGenerator.Core.Services
             var username = currentPlayer.HeroName;
 
             var bombResult = PlayerLogic.Bomb(lobby, lobby.Players[lobby.CurrentTurn], direction);
-            EndTurn(lobby);
+            LobbyService.EndTurn(lobby);
 
             if (currentPlayer.Bombs == 0)
             {
@@ -132,7 +131,7 @@ namespace MazeGenerator.Core.Services
         public static bool SkipTurn(int userId)
         {
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
-            if (CanMakeTurn(lobby, userId) == false)
+            if (LobbyService.CanMakeTurn(lobby, userId) == false)
             {
                 //TODO:
                 return false;
@@ -143,8 +142,7 @@ namespace MazeGenerator.Core.Services
             }
 
             var currentPlayer = lobby.Players[lobby.CurrentTurn];
-            var username = currentPlayer.HeroName;
-            EndTurn(lobby);
+            LobbyService.EndTurn(lobby);
 
             //TODO:
             return true;
@@ -156,17 +154,6 @@ namespace MazeGenerator.Core.Services
         }
 
 
-        //TODO: возможно стоит перенести в LobbyService
-        private static void EndTurn(Lobby lobby)
-        {
-            lobby.CurrentTurn = (lobby.CurrentTurn + 1) % lobby.Players.Count;
-            lobby.TimeLastMsg = DateTime.Now;
-            LobbyRepository.Update(lobby);
-        }
-
-        private static bool CanMakeTurn(Lobby lobby, int userId)
-        {
-            return lobby.Players.FindIndex(e => e.TelegramUserId == userId) == lobby.CurrentTurn;
-        }
+        
     }
 }

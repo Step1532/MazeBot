@@ -11,7 +11,7 @@ namespace MazeGenerator.Database
     public class CharacterRepository
     {
         private string _connectionString;
-        private string CharacterFile = $@"C:\Users\Step1\Desktop\mazegen\GameFiles\Characters.json";
+        private const string CharacterFile = @"C:\Users\Step1\Desktop\mazegen\GameFiles\Characters.json";
 
 
         public CharacterRepository()
@@ -26,9 +26,11 @@ namespace MazeGenerator.Database
                 File.WriteAllText(CharacterFile, JsonConvert.SerializeObject(new List<Character>()));
             }
             var res = JsonConvert.DeserializeObject<List<Character>>(File.ReadAllText(CharacterFile)) ?? new List<Character>();
-            Character character = new Character();
-            character.TelegramUserId = telegramUserId;
-            character.State = CharacterState.ChangeName;
+            Character character = new Character
+            {
+                TelegramUserId = telegramUserId,
+                State = CharacterState.ChangeName
+            };
             res.Add(character);
             File.WriteAllText(CharacterFile, JsonConvert.SerializeObject(res));
         }
