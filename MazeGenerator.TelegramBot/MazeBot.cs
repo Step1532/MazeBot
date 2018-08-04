@@ -29,8 +29,6 @@ namespace MazeGenerator.TelegramBot
             BotClient = new TelegramBotClient(token); //{"Timeout":"00:01:40","IsReceiving":true,"MessageOffset":0}
             BotClient.OnMessage += OnNewMessage;
             BotClient.StartReceiving();
-     
-            Console.ReadLine();
         }
 
         public void OnNewMessage(object sender, MessageEventArgs e)
@@ -97,16 +95,16 @@ namespace MazeGenerator.TelegramBot
             switch (e.CallbackQuery.Data)
             {
                 case "1":
-                    SComm(e, Direction.North);
+                    SComm(e.CallbackQuery.From.Id, Direction.North);
                     break;
                 case "2":
-                    SComm(e, Direction.West);
+                    SComm(e.CallbackQuery.From.Id, Direction.West);
                     break;
                 case "3":
-                    SComm(e, Direction.East);
+                    SComm(e.CallbackQuery.From.Id, Direction.East);
                     break;
                 case "4":
-                    SComm(e, Direction.South);
+                    SComm(e.CallbackQuery.From.Id, Direction.South);
                     break;
                 default:
                     bot.SendTextMessageAsync(e.CallbackQuery.Message.Chat.Id,
@@ -122,16 +120,16 @@ namespace MazeGenerator.TelegramBot
             switch (e.CallbackQuery.Data)
             {
                 case "1":
-                    BComm(e, Direction.North);
+                    BComm(e.CallbackQuery.From.Id, Direction.North);
                     break;
                 case "2":
-                    BComm(e, Direction.West);
+                    BComm(e.CallbackQuery.From.Id, Direction.West);
                     break;
                 case "3":
-                    BComm(e, Direction.East);
+                    BComm(e.CallbackQuery.From.Id, Direction.East);
                     break;
                 case "4":
-                    BComm(e, Direction.South);
+                    BComm(e.CallbackQuery.From.Id, Direction.South);
                     break;
                 default:
                     bot.SendTextMessageAsync(e.CallbackQuery.Message.Chat.Id,
@@ -157,9 +155,9 @@ namespace MazeGenerator.TelegramBot
             }
         }
 
-        public void SComm(CallbackQueryEventArgs e, Direction direction)
+        public void SComm(int playerid, Direction direction)
         {
-            var s = BotService.ShootCommand(e.CallbackQuery.From.Id, direction);
+            var s = BotService.ShootCommand(playerid, direction);
             foreach (var item in s)
             {
                 if (item.KeyBoardId != null)
@@ -173,9 +171,9 @@ namespace MazeGenerator.TelegramBot
 
             }
         }
-        public void BComm(CallbackQueryEventArgs e, Direction direction)
+        public void BComm(int playerId, Direction direction)
         {
-            var s = BotService.BombCommand(e.CallbackQuery.From.Id, direction);
+            var s = BotService.BombCommand(playerId, direction);
             foreach (var item in s)
             {
                 if (item.KeyBoardId != null)
@@ -245,6 +243,9 @@ namespace MazeGenerator.TelegramBot
                     {
                         _characterRepository.Read(playerId);
                         MemberRepository repo =new MemberRepository();
+                        var character = _characterRepository.Read(playerId);
+                        character.State = CharacterState.ChangeGameMode;
+                        _characterRepository.Update(character);
                         repo.DeleteOne(playerId);
                         return new List<MessageConfig>
                         {

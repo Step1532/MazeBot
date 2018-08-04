@@ -390,7 +390,7 @@ namespace MazeGenerator.TelegramBot
             msg.Add(new MessageConfig
             {
                 PlayerId = playerId,
-                Answer = $"Имя _{username}_ задано"
+                Answer = $"Имя *{username}* задано"
             });
             return msg;
         }
@@ -398,6 +398,8 @@ namespace MazeGenerator.TelegramBot
         public static List<MessageConfig> FindGameCommand(int playerId)
         {
             var members = new MemberRepository();
+            var characterRepository = new CharacterRepository();
+
             var msg = new List<MessageConfig>();
             if (LobbyService.CheckLobby(playerId))
             {
@@ -416,10 +418,14 @@ namespace MazeGenerator.TelegramBot
                     Answer = $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyService.EmptyPlaceCount(playerId)}",
                     PlayerId = playerId
                 });
+                var character = characterRepository.Read(playerId);
+                character.State = CharacterState.FindGame;
+                CharacterRepository.Update(character);
                 return msg;
             }
             LobbyService.StartNewLobby(playerId);
-            var memberlist = members.ReadMemberList(members.ReadLobbyId(playerId));
+            var memberlist = members.ReadMemberList(
+            members.ReadLobbyId(playerId));
 
             for (int i = 0; i < memberlist.Count; i++)
             {
@@ -427,10 +433,9 @@ namespace MazeGenerator.TelegramBot
                 {
                     Answer = "Игра начата",
                     PlayerId = memberlist[i].UserId,
-                    KeyBoardId = KeybordConfiguration.WithoutBombAndShootKeyboard()
+                    KeyBoardId = KeybordConfiguration.NewKeyBoard()
                 });
             }
-            var characterRepository = new CharacterRepository();
             foreach (var item in memberlist.Select(e => e.UserId))
             {
                 var character = characterRepository.Read(item);

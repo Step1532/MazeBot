@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\MazeGenerator.Core\MazeGenerator.Core.csproj" />
     <ProjectReference Include="..\MazeGenerator.Models\MazeGenerator.Models.csproj" />
+    <ProjectReference Include="..\MazeGenerator.TelegramBot\MazeGenerator.TelegramBot.csproj" />
   </ItemGroup>
 
 </Project>

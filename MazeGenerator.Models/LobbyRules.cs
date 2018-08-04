@@ -32,5 +32,20 @@ namespace MazeGenerator.Models
                 
             };
         }
+        public static LobbyRules Test()
+        {
+            return new LobbyRules
+            {
+                Size = new Coordinate(2, 2),
+                ExitCount = 0,
+                ArsenalCount = 0,
+                HospitalCount = 0,
+                FalseGoldCount = 0,
+                PlayerMaxHealth = 3,
+                PlayerMaxGuns = 2,
+                PlayerMaxBombs = 3,
+                BanTime = TimeSpan.FromDays(1),
+            };
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MazeGenerator.Core.Tools;
+using MazeGenerator.Database;
 using MazeGenerator.Models;
 using MazeGenerator.Models.ActionStatus;
 using MazeGenerator.Models.Enums;
@@ -199,6 +200,10 @@ namespace MazeGenerator.Core.Services
         //TODO: Дописать логику при убийстве
         private static void KillPlayer(Lobby lobby, Player target)
         {
+            CharacterRepository repo = new CharacterRepository();
+            var character = repo.Read(target.TelegramUserId);
+            character.State = CharacterState.ChangeGameMode;
+
             lobby.Players.Remove(target);
         }
     }
