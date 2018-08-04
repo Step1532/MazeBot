@@ -17,6 +17,7 @@ namespace MazeGenerator.Core.Services
         public static MoveStatus MoveCommand(int userId, Direction direction)
         {
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
+     
             if (CanMakeTurn(lobby, userId) == false)
             {
                 return new MoveStatus()
@@ -29,7 +30,8 @@ namespace MazeGenerator.Core.Services
             var currentPlayer = lobby.Players[lobby.CurrentTurn];
             var username = currentPlayer.HeroName;
             var actionList = PlayerLogic.TryMove(lobby, currentPlayer, direction);
-            
+            EndTurn(lobby);
+            FormatAnswers.ConsoleApp(lobby);
             //TODO: Вывод для дебага
             //FormatAnswers.ConsoleApp(lobby);
 
@@ -42,7 +44,8 @@ namespace MazeGenerator.Core.Services
                 return new MoveStatus
                 {
                     IsGameEnd = true,
-                    CurrentPlayer = currentPlayer
+                    CurrentPlayer = currentPlayer,
+                    PlayerActions = actionList
                 };
             }
 
@@ -50,7 +53,8 @@ namespace MazeGenerator.Core.Services
             {
                 IsOtherTurn = false,
                 IsGameEnd = false,
-                CurrentPlayer = currentPlayer
+                CurrentPlayer = currentPlayer,
+                    PlayerActions = actionList
             };
             if (actionList.Contains(PlayerAction.MeetPlayer))
             {
@@ -151,6 +155,8 @@ namespace MazeGenerator.Core.Services
             //};
         }
 
+
+        //TODO: возможно стоит перенести в LobbyService
         private static void EndTurn(Lobby lobby)
         {
             lobby.CurrentTurn = (lobby.CurrentTurn + 1) % lobby.Players.Count;

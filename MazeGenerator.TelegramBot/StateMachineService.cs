@@ -1,47 +1,61 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Metadata;
 using MazeGenerator.Core.Services;
+using MazeGenerator.Core.Tools;
 using MazeGenerator.Database;
 using MazeGenerator.Models;
 using MazeGenerator.Models.Enums;
+using MazeGenerator.TelegramBot.Models;
 
 namespace MazeGenerator.TelegramBot
 {
     public static class StateMachineService
     {
-        public static MessageConfig FindGameCommand(int playerId)
+        public static List<MessageConfig> FindGameCommand(int playerId)
         {
             var members = new MemberRepository();
-            var msg = new MessageConfig();
+            var msg = new List<MessageConfig>();
             if (LobbyService.CheckLobby(playerId))
-                return new MessageConfig
+            {
+                msg.Add(new MessageConfig
                 {
                     Answer = "Вы уже находитесь в лобби",
-                    CurrentPlayerId = playerId
-                };
-
+                    PlayerId = playerId
+                });
+                return msg;
+            }
             LobbyService.AddUser(playerId);
             if (LobbyService.EmptyPlaceCount(playerId) != 0)
-                return new MessageConfig
+            {
+                msg.Add(new MessageConfig
                 {
-                    Answer =
-                        $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyService.EmptyPlaceCount(playerId)}",
-                    CurrentPlayerId = playerId
-                };
-            BotService.StartGame(playerId);
-            msg.AnswerForOther = "Игра начата";
-            msg.KeyBoardId = KeyboardType.Move;
-            msg.OtherPlayersId = members.ReadMemberList(members.ReadLobbyId(playerId))
-                .Select(e => e.UserId)
-                .ToList();
+                    Answer = $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyService.EmptyPlaceCount(playerId)}",
+                    PlayerId = playerId
+                });
+                return msg;
+            }
+            LobbyService.StartNewLobby(playerId);
+            var memberlist = members.ReadMemberList(members.ReadLobbyId(playerId));
+
+            for (int i = 0; i < memberlist.Count; i++)
+            {
+                msg.Add(new MessageConfig
+                {
+                    Answer = "Игра начата",
+                    PlayerId = memberlist[i].UserId,
+                    KeyBoardId = KeybordConfiguration.WithoutBombAndShootKeyboard()
+                });
+            }
             var characterRepository = new CharacterRepository();
-            foreach (var item in msg.OtherPlayersId)
+            foreach (var item in memberlist.Select(e => e.UserId))
             {
                 var character = characterRepository.Read(item);
                 character.State = CharacterState.InGame;
                 characterRepository.Update(character);
             }
 
-            msg.NextPlayerId = members.ReadMemberList(members.ReadLobbyId(playerId)).First().UserId;
+            msg.Find(e => e.PlayerId == members.ReadMemberList(members.ReadLobbyId(playerId)).First().UserId).Answer += "Ваш ход";
             return msg;
         }
     }

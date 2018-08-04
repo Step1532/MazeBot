@@ -72,7 +72,7 @@ namespace MazeGenerator.Core.Services
                     actions.Add(PlayerAction.GameEnd);
                 }
             }
-
+           
             return actions;
         }
 

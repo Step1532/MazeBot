@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MazeGenerator.Core;
@@ -28,55 +29,67 @@ namespace MazeGenerator.TelegramBot
             BotClient = new TelegramBotClient(token); //{"Timeout":"00:01:40","IsReceiving":true,"MessageOffset":0}
             BotClient.OnMessage += OnNewMessage;
             BotClient.StartReceiving();
+     
             Console.ReadLine();
         }
 
         public void OnNewMessage(object sender, MessageEventArgs e)
         {
+            
             int playerId = e.Message.From.Id;
             var character = _characterRepository.Read(playerId);
 
 
             if (e.Message.Type != MessageType.Text)
                 return;
+            BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
 
             //=====
-
-            MessageConfig msg;
-            if (character == null)
+            List<MessageConfig> msg = null;
+            try
             {
-                 msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
-            }
-            else
-            {
-                 msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
-            }
-
-            if (msg != null)
-            {
-                var keyboard = GetKeyboardMarkup(KeyboardType.Move);
-
-                if (msg.OtherPlayersId != null)
+                
+                if (character == null)
                 {
-                    foreach (var playerid in msg.OtherPlayersId)
-                    {
-                        BotClient.SendTextMessageAsync(playerid, msg.AnswerForOther, ParseMode.Markdown, false, false,
-                            0, keyboard);
-                    }
-
-                    BotClient.SendTextMessageAsync(msg.NextPlayerId, "Ваш Ход");
+                    msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
                 }
-
-                BotClient.SendTextMessageAsync(msg.CurrentPlayerId, msg.Answer, ParseMode.Markdown);
+                else
+                {
+                    msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
+                }
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
                 return;
             }
 
+            //    if (character == null)
+            //    {
+            //        msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
+            //    }
+            //    else
+            //    {
+            //        msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
+            //    }
+            if (msg != null)
+            {
+                foreach (var item in msg)
+                {
+                    if (item.KeyBoardId != null)
+                    {
+                        BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false,false,0, item.KeyBoardId);
+                    }
+                    else
+                    {
+                        BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown);
+                    }
 
-            BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
+                }
+                    return;
+            }
         }
 
-        //TODO: проверить кто есть sender
-        //Если бот клиент, то можно упростить
         private void BotClient_OnCallbackQueryShoot(object sender, CallbackQueryEventArgs e)
         {
             var bot = (TelegramBotClient) sender;
@@ -147,18 +160,37 @@ namespace MazeGenerator.TelegramBot
         public void SComm(CallbackQueryEventArgs e, Direction direction)
         {
             var s = BotService.ShootCommand(e.CallbackQuery.From.Id, direction);
-            BotClient.SendTextMessageAsync(e.CallbackQuery.From.Id, s.Answer, ParseMode.Default, false, false, 0,
-            KeybordConfiguration.NewKeyBoard());
+            foreach (var item in s)
+            {
+                if (item.KeyBoardId != null)
+                {
+                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false, false, 0, item.KeyBoardId);
+                }
+                else
+                {
+                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown);
+                }
+
+            }
         }
         public void BComm(CallbackQueryEventArgs e, Direction direction)
         {
             var s = BotService.BombCommand(e.CallbackQuery.From.Id, direction);
-            BotClient.SendTextMessageAsync(e.CallbackQuery.From.Id, s.Answer, ParseMode.Default, false, false, 0,
-                KeybordConfiguration.NewKeyBoard());
-           
+            foreach (var item in s)
+            {
+                if (item.KeyBoardId != null)
+                {
+                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false, false, 0, item.KeyBoardId);
+                }
+                else
+                {
+                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown);
+                }
+
+            }
         }
 
-        public MessageConfig StateMachine(CharacterState state, string command, int playerId)
+        public List<MessageConfig> StateMachine(CharacterState state, string command, int playerId)
         {
             switch (state)
             {
@@ -176,10 +208,13 @@ namespace MazeGenerator.TelegramBot
                     }
                     else
                     {
-                        return new MessageConfig()
+                        return new List<MessageConfig>
                         {
-                            Answer = "неверная команда",
-                            CurrentPlayerId = playerId
+                            new MessageConfig()
+                            {
+                                Answer = "неверная команда",
+                                PlayerId =  playerId
+                            }
                         };
                     }
 
@@ -211,10 +246,13 @@ namespace MazeGenerator.TelegramBot
                         _characterRepository.Read(playerId);
                         MemberRepository repo =new MemberRepository();
                         repo.DeleteOne(playerId);
-                        return new MessageConfig()
+                        return new List<MessageConfig>
                         {
-                            Answer = "Вы удалены из очереди",
-                            CurrentPlayerId = playerId
+                            new MessageConfig()
+                            {
+                                Answer = "Вы удалены из очереди",
+                                PlayerId =  playerId
+                            }
                         };
                     }
                     else
@@ -267,9 +305,13 @@ namespace MazeGenerator.TelegramBot
                     {
                         return BotService.AfkCommand(playerId);
                     }
-                    return new MessageConfig()
+                    return new List<MessageConfig>
                     {
-                        Answer = Answers.UndefinedCommand.RandomAnswer()
+                        new MessageConfig()
+                        {
+                            Answer = Answers.UndefinedCommand.RandomAnswer(),
+                            PlayerId =  playerId
+                        }
                     };
 
                 case CharacterState.NewCharacter:
@@ -278,23 +320,32 @@ namespace MazeGenerator.TelegramBot
                         if (_characterRepository.Read(playerId) == null)
                         {
                             _characterRepository.Create(playerId);
-                            return new MessageConfig()
+                            return new List<MessageConfig>
                             {
-                                Answer = "Напишите имя персонажа",
-                                CurrentPlayerId = playerId
+                                new MessageConfig()
+                                {
+                                    Answer = "Напишите имя персонажа",
+                                    PlayerId = playerId
+                                }
                             };
                         }
 
-                        return new MessageConfig()
+                        return new List<MessageConfig>
                         {
-                            Answer = "Вы хотите удалить персонажа? Для удаления напишите *Удаляю* и нажмите /start",
-                            CurrentPlayerId = playerId
+                            new MessageConfig()
+                            {
+                                Answer = "Вы хотите удалить персонажа? Для удаления напишите *Удаляю* и нажмите /start",
+                                PlayerId = playerId
+                            }
                         };
                     }
-                    return new MessageConfig()
+                    return new List<MessageConfig>
                     {
-                        Answer = "неверная команда",
-                        CurrentPlayerId = playerId
+                        new MessageConfig()
+                        {
+                            Answer = "Неверная команда",
+                            PlayerId = playerId
+                        }
                     };
 
                 default:

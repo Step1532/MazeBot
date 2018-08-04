@@ -4,7 +4,7 @@ using MazeGenerator.Core.Services;
 using MazeGenerator.Models;
 using MazeGenerator.Models.Enums;
 
-namespace MazeGenerator.TelegramBot
+namespace MazeGenerator.Core
 {
     public static class FormatAnswers
     {

@@ -3,6 +3,7 @@ using MazeGenerator.Core.Tools;
 using MazeGenerator.Models;
 using MazeGenerator.Models.ActionStatus;
 using MazeGenerator.Models.Enums;
+using MazeGenerator.TelegramBot.Models;
 
 namespace MazeGenerator.TelegramBot
 {
@@ -33,19 +34,16 @@ namespace MazeGenerator.TelegramBot
                     return new MessageConfig
                     {
                         Answer = string.Format(Answers.ShootWall.RandomAnswer(), username),
-                        AnswerForOther = string.Format(Answers.ShootWall.RandomAnswer(), username)
                     };
                 case AttackType.Kill:
                     return new MessageConfig
                     {
                         Answer = string.Format(Answers.ShootKill.RandomAnswer(), username),
-                        AnswerForOther = string.Format(Answers.ShootKill.RandomAnswer(), username)
                     };
                 case AttackType.Hit:
                     return new MessageConfig
                     {
                         Answer = string.Format(Answers.ShootHit.RandomAnswer(), username),
-                        AnswerForOther = string.Format(Answers.ShootHit.RandomAnswer(), username)
                     };
             }
 
@@ -60,19 +58,16 @@ namespace MazeGenerator.TelegramBot
                     return new MessageConfig
                     {
                         Answer = string.Format(Answers.ShootWall.RandomAnswer(), username),
-                        AnswerForOther = string.Format(Answers.ShootWall.RandomAnswer(), username)
                     };
                 case AttackType.Kill:
                     return new MessageConfig
                     {
                         Answer = string.Format(Answers.ShootKill.RandomAnswer(), username),
-                        AnswerForOther = string.Format(Answers.ShootKill.RandomAnswer(), username)
                     };
                 case AttackType.Hit:
                     return new MessageConfig
                     {
                         Answer = string.Format(Answers.ShootHit.RandomAnswer(), username),
-                        AnswerForOther = string.Format(Answers.ShootHit.RandomAnswer(), username)
                     };
             }
 

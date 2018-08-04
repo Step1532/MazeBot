@@ -17,6 +17,11 @@ namespace MazeGenerator.Models
             Y = c.Y;
         }
 
+        public Coordinate()
+        {
+            
+        }
+
         public int X { get; set; }
         public int Y { get; set; }
 

@@ -11,7 +11,7 @@ namespace MazeGenerator.Database
     public class CharacterRepository
     {
         private string _connectionString;
-        private string CharacterFile = $@"Characters.json";
+        private string CharacterFile = $@"C:\Users\Step1\Desktop\mazegen\GameFiles\Characters.json";
 
 
         public CharacterRepository()

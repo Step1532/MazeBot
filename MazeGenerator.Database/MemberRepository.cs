@@ -10,7 +10,7 @@ namespace MazeGenerator.Database
     public class MemberRepository
     {
         private readonly string _connectionString;
-        private string UsersFilePath = @"usersinLobby.json";
+        private string UsersFilePath = @"C:\Users\Step1\Desktop\mazegen\GameFiles\usersinLobby.json";
 
         public MemberRepository()
         {
@@ -27,11 +27,15 @@ namespace MazeGenerator.Database
             };
             if (lobbyId == 1)
             {
-                Console.WriteLine(JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath)));
+   //             Console.WriteLine(JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath)));
             }
-
-            var ls = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
+            List<Member> ls = new List<Member>();
+            if (File.Exists(UsersFilePath))
+            {
+                ls = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
+            }
             ls.Add(member);
+
             File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(ls));
         }
 
@@ -50,6 +54,8 @@ namespace MazeGenerator.Database
         }
         public List<Member> ReadLobbyAll()
         {
+            if(File.Exists(UsersFilePath) == false)
+                return  new List<Member>();
             var res = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
             return res;
         }
