@@ -245,9 +245,24 @@ namespace MazeGenerator.TelegramBot
                             BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
                             BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
                             return null;
-                        case "/skiptutorial":
-                            throw new NotImplementedException();
-                            //TODO: выйти из туториала
+                        case "/skip":
+                            var character = _characterRepository.Read(playerId);
+                            LobbyRepository lobbyRepository = new LobbyRepository();
+                            MemberRepository memberRepository = new MemberRepository();
+                            memberRepository.DeleteOne(playerId);
+                            var lobby = lobbyRepository.Read(0);
+                            lobby.Players.Remove(lobby.Players.Find(e => e.TelegramUserId == playerId));
+                            lobbyRepository.Update(lobby);
+                            character.State = CharacterState.ChangeGameMode;
+                            _characterRepository.Update(character);
+                            return new List<MessageConfig>
+                            {
+                                new MessageConfig()
+                                {
+                                    Answer = "Обучение пропущено",
+                                    PlayerId =  playerId
+                                }
+                            };
                         default:
                             new MessageConfig()
                             {

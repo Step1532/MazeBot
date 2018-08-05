@@ -37,7 +37,7 @@ namespace MazeGenerator.Database
 
         public List<Member> ReadMemberList(int lobbyId)
         {
-            if (File.Exists(UsersFilePath))
+            if (File.Exists(UsersFilePath) == false)
             {
                 return new List<Member>();
             }

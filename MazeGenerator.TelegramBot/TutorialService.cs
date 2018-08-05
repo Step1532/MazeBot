@@ -23,6 +23,7 @@ namespace MazeGenerator.TelegramBot
             Lobby lobby = LobbyRepository.Read(0);
             var currentPlayer = lobby.Players.Find(e => e.TelegramUserId == userId);
             var actionList = PlayerLogic.TryMove(lobby, currentPlayer, direction);
+            LobbyRepository.Update(lobby);
             FormatAnswers.ConsoleApp(lobby);
             if (actionList.Contains(PlayerAction.GameEnd))
             {
