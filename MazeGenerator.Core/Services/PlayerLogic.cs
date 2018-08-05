@@ -203,7 +203,7 @@ namespace MazeGenerator.Core.Services
             CharacterRepository repo = new CharacterRepository();
             var character = repo.Read(target.TelegramUserId);
             character.State = CharacterState.ChangeGameMode;
-
+            repo.Update(character);
             lobby.Players.Remove(target);
         }
     }

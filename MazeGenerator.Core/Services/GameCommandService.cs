@@ -30,9 +30,9 @@ namespace MazeGenerator.Core.Services
             var currentPlayer = lobby.Players[lobby.CurrentTurn];
             var actionList = PlayerLogic.TryMove(lobby, currentPlayer, direction);
             LobbyService.EndTurn(lobby);
-            FormatAnswers.ConsoleApp(lobby);
+
             //TODO: Вывод для дебага
-            //FormatAnswers.ConsoleApp(lobby);
+            FormatAnswers.ConsoleApp(lobby);
 
             if (actionList.Contains(PlayerAction.GameEnd))
             {

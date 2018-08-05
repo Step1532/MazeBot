@@ -410,6 +410,7 @@ namespace MazeGenerator.TelegramBot
                 });
                 return msg;
             }
+            //TODO: isLobbyactive
             LobbyService.AddUser(playerId);
             if (LobbyService.EmptyPlaceCount(playerId) != 0)
             {

@@ -137,7 +137,6 @@ namespace MazeGenerator.TelegramBot
                     break;
             }
         }
-        //TODO: переписать название и арнументы методов
         public ReplyKeyboardMarkup GetKeyboardMarkup(KeyboardType keyBoardId)
         {
             switch (keyBoardId)
@@ -202,7 +201,13 @@ namespace MazeGenerator.TelegramBot
                     }
                     else if (command == "/tutorial")
                     {
-                        throw new NotImplementedException();
+                        var character = _characterRepository.Read(playerId);
+                        LobbyRepository lobbyRepository = new LobbyRepository();
+                        var lobby = lobbyRepository.Read(0);
+                        lobby.Players.Add(new Player{ Health = 3, HeroName = character.CharacterName, Rotate = Direction.North, TelegramUserId = playerId, UserCoordinate = new Coordinate(3, 3)});
+                        lobbyRepository.Update(lobby);
+                        character.State = CharacterState.Tutorial;
+                        _characterRepository.Update(character);
                     }
                     else
                     {
@@ -215,13 +220,31 @@ namespace MazeGenerator.TelegramBot
                             }
                         };
                     }
+                    break;
 
                 case CharacterState.Tutorial:
-                    throw new NotImplementedException();
                     if (command == "Вверх")
                     {
-                        throw new NotImplementedException();
-                        //TODO: те же команды что и в Ingame, только по другому обработать
+                        return TutorialService.MoveCommand(playerId, Direction.North);
+                    }
+                    else if (command == "Вниз")
+                    {
+                        return TutorialService.MoveCommand(playerId, Direction.South);
+                    }
+                    else if (command == "Вправо")
+                    {
+                        return TutorialService.MoveCommand(playerId, Direction.East);
+                    }
+                    else if (command == "Влево")
+                    {
+                        return TutorialService.MoveCommand(playerId, Direction.West);
+                    }
+                    else if (command == "Взрыв стены")
+                    {
+                        var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
+                        BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
+                        BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
+                        return null;
                     }
                     else if (command == "/skiptutorial")
                     {
@@ -263,49 +286,38 @@ namespace MazeGenerator.TelegramBot
                     }
 
                 case CharacterState.InGame:
-                    if (command == "Вверх")
+                    switch (command)
                     {
-                        return BotService.MoveCommand(playerId, Direction.North);
-                    }
-                    if (command == "Вниз")
-                    {
-                        return BotService.MoveCommand(playerId, Direction.South);
-                    }
-                    if (command == "Вправо")
-                    {
-                        return BotService.MoveCommand(playerId, Direction.East);
-                    }
-                    if (command == "Влево")
-                    {
-                        return BotService.MoveCommand(playerId, Direction.West);
-                    }
-                    if (command == "Удар кинжалом")
-                    {
-                        return BotService.StabCommand(playerId);
-                    }
-                    if (command == "Пропуск хода")
-                    {
-                        return BotService.SkipTurn(playerId);
+                        case "Вверх":
+                            return BotService.MoveCommand(playerId, Direction.North);
+                        case "Вниз":
+                            return BotService.MoveCommand(playerId, Direction.South);
+                        case "Вправо":
+                            return BotService.MoveCommand(playerId, Direction.East);
+                        case "Влево":
+                            return BotService.MoveCommand(playerId, Direction.West);
+                        case "Удар кинжалом":
+                            return BotService.StabCommand(playerId);
+                        case "Пропуск хода":
+                            return BotService.SkipTurn(playerId);
+                        case "Выстрел":
+                        {
+                            var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
+                            BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
+                            BotClient.OnCallbackQuery += BotClient_OnCallbackQueryShoot;
+                            return null;
+                        }
+                        case "Взрыв стены":
+                        {
+                            var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
+                            BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
+                            BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
+                            return null;
+                        }
+                        case "/afk":
+                            return BotService.AfkCommand(playerId);
                     }
 
-                    if (command == "Выстрел")
-                    {
-                        var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
-                        BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
-                        BotClient.OnCallbackQuery += BotClient_OnCallbackQueryShoot;
-                        return null;
-                    }
-                    if (command == "Взрыв стены")
-                    {
-                        var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
-                        BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
-                        BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
-                        return null;
-                    }
-                    if (command == "/afk")
-                    {
-                        return BotService.AfkCommand(playerId);
-                    }
                     return new List<MessageConfig>
                     {
                         new MessageConfig()

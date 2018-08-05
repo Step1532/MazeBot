@@ -40,7 +40,7 @@ namespace MazeGenerator.Core.Services
             var users = _memberRepository.ReadLobbyAll();
             return users.Any(e => e.UserId == userId);
         }
-
+        //TODO:
         public static void AddUser(int userId)
         {
             var members = _memberRepository.ReadLobbyAll();

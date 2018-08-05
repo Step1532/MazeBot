@@ -21,7 +21,6 @@ namespace MazeGenerator.Test.LobbyRepositoryTest
             lobbyRepository.Create(lobby);
 
             var newLobby = lobbyRepository.Read(lobbyId);
-            //TODO
             Assert.AreEqual(lobby.GameId, newLobby.GameId);
             Assert.AreEqual(lobby.Maze[0, 3], newLobby.Maze[0, 3]);
             Assert.AreEqual(lobby.Players.Count, newLobby.Players.Count);
@@ -39,7 +38,7 @@ namespace MazeGenerator.Test.LobbyRepositoryTest
             lobby.Maze[0, 3] = 0;
             lobbyRepository.Update(lobby);
             var newLobby = lobbyRepository.Read(lobbyId);
-            //TODO
+
             Assert.AreEqual(lobby.GameId, newLobby.GameId);
             Assert.AreEqual(lobby.Maze[0, 3], newLobby.Maze[0, 3]);
             Assert.AreEqual(lobby.Players.Count, newLobby.Players.Count);
