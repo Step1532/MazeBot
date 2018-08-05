@@ -37,6 +37,10 @@ namespace MazeGenerator.Database
 
         public List<Member> ReadMemberList(int lobbyId)
         {
+            if (File.Exists(UsersFilePath))
+            {
+                return new List<Member>();
+            }
             var res = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath))
                 .Where(e => e.LobbyId == lobbyId)
                 .ToList();

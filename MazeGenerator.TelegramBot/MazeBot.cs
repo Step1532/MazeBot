@@ -46,7 +46,7 @@ namespace MazeGenerator.TelegramBot
             List<MessageConfig> msg = null;
             try
             {
-                
+
                 if (character == null)
                 {
                     msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
@@ -62,14 +62,14 @@ namespace MazeGenerator.TelegramBot
                 return;
             }
 
-            //    if (character == null)
-            //    {
-            //        msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
-            //    }
-            //    else
-            //    {
-            //        msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
-            //    }
+            //if (character == null)
+            //{
+            //    msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
+            //}
+            //else
+            //{
+            //    msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
+            //}
             if (msg != null)
             {
                 foreach (var item in msg)
@@ -195,95 +195,99 @@ namespace MazeGenerator.TelegramBot
                     return BotService.TryChangeName(command, playerId);
 
                 case CharacterState.ChangeGameMode:
-                    if (command == "/game")
+                    switch (command)
                     {
-                        return BotService.FindGameCommand(playerId);
-                    }
-                    else if (command == "/tutorial")
-                    {
-                        var character = _characterRepository.Read(playerId);
-                        LobbyRepository lobbyRepository = new LobbyRepository();
-                        var lobby = lobbyRepository.Read(0);
-                        lobby.Players.Add(new Player{ Health = 3, HeroName = character.CharacterName, Rotate = Direction.North, TelegramUserId = playerId, UserCoordinate = new Coordinate(3, 3)});
-                        lobbyRepository.Update(lobby);
-                        character.State = CharacterState.Tutorial;
-                        _characterRepository.Update(character);
-                    }
-                    else
-                    {
-                        return new List<MessageConfig>
-                        {
-                            new MessageConfig()
+                        case "/game":
+                            return BotService.FindGameCommand(playerId);
+                        case "/tutorial":
+                            var character = _characterRepository.Read(playerId);
+                            LobbyRepository lobbyRepository = new LobbyRepository();
+                            MemberRepository memberRepository = new MemberRepository();
+                            memberRepository.Create(0, playerId);
+                            var lobby = lobbyRepository.Read(0);
+                            lobby.Players.Add(new Player{ Health = 3, HeroName = character.CharacterName, Rotate = Direction.North, TelegramUserId = playerId, UserCoordinate = new Coordinate(3, 3)});
+                            lobbyRepository.Update(lobby);
+                            character.State = CharacterState.Tutorial;
+                            _characterRepository.Update(character);
+                            return new List<MessageConfig>
                             {
-                                Answer = "неверная команда",
-                                PlayerId =  playerId
-                            }
-                        };
+                                new MessageConfig()
+                                {
+                                    Answer = "Обучение",
+                                    PlayerId =  playerId
+                                }
+                            };
+                        default:
+                            return new List<MessageConfig>
+                            {
+                                new MessageConfig()
+                                {
+                                    Answer = "неверная команда",
+                                    PlayerId =  playerId
+                                }
+                            };
                     }
                     break;
 
                 case CharacterState.Tutorial:
-                    if (command == "Вверх")
+                    switch (command)
                     {
-                        return TutorialService.MoveCommand(playerId, Direction.North);
-                    }
-                    else if (command == "Вниз")
-                    {
-                        return TutorialService.MoveCommand(playerId, Direction.South);
-                    }
-                    else if (command == "Вправо")
-                    {
-                        return TutorialService.MoveCommand(playerId, Direction.East);
-                    }
-                    else if (command == "Влево")
-                    {
-                        return TutorialService.MoveCommand(playerId, Direction.West);
-                    }
-                    else if (command == "Взрыв стены")
-                    {
-                        var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
-                        BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
-                        BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
-                        return null;
-                    }
-                    else if (command == "/skiptutorial")
-                    {
-                        throw new NotImplementedException();
-                        //TODO: выйти из туториала
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                        //TODO: сообщение, что неверная комманда
-                    }
-
-                case CharacterState.FindGame:
-                    if (command == "/help")
-                    {
-                        throw new NotImplementedException();
-                    }
-                    else if (command == "/stop")
-                    {
-                        _characterRepository.Read(playerId);
-                        MemberRepository repo =new MemberRepository();
-                        var character = _characterRepository.Read(playerId);
-                        character.State = CharacterState.ChangeGameMode;
-                        _characterRepository.Update(character);
-                        repo.DeleteOne(playerId);
-                        return new List<MessageConfig>
-                        {
+                        case "Вверх":
+                            return TutorialService.MoveCommand(playerId, Direction.North);
+                        case "Вниз":
+                            return TutorialService.MoveCommand(playerId, Direction.South);
+                        case "Вправо":
+                            return TutorialService.MoveCommand(playerId, Direction.East);
+                        case "Влево":
+                            return TutorialService.MoveCommand(playerId, Direction.West);
+                        case "Взрыв стены":
+                            var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
+                            BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
+                            BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
+                            return null;
+                        case "/skiptutorial":
+                            throw new NotImplementedException();
+                            //TODO: выйти из туториала
+                        default:
                             new MessageConfig()
                             {
-                                Answer = "Вы удалены из очереди",
-                                PlayerId =  playerId
-                            }
-                        };
+                                Answer = "Неверная команда",
+                                PlayerId = playerId
+                            };
+                            break;
                     }
-                    else
+                    break;
+
+                case CharacterState.FindGame:
+                    switch (command)
                     {
-                        throw new NotImplementedException();
-                        //TODO: сообщение, что неверная комманда
+                        case "/help":
+                            throw new NotImplementedException();
+                        case "/stop":
+                            _characterRepository.Read(playerId);
+                            MemberRepository repo =new MemberRepository();
+                            var character = _characterRepository.Read(playerId);
+                            character.State = CharacterState.ChangeGameMode;
+                            _characterRepository.Update(character);
+                            repo.DeleteOne(playerId);
+                            return new List<MessageConfig>
+                            {
+                                new MessageConfig()
+                                {
+                                    Answer = "Вы удалены из очереди",
+                                    PlayerId =  playerId
+                                }
+                            };
+                        default:
+
+                            new MessageConfig()
+                            {
+                                Answer = "Неверная команда",
+                                PlayerId = playerId
+                            };
+                            break;
                     }
+                    break;
 
                 case CharacterState.InGame:
                     switch (command)
