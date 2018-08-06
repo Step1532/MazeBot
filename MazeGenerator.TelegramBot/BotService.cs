@@ -42,7 +42,6 @@ namespace MazeGenerator.TelegramBot
                 {
                     if (memberlist[i].UserId == userId)
                     {
-                        //TODO:
                         msg.Add(new MessageConfig
                         {
                             Answer = String.Format(Answers.NotBullet.RandomAnswer(), username),
@@ -53,7 +52,7 @@ namespace MazeGenerator.TelegramBot
                     {
                         msg.Add(new MessageConfig
                         {
-                            Answer = String.Format(Answers.NotBullet.RandomAnswer(), username),
+                            Answer = String.Format(AnswersForOther.NotBullet.RandomAnswer(), username),
                             PlayerId = memberlist[i].UserId
                         });
                     }
@@ -92,7 +91,6 @@ namespace MazeGenerator.TelegramBot
 
                     if (memberlist[i].UserId == userId)
                     {
-                        //TODO:
                         msg.Add(new MessageConfig
                         {
                             Answer = String.Format(Answers.ResultBombWall.RandomAnswer(), username),
@@ -103,7 +101,7 @@ namespace MazeGenerator.TelegramBot
                     {
                         msg.Add(new MessageConfig
                         {
-                            Answer = String.Format(Answers.ResultBombWall.RandomAnswer(), username),
+                            Answer = String.Format(AnswersForOther.ResultBombWall.RandomAnswer(), username),
                             PlayerId = memberlist[i].UserId
                         });
                     }
@@ -124,7 +122,6 @@ namespace MazeGenerator.TelegramBot
                 {
                     if (memberlist[i].UserId == userId)
                     {
-                        //TODO:
                         msg.Add(new MessageConfig
                         {
                             Answer = String.Format(Answers.ResultBombVoid.RandomAnswer(), username),
@@ -135,7 +132,7 @@ namespace MazeGenerator.TelegramBot
                     {
                         msg.Add(new MessageConfig
                         {
-                            Answer = String.Format(Answers.ResultBombVoid.RandomAnswer(), username),
+                            Answer = String.Format(AnswersForOther.ResultBombVoid.RandomAnswer(), username),
                             PlayerId = memberlist[i].UserId
                         });
                     }
@@ -167,7 +164,6 @@ namespace MazeGenerator.TelegramBot
                 {
                     if (memberlist[i].UserId == userId)
                     {
-                        //TODO:
                         msg.Add(new MessageConfig
                         {
                             Answer = String.Format(Answers.NotBullet.RandomAnswer(), username),
@@ -178,7 +174,7 @@ namespace MazeGenerator.TelegramBot
                     {
                         msg.Add(new MessageConfig
                         {
-                            Answer = String.Format(Answers.NotBullet.RandomAnswer(), username),
+                            Answer = String.Format(AnswersForOther.NotBullet.RandomAnswer(), username),
                             PlayerId = memberlist[i].UserId
                         });
                     }
@@ -210,6 +206,7 @@ namespace MazeGenerator.TelegramBot
                     //TODO: написать тип SkipStatus
             var res = GameCommandService.SkipTurn(chatId);
             List<MessageConfig> msg = new List<MessageConfig>();
+            //TODO
             if (res)
             {
                 msg.Add(new MessageConfig
@@ -281,7 +278,6 @@ namespace MazeGenerator.TelegramBot
                     
                     if (memberlist[i].UserId == chatId)
                     {
-                        //TODO:
                         msg.Add(new MessageConfig
                         {
                             Answer = String.Format(Answers.EndGame.RandomAnswer(), username),
@@ -292,7 +288,7 @@ namespace MazeGenerator.TelegramBot
                     {
                         msg.Add(new MessageConfig
                         {
-                            Answer = String.Format(Answers.EndGame.RandomAnswer(), username),
+                            Answer = String.Format(AnswersForOther.EndGame.RandomAnswer(), username),
                             PlayerId = memberlist[i].UserId
                         });
                     }
@@ -307,7 +303,6 @@ namespace MazeGenerator.TelegramBot
                 {
                     if (memberlist[i].UserId == chatId)
                     {
-                        //TODO:
                         msg.Add(new MessageConfig
                         {
                             Answer = String.Format(Answers.MoveWall.RandomAnswer(), username),
@@ -318,7 +313,7 @@ namespace MazeGenerator.TelegramBot
                     {
                         msg.Add(new MessageConfig
                         {
-                            Answer = String.Format(Answers.MoveWall.RandomAnswer(), username),
+                            Answer = String.Format(AnswersForOther.MoveWall.RandomAnswer(), username),
                             PlayerId = memberlist[i].UserId
                         });
                     }

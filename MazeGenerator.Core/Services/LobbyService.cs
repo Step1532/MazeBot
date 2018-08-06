@@ -66,15 +66,13 @@ namespace MazeGenerator.Core.Services
             Member lastuser;
             if (players.Count == 0)
             {
-                //TODO: Это что?
-                return 1;
+                return LobbyRules.GenerateTemplateRules().PlayersCount;
             }
             else
             {
                 lastuser = players.Last();
                 var users = _memberRepository.ReadLobbyAll().Where(e => e.LobbyId == lastuser.LobbyId);
-                //TODO: <3
-                return 1-users.Count();
+                return LobbyRules.GenerateTemplateRules().PlayersCount-users.Count();
 
             } 
 

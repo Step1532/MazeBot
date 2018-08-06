@@ -12,6 +12,7 @@ namespace MazeGenerator.Models
         public int PlayerMaxHealth;
         public int PlayerMaxGuns;
         public int PlayerMaxBombs;
+        public int PlayersCount;
         public Coordinate Size;
         public TimeSpan BanTime;
 
@@ -29,7 +30,9 @@ namespace MazeGenerator.Models
                 PlayerMaxGuns = 2,
                 PlayerMaxBombs = 3,
                 BanTime = TimeSpan.FromDays(1),
-                
+                PlayersCount = 1,
+
+
             };
         }
         public static LobbyRules Test()

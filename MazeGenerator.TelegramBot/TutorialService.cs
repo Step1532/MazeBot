@@ -73,7 +73,6 @@ namespace MazeGenerator.TelegramBot
             }
             if (status.PlayerActions.Contains(PlayerAction.OnWall))
             {
-                //TODO:
                 msg.Add(new MessageConfig
                 {
                     Answer = String.Format(Answers.MoveWall.RandomAnswer(), username),
