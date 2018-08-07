@@ -37,16 +37,16 @@ namespace MazeGenerator.Database
 
         public Character Read(int telegranUserId)
         {
-            if (File.Exists(CharacterFile) == false)
-            {
-                return null;
-            }
-            var res = JsonConvert.DeserializeObject<List<Character>>(File.ReadAllText(CharacterFile)) ?? new List<Character>();
-            return res.Find(e => e.TelegramUserId == telegranUserId);
+            return ReadAll()
+                .Find(e => e.TelegramUserId == telegranUserId);
         }
 
         public List<Character> ReadAll()
         {
+            if (File.Exists(CharacterFile) == false)
+            {
+                return null;
+            }
             return JsonConvert.DeserializeObject<List<Character>>(File.ReadAllText(CharacterFile)) ?? new List<Character>();
         }
 

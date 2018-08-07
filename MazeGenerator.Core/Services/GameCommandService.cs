@@ -110,9 +110,7 @@ namespace MazeGenerator.Core.Services
             }
 
             var currentPlayer = lobby.Players[lobby.CurrentTurn];
-            var username = currentPlayer.HeroName;
-
-            var bombResult = PlayerLogic.Bomb(lobby, lobby.Players[lobby.CurrentTurn], direction);
+            var bombResult = PlayerLogic.Bomb(lobby, currentPlayer, direction);
             LobbyService.EndTurn(lobby);
 
             if (currentPlayer.Bombs == 0)
@@ -135,42 +133,22 @@ namespace MazeGenerator.Core.Services
         public static SkipTurnResult SkipTurn(int userId)
         {
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
-            var Result = new SkipTurnResult();
+            var result = new SkipTurnResult();
 
             if (LobbyService.CanMakeTurn(lobby, userId) == false)
             {
                 //TODO:
-                Result.CanMakeTurn = false;
-                return Result;
-                //return new BombStatus
-                //{
-                //    IsOtherTurn = true
-                //};
+                result.CanMakeTurn = false;
+                return result;
+               
             }
-            if (PlayerLogic.LootChest(lobby, lobby.Players[lobby.CurrentTurn]))
-            {
-                Result.PickChest = true;
-            }
-            else
-            {
-                Result.PickChest = false;
-            }
-
-
-            var currentPlayer = lobby.Players[lobby.CurrentTurn];
+            result.PickChest = PlayerLogic.LootChest(lobby, lobby.Players[lobby.CurrentTurn]);
             LobbyService.EndTurn(lobby);
 
             //TODO:
-            Result.CanMakeTurn = true;
-            //return new MessageConfig
-            //{
-            //    Answer = string.Format(Answers.SkipTurn.RandomAnswer(), res.HeroName),
-            //    AnswerForOther = null,
-            //};
-            return Result;
+            result.CanMakeTurn = true;
+            return result;
         }
-
-
         
     }
 }

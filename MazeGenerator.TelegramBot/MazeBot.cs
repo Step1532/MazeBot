@@ -42,8 +42,8 @@ namespace MazeGenerator.TelegramBot
                 return;
             BotClient.SendChatActionAsync(playerId, ChatAction.Typing);
 
-            //=====
-            List<MessageConfig> msg = null;
+            
+            List<MessageConfig> msg;
             //try
             //{
 
@@ -70,21 +70,19 @@ namespace MazeGenerator.TelegramBot
             {
                 msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
             }
-            if (msg != null)
-            {
-                foreach (var item in msg)
-                {
-                    if (item.KeyBoardId != null)
-                    {
-                        BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false,false,0, item.KeyBoardId);
-                    }
-                    else
-                    {
-                        BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown);
-                    }
 
+            if (msg == null) return;
+            foreach (var item in msg)
+            {
+                if (item.KeyBoardId != null)
+                {
+                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false,false,0, item.KeyBoardId);
                 }
-                    return;
+                else
+                {
+                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown);
+                }
+
             }
         }
 
@@ -157,6 +155,7 @@ namespace MazeGenerator.TelegramBot
         public void SComm(int playerid, Direction direction)
         {
             var s = BotService.ShootCommand(playerid, direction);
+            //TODO: Вынести в метод SendResponse
             foreach (var item in s)
             {
                 if (item.KeyBoardId != null)
@@ -189,6 +188,7 @@ namespace MazeGenerator.TelegramBot
 
         public List<MessageConfig> StateMachine(CharacterState state, string command, int playerId)
         {
+            //TODO: Вынести сюда создание репозиториев
             switch (state)
             {
                 case CharacterState.ChangeName:
@@ -263,14 +263,15 @@ namespace MazeGenerator.TelegramBot
                                 }
                             };
                         default:
-                            new MessageConfig()
+                            return new List<MessageConfig>
                             {
-                                Answer = "Неверная команда",
-                                PlayerId = playerId
+                                new MessageConfig()
+                                {
+                                    Answer = "Неверная команда",
+                                    PlayerId =  playerId
+                                }
                             };
-                            break;
                     }
-                    break;
 
                 case CharacterState.FindGame:
                     switch (command)
@@ -293,15 +294,15 @@ namespace MazeGenerator.TelegramBot
                                 }
                             };
                         default:
-
-                            new MessageConfig()
+                            return new List<MessageConfig>
                             {
-                                Answer = "Неверная команда",
-                                PlayerId = playerId
+                                new MessageConfig()
+                                {
+                                    Answer = "Неверная команда",
+                                    PlayerId =  playerId
+                                }
                             };
-                            break;
                     }
-                    break;
 
                 case CharacterState.InGame:
                     switch (command)
@@ -374,7 +375,6 @@ namespace MazeGenerator.TelegramBot
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
                
             }
-            throw new Exception();
         }
     }
 }

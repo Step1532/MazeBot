@@ -61,8 +61,6 @@ namespace MazeGenerator.Core.Services
 
             if (types.Contains(MazeObjectType.Player))
             {
-                var p = lobby.Players.Find(e =>
-                    Equals(e.UserCoordinate, player.UserCoordinate) && e.TelegramUserId != player.TelegramUserId);
                 actions.Add(PlayerAction.MeetPlayer);
             }
 
@@ -109,7 +107,7 @@ namespace MazeGenerator.Core.Services
         private static AttackStatus Shoot(Lobby lobby, Player player, Direction direction)
         {
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
-            var bulletPosition = new Coordinate(player.UserCoordinate.X, player.UserCoordinate.Y);
+            var bulletPosition = new Coordinate(player.UserCoordinate);
 
             List<MazeObjectType> type;
             do
@@ -181,24 +179,17 @@ namespace MazeGenerator.Core.Services
             };
             var target = MazeLogic.PlayersOnCell(player, lobby)?.FirstOrDefault();
 
-            if (LootChest(lobby, player))
-            {
-                stabResult.PickChest = true;
-            }
-            else
-            {
-                stabResult.PickChest = false;
-            }
+            stabResult.PickChest = LootChest(lobby, player);
             if (target == null)
             {
                 stabResult.Result = AttackType.NoAttack;
                 return stabResult;
             }
+            stabResult.Target = target;
             if (target.Chest != null)
             {
                 DropChest(lobby, target);
             }
-            stabResult.Target = target;
             if (target.Health > 1)
             {
                 target.Health--;
@@ -206,6 +197,9 @@ namespace MazeGenerator.Core.Services
                 return stabResult;
             }
 
+            //TODO: Добавить победу
+            //TODO: А еще лучше писать метод, который будет определять, что остался один игрок
+            //stabResult.IsGameEnd ==...
             lobby.Players.Remove(target);
             stabResult.Result = AttackType.Kill;
             return stabResult;
