@@ -47,6 +47,22 @@ namespace MazeGenerator.Core.Tools
 
             throw new ArgumentException();
         }
+        public static string DirectionToString(this Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.North:
+                    return "Вперед";
+                case Direction.South:
+                    return "Назад";
+                case Direction.East:
+                    return "Вправо";
+                case Direction.West:
+                    return "Влево";
+            }
+
+            throw new ArgumentException();
+        }
 
         public static Coordinate TargetCoordinate(Direction rotate, Direction moveDirection)
         {

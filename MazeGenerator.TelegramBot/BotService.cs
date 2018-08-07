@@ -60,11 +60,41 @@ namespace MazeGenerator.TelegramBot
                 return msg;
             }
 
+            if (status.Result == AttackType.NoTarget)
+            {
+                msg.Add(new MessageConfig
+                {
+                    Answer = String.Format(Answers.ShootWall.RandomAnswer(), username, Extensions.DirectionToString(direction)),
+                    PlayerId = userId
+                });
 
-            var config = StatusToMessage.MessageOnShoot(status.Result, username);
-            config.PlayerId = userId;
-            msg.Add(config);
-            if (status.ShootCount == false) config.KeyBoardId = KeybordConfiguration.WithoutShootKeyBoard();
+                msg.AddRange(memberlist
+                    .Where(m => m.UserId != userId)
+                    .Select(m => new MessageConfig
+                    {
+                        Answer = String.Format(AnswersForOther.ShootWall.RandomAnswer(), username, Extensions.DirectionToString(direction)),
+                        PlayerId = m.UserId
+                    }));
+                return msg;
+            }
+            var config = StatusToMessage.MessageOnShoot(status.Result, username, status.Target.HeroName,
+                Extensions.DirectionToString(direction));
+                msg.Add(new MessageConfig
+                {
+                    Answer = config.Item1,
+                    PlayerId = userId
+                });
+
+                msg.AddRange(memberlist
+                    .Where(m => m.UserId != userId)
+                    .Select(m => new MessageConfig
+                    {
+                        Answer = config.Item2,
+                        PlayerId = m.UserId
+                    }));
+            
+
+            if (status.ShootCount == false) msg.Find(e => e.PlayerId == userId).KeyBoardId = KeybordConfiguration.WithoutShootKeyBoard();
             return msg;
         }
 
@@ -75,37 +105,30 @@ namespace MazeGenerator.TelegramBot
             var memberlist = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(userId));
             if (status.IsOtherTurn)
             {
-                        msg.Add(new MessageConfig
-                        {
-                            Answer = String.Format(Answers.NoTurn.RandomAnswer()),
-                            PlayerId = userId
-                        });
+                msg.Add(new MessageConfig
+                {
+                    Answer = String.Format(Answers.NoTurn.RandomAnswer()),
+                    PlayerId = userId
+                });
                 return msg;
             }
+
             var username = status.CurrentPlayer.HeroName;
             if (status.Result == BombResultType.Wall)
             {
-                for (int i = 0; i < memberlist.Count; i++)
+                msg.Add(new MessageConfig
                 {
+                    Answer = String.Format(Answers.ResultBombWall.RandomAnswer(), username) + '\n',
+                    PlayerId = userId
+                });
 
-
-                    if (memberlist[i].UserId == userId)
+                msg.AddRange(memberlist
+                    .Where(m => m.UserId != userId)
+                    .Select(m => new MessageConfig
                     {
-                        msg.Add(new MessageConfig
-                        {
-                            Answer = String.Format(Answers.ResultBombWall.RandomAnswer(), username),
-                            PlayerId = memberlist[i].UserId
-                        });
-                    }
-                    else
-                    {
-                        msg.Add(new MessageConfig
-                        {
-                            Answer = String.Format(AnswersForOther.ResultBombWall.RandomAnswer(), username),
-                            PlayerId = memberlist[i].UserId
-                        });
-                    }
-                }
+                        Answer = String.Format(AnswersForOther.ResultBombWall.RandomAnswer(), username, Extensions.DirectionToString(direction)),
+                        PlayerId = m.UserId
+                    }));
             }
             else if (status.Result == BombResultType.NoBomb)
             {
@@ -114,31 +137,33 @@ namespace MazeGenerator.TelegramBot
                     Answer = String.Format(Answers.ResultBombNoBomb.RandomAnswer()),
                     PlayerId = userId
                 });
-                return msg;
             }
             else if (status.Result == BombResultType.Void)
             {
                 for (int i = 0; i < memberlist.Count; i++)
                 {
-                    if (memberlist[i].UserId == userId)
+                    msg.Add(new MessageConfig
                     {
-                        msg.Add(new MessageConfig
+                        Answer = String.Format(Answers.ResultBombVoid.RandomAnswer(), username) + '\n',
+                        PlayerId = userId
+                    });
+
+                    msg.AddRange(memberlist
+                        .Where(m => m.UserId != userId)
+                        .Select(m => new MessageConfig
                         {
-                            Answer = String.Format(Answers.ResultBombVoid.RandomAnswer(), username),
-                            PlayerId = memberlist[i].UserId
-                        });
-                    }
-                    else
-                    {
-                        msg.Add(new MessageConfig
-                        {
-                            Answer = String.Format(AnswersForOther.ResultBombVoid.RandomAnswer(), username),
-                            PlayerId = memberlist[i].UserId
-                        });
-                    }
+                            Answer = String.Format(AnswersForOther.ResultBombVoid.RandomAnswer(), username,
+                                Extensions.DirectionToString(direction)),
+                            PlayerId = m.UserId
+                        }));
                 }
+
+                
             }
+            if (status.BombCount == false) msg.Find(e => e.PlayerId == userId).KeyBoardId = KeybordConfiguration.WithoutBombKeyBoard();
+
             return msg;
+
         }
 
         public static List<MessageConfig> StabCommand(int userId)
@@ -204,19 +229,49 @@ namespace MazeGenerator.TelegramBot
         public static List<MessageConfig> SkipTurn(int chatId)
         {
                     //TODO: написать тип SkipStatus
+            CharacterRepository character = new CharacterRepository();
             var res = GameCommandService.SkipTurn(chatId);
+            var memberlist = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(chatId));
+            var username = character.Read(chatId).CharacterName;
+
             List<MessageConfig> msg = new List<MessageConfig>();
             //TODO
-            if (res)
+            if (res.CanMakeTurn)
             {
-                msg.Add(new MessageConfig
+                if (res.PickChest)
                 {
-                    Answer = String.Format(Answers.SkipTurn.RandomAnswer()),
-                    PlayerId = chatId,
-                });
+                    msg.Add(new MessageConfig
+                    {
+                        Answer = String.Format(Answers.SkipTurn.RandomAnswer(), username) + '\n' + String.Format(Answers.MoveChest.RandomAnswer(), username),
+                        PlayerId = chatId
+                    });
+
+                    msg.AddRange(memberlist
+                        .Where(m => m.UserId != chatId)
+                        .Select(m => new MessageConfig
+                        {
+                            Answer = String.Format(AnswersForOther.SkipTurn.RandomAnswer(), username) + '\n' + String.Format(AnswersForOther.MoveChest.RandomAnswer(), username),
+                            PlayerId = m.UserId
+                        }));
+                }
+                else
+                {
+                    msg.Add(new MessageConfig
+                    {
+                        Answer = String.Format(Answers.SkipTurn.RandomAnswer(), username) + '\n',
+                        PlayerId = chatId
+                    });
+
+                    msg.AddRange(memberlist
+                        .Where(m => m.UserId != chatId)
+                        .Select(m => new MessageConfig
+                        {
+                            Answer = String.Format(AnswersForOther.SkipTurn.RandomAnswer(), username),
+                            PlayerId = m.UserId
+                        }));
+                }
                 return msg;
             }
-
             msg.Add(new MessageConfig
             {
                 Answer = String.Format(Answers.NoTurn.RandomAnswer()),
@@ -235,6 +290,7 @@ namespace MazeGenerator.TelegramBot
             if (TimeSpan.Compare(lobby.Rules.BanTime, res) == -1)
             {
                 lobby.IsActive = false;
+
                 MemberRepository.Delete(lobby.GameId);
                 msg.Add(new MessageConfig
                 {
@@ -267,6 +323,7 @@ namespace MazeGenerator.TelegramBot
                 });
                 return msg;
             }
+
             if (status.IsGameEnd)
             {
                 
@@ -288,7 +345,7 @@ namespace MazeGenerator.TelegramBot
                     {
                         msg.Add(new MessageConfig
                         {
-                            Answer = String.Format(AnswersForOther.EndGame.RandomAnswer(), username),
+                            Answer = String.Format(AnswersForOther.EndGame.RandomAnswer(), username, Extensions.DirectionToString(direction)),
                             PlayerId = memberlist[i].UserId
                         });
                     }
@@ -299,71 +356,87 @@ namespace MazeGenerator.TelegramBot
 
             if (status.PlayerActions.Contains(PlayerAction.OnWall))
             {
-                for (int i = 0; i < memberlist.Count; i++)
+                msg.Add(new MessageConfig
                 {
-                    if (memberlist[i].UserId == chatId)
+                    Answer = String.Format(Answers.MoveWall.RandomAnswer(), username) + '\n',
+                    PlayerId = chatId
+                });
+
+                msg.AddRange(memberlist
+                    .Where(m => m.UserId != chatId)
+                    .Select(m => new MessageConfig
                     {
-                        msg.Add(new MessageConfig
-                        {
-                            Answer = String.Format(Answers.MoveWall.RandomAnswer(), username),
-                            PlayerId = memberlist[i].UserId
-                        });
-                    }
-                    else
-                    {
-                        msg.Add(new MessageConfig
-                        {
-                            Answer = String.Format(AnswersForOther.MoveWall.RandomAnswer(), username),
-                            PlayerId = memberlist[i].UserId
-                        });
-                    }
-                }
+                        Answer = String.Format(AnswersForOther.MoveWall.RandomAnswer(), username, Extensions.DirectionToString(direction)),
+                        PlayerId = m.UserId
+                    }));
 
                 return msg;
             }
 
-
+            string s = "";
             var messageList = new List<string>();
-            messageList.Add(String.Format(Answers.MoveGo.RandomAnswer(), username));
+
+            foreach (var item in status.PlayerActions)
+            {
+                var newString = StatusToMessage.MessageOnMoveAction(item, username);
+                if (newString != null)
+                    messageList.Add(newString);
+            }
 
             if (status.PlayersOnSameCell != null)
                 foreach (var player in status.PlayersOnSameCell)
                     messageList.Add(String.Format(Answers.MovePlayer.RandomAnswer(), username, player.HeroName));
 
-            foreach (var item in status.PlayerActions)
-            {
-                var newString = StatusToMessage.MessageOnMoveAction(item, username);
-                if (newString != null) messageList.Add(newString);
-            }
+            s = string.Join("\n", messageList);
 
-            //TODO: реализовать нормально
-            //return new MessageConfig
-            //{
-            //    KeyBoardId = KeyboardType.Move,
-            //    Answer = string.Join("\n", messageList),
-            //    AnswerForOther = string.Join("\n", messageList),
-            //    CurrentPlayerId = chatId,
-            //    OtherPlayersId = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(chatId)).Where(e => e.UserId != chatId).Select(e => e.UserId).ToList(),
-
-            //};
             msg.Add(new MessageConfig
             {
-                Answer = String.Join("\n", messageList),
-                PlayerId =  chatId
+                Answer = String.Format(Answers.MoveGo.RandomAnswer(), username) + '\n' + s,
+                PlayerId = chatId
             });
+
+            msg.AddRange(memberlist
+                .Where(m => m.UserId != chatId)
+                .Select(m => new MessageConfig
+                {
+                    Answer = String.Format(AnswersForOther.MoveGo.RandomAnswer(), username, Extensions.DirectionToString(direction)) + s,
+                    PlayerId = m.UserId
+                }));
+
+            //for (int i = 0; i < memberlist.Count-1; i++)
+            //{
+            //    if (memberlist[i].UserId == chatId)
+            //    {
+            //        msg.Add(new MessageConfig
+            //        {
+            //            Answer = String.Format(Answers.MoveGo.RandomAnswer(), username) + '\n' + s,
+            //            PlayerId = memberlist[i].UserId,
+            //        });
+            //    }
+            //    else
+            //    {
+            //        msg.Add(new MessageConfig
+            //        {
+            //            Answer = String.Format(AnswersForOther.MoveGo.RandomAnswer(), username, Extensions.DirectionToString(direction)) + s,
+
+            //            PlayerId = memberlist[i].UserId
+            //        });
+            //    }
+            //}
+
             return msg;
         }
 
         public static List<MessageConfig> TryChangeName(string username, int playerId)
         {
-            var loginRegex = new Regex("^[a-zA-Zа-яА-Я][a-zA-Zа-яА-Я0-9]{2,9}$");
+            var loginRegex = new Regex("^[a-zA-Zа-яА-Я][a-zA-Zа-яА-Я0-9]{3,15}$");
             List<MessageConfig> msg = new List<MessageConfig>();
             if (loginRegex.Match(username).Success == false)
             {
                 msg.Add(new MessageConfig
                 {
                     PlayerId = playerId,
-                    Answer = $"Используются неразрешенные символы"
+                    Answer = $"Имя персонажа может содержать буквы *A-Z*, *А-Я*, английского и русского алфавита, а также *цифры*. Длинна ника не должно превышать *15* символов, и не должна быть короче *3-x*"
                 });
                 return msg;
             }
@@ -373,7 +446,7 @@ namespace MazeGenerator.TelegramBot
                 msg.Add(new MessageConfig
                 {
                     PlayerId = playerId,
-                    Answer = $"Имя существует"
+                    Answer = $"Такой ник уже существует"
                 });
                 return msg;
             }

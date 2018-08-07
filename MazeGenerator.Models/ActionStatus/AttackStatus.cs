@@ -7,6 +7,7 @@ namespace MazeGenerator.Models.ActionStatus
         public AttackType Result { get; set; }
         public Player Target { get; set; }
         public bool ShootCount { get; set; }
+        public bool PickChest { get; set; }
 
     }
 }

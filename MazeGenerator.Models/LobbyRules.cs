@@ -30,9 +30,7 @@ namespace MazeGenerator.Models
                 PlayerMaxGuns = 2,
                 PlayerMaxBombs = 3,
                 BanTime = TimeSpan.FromDays(1),
-                PlayersCount = 1,
-
-
+                PlayersCount = 2,
             };
         }
         public static LobbyRules Test()

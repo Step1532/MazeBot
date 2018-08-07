@@ -46,8 +46,8 @@ namespace MazeGenerator.Core.GameGenerator
             for (var i = 0; i < lobby.Rules.HospitalCount; i++)
                 AddEvent(EventTypeEnum.Hospital, lobby);
             for (var i = 0; i < lobby.Rules.FalseGoldCount; i++)
-                AddEventChest(lobby, false);
-            AddEventChest(lobby, true);
+                AddEventChest(lobby, false, 0);
+            AddEventChest(lobby, true, 1);
         }
 
         private static void AddEvent(EventTypeEnum eventType, Lobby lobby)
@@ -74,7 +74,7 @@ namespace MazeGenerator.Core.GameGenerator
             lobby.Maze[coordinate.X, coordinate.Y] = 0;
         }
 
-        private static void AddEventChest(Lobby lobby, bool Istrue)
+        private static void AddEventChest(Lobby lobby, bool Istrue, int id)
         {
             Coordinate coordinate;
             do
@@ -83,7 +83,7 @@ namespace MazeGenerator.Core.GameGenerator
             } while (CheckCoordinateEvents(lobby, coordinate));
 
             lobby.Events.Add(new GameEvent(EventTypeEnum.Chest, coordinate));
-            lobby.Chests.Add(new Treasure(coordinate, Istrue));
+            lobby.Chests.Add(new Treasure(coordinate, Istrue, id));
         }
 
         /// <summary>

@@ -45,6 +45,70 @@ namespace MazeGenerator.TelegramBot
             return status;
         }
 
+        public static List<MessageConfig> BomCommand(int userId, Direction direction)
+        {
+            List<MessageConfig> msg = new List<MessageConfig>();
+            var status = BombCommand(userId, direction);
+            var memberlist = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(userId));
+            if (status.IsOtherTurn)
+            {
+                msg.Add(new MessageConfig
+                {
+                    Answer = String.Format(Answers.NoTurn.RandomAnswer()),
+                    PlayerId = userId
+                });
+                return msg;
+            }
+            var username = status.CurrentPlayer.HeroName;
+            if (status.Result == BombResultType.Wall)
+            {
+                        msg.Add(new MessageConfig
+                        {
+                            Answer = String.Format(AnswersForOther.ResultBombWall.RandomAnswer(), username),
+                            PlayerId = userId
+                        });
+               
+            }
+            else if (status.Result == BombResultType.NoBomb)
+            {
+                msg.Add(new MessageConfig
+                {
+                    Answer = String.Format(Answers.ResultBombNoBomb.RandomAnswer()),
+                    PlayerId = userId
+                });
+                return msg;
+            }
+            else if (status.Result == BombResultType.Void)
+            {
+
+                msg.Add(new MessageConfig
+                {
+                    Answer = String.Format(AnswersForOther.ResultBombVoid.RandomAnswer(), username),
+                    PlayerId =  userId
+                });
+            }
+
+            return msg;
+        }
+        public static BombStatus BombCommand(int userId, Direction direction)
+        {
+            Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
+            var currentPlayer = lobby.Players[lobby.CurrentTurn];
+
+            var bombResult = PlayerLogic.Bomb(lobby, lobby.Players[lobby.CurrentTurn], direction);
+            if (currentPlayer.Bombs == 0)
+            {
+                //TODO: correct keyboard
+                //msg.KeyBoardId = KeyboardType.Bomb;
+            }
+
+            return new BombStatus
+            {
+                CurrentPlayer = currentPlayer,
+                Result = bombResult
+            };
+        }
+
         public static List<MessageConfig> MoveCommand(int chatId, Direction direction)
         {
             var status = MovCommand(chatId, direction);

@@ -44,32 +44,32 @@ namespace MazeGenerator.TelegramBot
 
             //=====
             List<MessageConfig> msg = null;
-            try
-            {
-
-                if (character == null)
-                {
-                    msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
-                }
-                else
-                {
-                    msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
-                }
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
-                return;
-            }
-
-            //if (character == null)
+            //try
             //{
-            //    msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
+
+            //    if (character == null)
+            //    {
+            //        msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
+            //    }
+            //    else
+            //    {
+            //        msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
+            //    }
             //}
-            //else
+            //catch (Exception exception)
             //{
-            //    msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
+            //    Console.WriteLine(exception);
+            //    return;
             //}
+
+            if (character == null)
+            {
+                msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
+            }
+            else
+            {
+                msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
+            }
             if (msg != null)
             {
                 foreach (var item in msg)
@@ -227,7 +227,6 @@ namespace MazeGenerator.TelegramBot
                                 }
                             };
                     }
-                    break;
 
                 case CharacterState.Tutorial:
                     switch (command)
@@ -361,15 +360,6 @@ namespace MazeGenerator.TelegramBot
                                 }
                             };
                         }
-
-                        return new List<MessageConfig>
-                        {
-                            new MessageConfig()
-                            {
-                                Answer = "Вы хотите удалить персонажа? Для удаления напишите *Удаляю* и нажмите /start",
-                                PlayerId = playerId
-                            }
-                        };
                     }
                     return new List<MessageConfig>
                     {

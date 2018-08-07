@@ -11,16 +11,16 @@ namespace MazeGenerator.Core.Services
     {
         private static MemberRepository _memberRepository = new MemberRepository();
         private static LobbyRepository _lobbyRepository = new LobbyRepository();
-
+        private static CharacterRepository _characterRepository = new CharacterRepository();
         public static void StartNewLobby(int playerId)
         {
-            var characters = new CharacterRepository();
-            var character = characters.Read(playerId);
             var gameid = _memberRepository.ReadLobbyId(playerId);
             var players = _memberRepository.ReadMemberList(gameid);
             var lobby = new Lobby(gameid);
+
             foreach (var p in players)
             {
+                var character = _characterRepository.Read(p.UserId);
                 var player = new Player
                 {
                     Rotate = Direction.North,
@@ -63,17 +63,15 @@ namespace MazeGenerator.Core.Services
         public static int EmptyPlaceCount(int userId)
         {
             var players = _memberRepository.ReadLobbyAll();
-            Member lastuser;
             if (players.Count == 0)
             {
                 return LobbyRules.GenerateTemplateRules().PlayersCount;
             }
             else
             {
-                lastuser = players.Last();
+                Member lastuser = players.Last();
                 var users = _memberRepository.ReadLobbyAll().Where(e => e.LobbyId == lastuser.LobbyId);
-                return LobbyRules.GenerateTemplateRules().PlayersCount-users.Count();
-
+                return LobbyRules.GenerateTemplateRules().PlayersCount - users.Count();
             } 
 
         }

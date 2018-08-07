@@ -8,8 +8,8 @@ namespace MazeGenerator.TelegramBot
     {
         public static readonly List<string> MoveGo = new List<string>()
         {
-            "прошел",
-            "go"
+            "{0}прошел{1}",
+            "{0}go{1}"
         };
         public static readonly List<string> UndefinedCommand = new List<string>()
         {
@@ -18,63 +18,63 @@ namespace MazeGenerator.TelegramBot
         };
         public static readonly List<string> MoveWall = new List<string>()
         {
-            "wall",
-            "стена"
+            "wall{0}{1}",
+            "стена{0}{1}"
         };
         public static readonly List<string> MoveArs = new List<string>()
         {
-            "Арсенаал",
-            "arsenal"
+            "Арсенаал{0}{1}",
+            "arsenal{0}{1}"
         };
         public static readonly List<string> MoveHosp = new List<string>()
         {
-            "hospital",
-            "госпиталь"
+            "hospital{0}{1}",
+            "госпиталь{0}{1}"
         };
         public static readonly List<string> MovePlayer = new List<string>()
         {
             "{0}Встретил игрока{1}",
-            "Player"
+            "{0}Player{1}"
         };
         public static readonly List<string> MoveChest = new List<string>()
         {
-            "cундук",
-            "сокров ище"
+            "cундук{0}",
+            "сокров ище{0}"
         };
         public static readonly List<string> ExitFalseChest = new List<string>()
         {
-            "хреновое сокровище",
-            "ложное"
+            "хреновое сокровище{0}",
+            "ложное{0}"
         };
         public static readonly List<string> ShootWall = new List<string>()
         {
-            "увы",
-            "мимо"
+            "увы{0}",
+            "мимо{0}"
         };
         public static readonly List<string> ShootHit = new List<string>()
         {
-            "ранил",
-            "поставил рану"
+            "ранил{0}",
+            "поставил рану{0}"
         };
         public static readonly List<string> SkipTurn = new List<string>()
         {
-            "Ходпропущен",
-            "Ход пропущен"
+            "Ходпропущен{0}",
+            "Ход пропущен{0}"
         };
         public static readonly List<string> ShootKill = new List<string>()
         {
-            "да прольется кровь невинных",
-            "убил х_х"
+            "да прольется кровь невинных{0}",
+            "убил х_х{0}"
         };
         public static readonly List<string> EndGame = new List<string>()
         {
-            "ПППООБЕДДил!",
-            "УРРА!"
+            "ПППООБЕДДил!{0}",
+            "УРРА!{0}"
         };
         public static readonly List<string> AfkPlayer = new List<string>()
         {
-            "AfkPlayer",
-            "Игра расформарована"
+            "AfkPlayer{0}",
+            "Игра расформарована{0}"
         };
         public static readonly List<string> NoTurn = new List<string>()
         {
@@ -88,8 +88,8 @@ namespace MazeGenerator.TelegramBot
         };
         public static readonly List<string> ResultBombVoid = new List<string>()
         {
-            "Взрыв пустоты?",
-            "пусто"
+            "Взрыв пустоты?{0}",
+            "пусто{0}"
         };
         public static readonly List<string> ResultBombNoBomb = new List<string>()
         {
@@ -98,8 +98,8 @@ namespace MazeGenerator.TelegramBot
         };
         public static readonly List<string> ResultBombWall = new List<string>()
         {
-            "Стена взорвана",
-            "стены нет!"
+            "Стена взорвана{0}",
+            "стены нет!{0}"
         };
     }
 

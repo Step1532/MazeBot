@@ -117,8 +117,12 @@ namespace MazeGenerator.Core.Services
 
             if (currentPlayer.Bombs == 0)
             {
-                //TODO: correct keyboard
-                //msg.KeyBoardId = KeyboardType.Bomb;
+                return new BombStatus
+                {
+                    CurrentPlayer = currentPlayer,
+                    Result = bombResult,
+                    BombCount = false
+                };
             }
 
             return new BombStatus
@@ -128,29 +132,42 @@ namespace MazeGenerator.Core.Services
             };
         }
 
-        public static bool SkipTurn(int userId)
+        public static SkipTurnResult SkipTurn(int userId)
         {
             Lobby lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
+            var Result = new SkipTurnResult();
+
             if (LobbyService.CanMakeTurn(lobby, userId) == false)
             {
                 //TODO:
-                return false;
+                Result.CanMakeTurn = false;
+                return Result;
                 //return new BombStatus
                 //{
                 //    IsOtherTurn = true
                 //};
             }
+            if (PlayerLogic.LootChest(lobby, lobby.Players[lobby.CurrentTurn]))
+            {
+                Result.PickChest = true;
+            }
+            else
+            {
+                Result.PickChest = false;
+            }
+
 
             var currentPlayer = lobby.Players[lobby.CurrentTurn];
             LobbyService.EndTurn(lobby);
 
             //TODO:
-            return true;
+            Result.CanMakeTurn = true;
             //return new MessageConfig
             //{
             //    Answer = string.Format(Answers.SkipTurn.RandomAnswer(), res.HeroName),
             //    AnswerForOther = null,
             //};
+            return Result;
         }
 
 

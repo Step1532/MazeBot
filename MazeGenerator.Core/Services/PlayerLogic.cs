@@ -6,6 +6,7 @@ using MazeGenerator.Database;
 using MazeGenerator.Models;
 using MazeGenerator.Models.ActionStatus;
 using MazeGenerator.Models.Enums;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace MazeGenerator.Core.Services
 {
@@ -18,13 +19,21 @@ namespace MazeGenerator.Core.Services
         {
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
             var types = MazeLogic.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby);
+
+            //TODO: debug
             Console.Clear();
             Console.WriteLine(player.UserCoordinate.X + " " + player.UserCoordinate.Y);
+            //===========
+
             if (types.Contains(MazeObjectType.Wall) || types.Contains(MazeObjectType.Space))
                 return new List<PlayerAction> {PlayerAction.OnWall};
 
-            var actions = new List<PlayerAction>();
             player.UserCoordinate -= coord;
+            if (player.Chest != null)
+            {
+                lobby.Chests.Find(e => e.Id == player.Chest.Id).Position = player.UserCoordinate;
+            }
+            var actions = new List<PlayerAction>();
 
             if (types.Contains(MazeObjectType.Event))
             {
@@ -101,6 +110,7 @@ namespace MazeGenerator.Core.Services
         {
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
             var bulletPosition = new Coordinate(player.UserCoordinate.X, player.UserCoordinate.Y);
+
             List<MazeObjectType> type;
             do
             {
@@ -120,9 +130,6 @@ namespace MazeGenerator.Core.Services
                     ShootCount = (player.Guns != 0)
                 };
             }
-
-            if (type.All(t => t != MazeObjectType.Player))
-                throw new Exception("Shoot");
 
             var target = lobby.Players.Find(e => Equals(e.UserCoordinate, bulletPosition));
 
@@ -150,9 +157,12 @@ namespace MazeGenerator.Core.Services
         /// </summary>
         public static BombResultType Bomb(Lobby lobby, Player player, Direction direction)
         {
-            if (player.Bombs <= 0) return BombResultType.NoBomb;
+            if (player.Bombs <= 0)
+                return BombResultType.NoBomb;
             var coord = Extensions.TargetCoordinate(player.Rotate, direction);
+
             player.Bombs--;
+
             if (MazeLogic.CheckLobbyCoordinate(player.UserCoordinate - coord, lobby)
                 .Contains(MazeObjectType.Wall))
             {
@@ -170,12 +180,24 @@ namespace MazeGenerator.Core.Services
                 CurrentPlayer = player
             };
             var target = MazeLogic.PlayersOnCell(player, lobby)?.FirstOrDefault();
+
+            if (LootChest(lobby, player))
+            {
+                stabResult.PickChest = true;
+            }
+            else
+            {
+                stabResult.PickChest = false;
+            }
             if (target == null)
             {
                 stabResult.Result = AttackType.NoAttack;
                 return stabResult;
             }
-
+            if (target.Chest != null)
+            {
+                DropChest(lobby, target);
+            }
             stabResult.Target = target;
             if (target.Health > 1)
             {
@@ -193,8 +215,23 @@ namespace MazeGenerator.Core.Services
         {
             lobby.Events.Add(new GameEvent(EventTypeEnum.Chest,
                 new Coordinate(target.UserCoordinate)));
-            target.Chest.Position = new Coordinate(target.UserCoordinate);
+            var treasure = lobby.Chests.Find(e => e.Id == target.Chest.Id);
+            treasure.Position = new Coordinate(target.UserCoordinate);
             target.Chest = null;
+        }
+
+        public static bool LootChest(Lobby lobby, Player player)
+        {
+            //var types = MazeLogic.CheckLobbyCoordinate(player.UserCoordinate, lobby);
+            var events = MazeLogic.EventsOnCell(player.UserCoordinate, lobby);
+            if (events.Contains(EventTypeEnum.Chest))
+                if (player.Chest == null && player.Health == lobby.Rules.PlayerMaxHealth)
+                {
+                    player.Chest = MazeLogic.PickChest(player.UserCoordinate, lobby, player);
+                    return true;
+                }
+
+            return false;
         }
 
         //TODO: Дописать логику при убийстве
