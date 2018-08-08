@@ -125,7 +125,6 @@ namespace MazeGenerator.Core.Services
                     CurrentPlayer = player,
                     Result = AttackType.NoTarget,
                     Target = null,
-                    ShootCount = (player.Guns != 0)
                 };
             }
 
@@ -146,7 +145,6 @@ namespace MazeGenerator.Core.Services
                 CurrentPlayer = player,
                 Result = AttackType.Hit,
                 Target = target,
-                ShootCount = (player.Guns != 0)
             };
         }
 

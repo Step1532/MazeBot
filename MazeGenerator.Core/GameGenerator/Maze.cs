@@ -11,7 +11,10 @@ namespace MazeGenerator.Core.GameGenerator
 
         public static byte[,] CreateMaze(ushort width, ushort height)
         {
-            var maze = new byte[width, height];
+            int h, w;
+            h = Random.Next(width, height);
+            //w = Random.Next(width, height);
+            var maze = new byte[(ushort)h, (ushort)h];
             GenerateTWMaze_GrowingTree(maze);
             return LineToBlock(maze);
         }

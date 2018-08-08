@@ -64,11 +64,13 @@ namespace MazeGenerator.TelegramBot
 
             if (status.Result == AttackType.NoTarget)
             {
-                msg.Add(new MessageConfig
-                {
-                    Answer = String.Format(Answers.ShootWall.RandomAnswer(), username, Extensions.DirectionToString(direction)),
-                    PlayerId = userId
-                });
+                    msg.Add(new MessageConfig
+                    {
+                        Answer = String.Format(Answers.ShootWall.RandomAnswer(), username,
+                            Extensions.DirectionToString(direction)),
+                        PlayerId = userId,
+                        KeyBoardId = status.KeyboardType
+                    });
 
                 msg.AddRange(memberlist
                     .Where(m => m.UserId != userId)
@@ -94,9 +96,10 @@ namespace MazeGenerator.TelegramBot
                         Answer = config.Item2,
                         PlayerId = m.UserId
                     }));
-            
 
-            if (status.ShootCount == false) msg.Find(e => e.PlayerId == userId).KeyBoardId = KeybordConfiguration.WithoutShootKeyBoard();
+
+            //if (status.ShootCount == false) 
+            msg.Find(e => e.PlayerId == userId).KeyBoardId = status.KeyboardType;
             return msg;
         }
 
@@ -162,7 +165,8 @@ namespace MazeGenerator.TelegramBot
 
                 
             }
-            if (status.BombCount == false) msg.Find(e => e.PlayerId == userId).KeyBoardId = KeybordConfiguration.WithoutBombKeyBoard();
+            //            if (status.BombCount == false) 
+            msg.Find(e => e.PlayerId == userId).KeyBoardId = status.KeyboardId;
 
             return msg;
 
@@ -380,12 +384,21 @@ namespace MazeGenerator.TelegramBot
                     messageList.Add(String.Format(Answers.MovePlayer.RandomAnswer(), username, player.HeroName));
 
             s = string.Join("\n", messageList);
-
+            if(status.PlayerActions.Contains(PlayerAction.OnArsenal))
             msg.Add(new MessageConfig
             {
                 Answer = String.Format(Answers.MoveGo.RandomAnswer(), username) + '\n' + s,
-                PlayerId = chatId
+                PlayerId = chatId,
+                KeyBoardId  = KeyboardType.ShootwithBomb
             });
+            else
+            {
+                msg.Add(new MessageConfig
+                {
+                    Answer = String.Format(Answers.MoveGo.RandomAnswer(), username) + '\n' + s,
+                    PlayerId = chatId,
+                });
+            }
 
             msg.AddRange(memberlist
                 .Where(m => m.UserId != chatId)
@@ -473,7 +486,7 @@ namespace MazeGenerator.TelegramBot
                 {
                     Answer = "Игра начата",
                     PlayerId = memberlist[i].UserId,
-                    KeyBoardId = KeybordConfiguration.NewKeyBoard()
+                    KeyBoardId = KeyboardType.Move
                 });
             }
             foreach (var item in memberlist.Select(e => e.UserId))

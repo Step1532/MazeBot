@@ -20,7 +20,8 @@ namespace MazeGenerator.Models
         {
             return new LobbyRules
             {
-                Size = new Coordinate(3, 3),
+                //                Size = new Coordinate(3, 3),
+                Size = new Coordinate(5, 10),
                 ExitCount = 1,
                 ArsenalCount = 1,
                 HospitalCount = 1,
@@ -30,7 +31,7 @@ namespace MazeGenerator.Models
                 PlayerMaxGuns = 2,
                 PlayerMaxBombs = 3,
                 BanTime = TimeSpan.FromDays(1),
-                PlayersCount = 2,
+                PlayersCount = 1,
             };
         }
         public static LobbyRules Test()

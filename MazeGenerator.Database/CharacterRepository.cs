@@ -37,7 +37,7 @@ namespace MazeGenerator.Database
 
         public Character Read(int telegranUserId)
         {
-            return ReadAll()
+            return ReadAll()?
                 .Find(e => e.TelegramUserId == telegranUserId);
         }
 

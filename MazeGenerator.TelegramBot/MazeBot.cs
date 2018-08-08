@@ -76,7 +76,7 @@ namespace MazeGenerator.TelegramBot
             {
                 if (item.KeyBoardId != null)
                 {
-                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false,false,0, item.KeyBoardId);
+                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false,false,0, GetKeyboardMarkup(item.KeyBoardId));
                 }
                 else
                 {
@@ -148,7 +148,7 @@ namespace MazeGenerator.TelegramBot
                 case KeyboardType.ShootwithBomb:
                     return KeybordConfiguration.NewKeyBoard();
                 default:
-                    throw new ArgumentException(keyBoardId.ToString());
+                    return null;
             }
         }
 
@@ -160,7 +160,7 @@ namespace MazeGenerator.TelegramBot
             {
                 if (item.KeyBoardId != null)
                 {
-                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false, false, 0, item.KeyBoardId);
+                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false, false, 0, GetKeyboardMarkup(item.KeyBoardId));
                 }
                 else
                 {
@@ -176,7 +176,7 @@ namespace MazeGenerator.TelegramBot
             {
                 if (item.KeyBoardId != null)
                 {
-                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false, false, 0, item.KeyBoardId);
+                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false, false, 0, GetKeyboardMarkup(item.KeyBoardId));
                 }
                 else
                 {

@@ -1,4 +1,5 @@
-﻿using Telegram.Bot.Types.ReplyMarkups;
+﻿using MazeGenerator.Models.Enums;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace MazeGenerator.TelegramBot.Models
 {
@@ -6,6 +7,6 @@ namespace MazeGenerator.TelegramBot.Models
     {
         public string Answer { get; set; }
         public int PlayerId { get; set; }
-        public ReplyKeyboardMarkup KeyBoardId { get; set; }
+        public KeyboardType KeyBoardId { get; set; }
     }
 }

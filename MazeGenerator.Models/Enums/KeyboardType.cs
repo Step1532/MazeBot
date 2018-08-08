@@ -2,6 +2,7 @@
 {
     public enum KeyboardType
     {
+        NoKeyboard,
         Move,
         Shoot,
         Bomb,

@@ -53,8 +53,9 @@ namespace MazeGenerator.Core.Services
                 IsOtherTurn = false,
                 IsGameEnd = false,
                 CurrentPlayer = currentPlayer,
-                    PlayerActions = actionList
+                PlayerActions = actionList
             };
+
             if (actionList.Contains(PlayerAction.MeetPlayer))
             {
                 status.PlayersOnSameCell = MazeLogic.PlayersOnCell(currentPlayer, lobby);
@@ -75,8 +76,11 @@ namespace MazeGenerator.Core.Services
 
             var currentPlayer = lobby.Players[lobby.CurrentTurn];
             var shootResult = PlayerLogic.TryShoot(lobby, currentPlayer, direction);
-
             LobbyService.EndTurn(lobby);
+            if (currentPlayer.Guns == 0)
+                shootResult.KeyboardType = KeyboardType.Bomb;
+            if (currentPlayer.Guns == 0 && currentPlayer.Bombs == 0)
+                shootResult.KeyboardType  = KeyboardType.Move;
             return shootResult;
         }
 
@@ -113,20 +117,29 @@ namespace MazeGenerator.Core.Services
             var bombResult = PlayerLogic.Bomb(lobby, currentPlayer, direction);
             LobbyService.EndTurn(lobby);
 
+            if (currentPlayer.Bombs == 0 &&  currentPlayer.Guns == 0)
+            {
+                return new BombStatus
+                {
+                    CurrentPlayer = currentPlayer,
+                    Result = bombResult,
+                    KeyboardId = KeyboardType.Move
+                };
+            }
             if (currentPlayer.Bombs == 0)
             {
                 return new BombStatus
                 {
                     CurrentPlayer = currentPlayer,
                     Result = bombResult,
-                    BombCount = false
+                    KeyboardId = KeyboardType.Shoot
                 };
             }
 
             return new BombStatus
             {
                 CurrentPlayer = currentPlayer,
-                Result = bombResult
+                Result = bombResult,
             };
         }
 
