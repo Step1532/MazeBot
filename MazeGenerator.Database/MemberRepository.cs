@@ -28,12 +28,25 @@ namespace MazeGenerator.Database
             {
                 LobbyId = lobbyId,
                 UserId = userId,
-                LanguageId = 0
+                LanguageId = 0,
+                IsLobbyActive = false
             };
             ls.Add(member);
 
             File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(ls));
         }
+        public void Update(List<Member> members)
+        {
+            List<Member> ls = new List<Member>();
+            ls = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
+            foreach (var item in members)
+            {
+                ls.Remove(ls.Find(e => e.UserId == item.UserId));
+                ls.Add(item);
+            }
+            File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(ls));
+        }
+
 
         public List<Member> ReadMemberList(int lobbyId)
         {

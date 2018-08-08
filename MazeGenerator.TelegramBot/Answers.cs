@@ -7,13 +7,19 @@ namespace MazeGenerator.TelegramBot
     {
         public static readonly List<string> MoveGo = new List<string>()
         {
-            "прошел",
-            "go"
+            "Тебе снова везет, ты смог пройти дальше",
+            "И снова прошел",
+            "Идем дальше, впереди нет преград",
+            "Понемногу продвигаемся",
+            "А ты везунчик, прошел",
+            "Прошел",
         };
         public static readonly List<string> UndefinedCommand = new List<string>()
         {
-            "неизвестная команда",
-            "что ты написал?"
+            "Неизвестная команда",
+            "Такой команды нет",
+            "Непонимаю, скажи иначе",
+            "Я твоя не понимать",
         };
         public static readonly List<string> MoveWall = new List<string>()
         {

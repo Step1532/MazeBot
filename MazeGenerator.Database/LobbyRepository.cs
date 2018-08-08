@@ -24,6 +24,8 @@ namespace MazeGenerator.Database
 
         public Lobby Read(int lobbyId)
         {
+            if (File.Exists(LobbyFile(lobbyId)) == false)
+                return null;
             return JsonConvert.DeserializeObject<Lobby>(File.ReadAllText(LobbyFile(lobbyId)));
         }
 

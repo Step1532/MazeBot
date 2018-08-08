@@ -194,6 +194,10 @@ namespace MazeGenerator.Core.Services
                 stabResult.Result = AttackType.Hit;
                 return stabResult;
             }
+            else
+            {
+                KillPlayer(lobby, target);
+            }
 
             //TODO: Добавить победу
             //TODO: А еще лучше писать метод, который будет определять, что остался один игрок
@@ -230,6 +234,8 @@ namespace MazeGenerator.Core.Services
         private static void KillPlayer(Lobby lobby, Player target)
         {
             CharacterRepository repo = new CharacterRepository();
+            MemberRepository members = new MemberRepository();
+            members.DeleteOne(target.TelegramUserId);
             var character = repo.Read(target.TelegramUserId);
             character.State = CharacterState.ChangeGameMode;
             repo.Update(character);

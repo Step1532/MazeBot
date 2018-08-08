@@ -451,7 +451,7 @@ namespace MazeGenerator.TelegramBot
         {
             var members = new MemberRepository();
             var characterRepository = new CharacterRepository();
-
+            var lobyRepository = new LobbyRepository();
             var msg = new List<MessageConfig>();
             if (LobbyService.CheckLobby(playerId))
             {
@@ -489,6 +489,13 @@ namespace MazeGenerator.TelegramBot
                     KeyBoardId = KeyboardType.Move
                 });
             }
+            List<Member> ls = new List<Member>();
+            foreach (var item in members.ReadMemberList(members.ReadLobbyId(playerId)))
+            {
+                item.IsLobbyActive = true;
+                ls.Add(item);
+            }
+            members.Update(ls);
             foreach (var item in memberlist.Select(e => e.UserId))
             {
                 var character = characterRepository.Read(item);

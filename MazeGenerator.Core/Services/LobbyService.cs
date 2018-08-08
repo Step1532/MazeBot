@@ -44,19 +44,30 @@ namespace MazeGenerator.Core.Services
         public static void AddUser(int userId)
         {
             var members = _memberRepository.ReadLobbyAll();
+            LobbyRepository lobby = new LobbyRepository();
             if (members.Count == 0)
             {
                 _memberRepository.Create(1, userId);
-                return;
-            }
-            var  member =  members.Last();
-            if (EmptyPlaceCount(member.UserId) == 0)
-            {
-                _memberRepository.Create(member.LobbyId+1, userId);
+
             }
             else
             {
-                _memberRepository.Create(member.LobbyId, userId);
+                var member = members.Last();
+                if (member.IsLobbyActive == false)
+                {
+                    if (EmptyPlaceCount(member.UserId) == 0)
+                    {
+                        _memberRepository.Create(member.LobbyId + 1, userId);
+                    }
+                    else
+                    {
+                        _memberRepository.Create(member.LobbyId, userId);
+                    }
+                }
+                else
+                {
+                    _memberRepository.Create(member.LobbyId + 1, userId);
+                }
             }
         }
 
