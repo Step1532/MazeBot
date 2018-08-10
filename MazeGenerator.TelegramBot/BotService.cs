@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
@@ -281,7 +282,7 @@ namespace MazeGenerator.TelegramBot
             var lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(playerid));
             var res = DateTime.Now.Subtract(lobby.TimeLastMsg);
             //TODO: засчитывать игроку бан
-                List<MessageConfig> msg = new List<MessageConfig>();
+            List<MessageConfig> msg = new List<MessageConfig>();
             if (TimeSpan.Compare(lobby.Rules.BanTime, res) == -1)
             {
                 lobby.IsActive = false;
@@ -297,6 +298,38 @@ namespace MazeGenerator.TelegramBot
             msg.Add(new MessageConfig
             {
                 Answer = "Дождитесь 24 часа после последнего сообщения",
+                PlayerId = playerid,
+            });
+            return msg;
+        }
+        //todo
+        public static List<MessageConfig> LeaveCommand(int playerid)
+        {
+            List<MessageConfig> msg = new List<MessageConfig>();
+            var lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(playerid));
+            var ls = lobby.Players.Select(e => e.TelegramUserId).ToList();
+            foreach (var item in ls)
+            {
+                var hero = CharacterRepository.Read(item);
+                hero.State = CharacterState.ChangeGameMode;
+                CharacterRepository.Update(hero);
+                msg.Add(new MessageConfig
+                {
+                    //todo answer
+                    Answer = String.Format(Answers.AfkPlayer.RandomAnswer()),
+                    PlayerId = playerid,
+                });
+            }
+            var res = DateTime.Now;
+            var c = CharacterRepository.Read(playerid);
+            c.State = CharacterState.Ban;
+            c.BanTime = res;
+            CharacterRepository.Update(c);
+            lobby.IsActive = false;
+            MemberRepository.Delete(lobby.GameId);
+            msg.Add(new MessageConfig
+            {
+                Answer = "Напишите подтверждение",
                 PlayerId = playerid,
             });
             return msg;

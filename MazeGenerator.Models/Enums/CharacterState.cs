@@ -7,6 +7,8 @@
         ChangeGameMode,
         Tutorial,
         FindGame,
-        InGame
+        InGame,
+        AcceptLeave,
+        Ban
     }
 }

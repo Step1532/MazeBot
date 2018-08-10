@@ -11,6 +11,7 @@ namespace MazeGenerator.Models
         public string CharacterName { get; set; }
         public int Experience { get; set; }
         public CharacterState State { get; set; }
+        public DateTime  BanTime { get; set; }
 
         public Character()
         {

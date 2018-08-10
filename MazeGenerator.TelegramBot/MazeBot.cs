@@ -205,7 +205,14 @@ namespace MazeGenerator.TelegramBot
                             MemberRepository memberRepository = new MemberRepository();
                             memberRepository.Create(0, playerId);
                             var lobby = lobbyRepository.Read(0);
-                            lobby.Players.Add(new Player{ Health = 3, HeroName = character.CharacterName, Rotate = Direction.North, TelegramUserId = playerId, UserCoordinate = new Coordinate(3, 3)});
+                            lobby.Players.Add(new Player
+                            {
+                                Health = 3,
+                                HeroName = character.CharacterName,
+                                Rotate = Direction.North,
+                                TelegramUserId = playerId,
+                                UserCoordinate = new Coordinate(3, 3)
+                            });
                             lobbyRepository.Update(lobby);
                             character.State = CharacterState.Tutorial;
                             _characterRepository.Update(character);
@@ -214,7 +221,7 @@ namespace MazeGenerator.TelegramBot
                                 new MessageConfig()
                                 {
                                     Answer = "Обучение",
-                                    PlayerId =  playerId
+                                    PlayerId = playerId
                                 }
                             };
                         default:
@@ -223,7 +230,7 @@ namespace MazeGenerator.TelegramBot
                                 new MessageConfig()
                                 {
                                     Answer = "неверная команда",
-                                    PlayerId =  playerId
+                                    PlayerId = playerId
                                 }
                             };
                     }
@@ -241,7 +248,8 @@ namespace MazeGenerator.TelegramBot
                             return TutorialService.MoveCommand(playerId, Direction.West);
                         case "Взрыв стены":
                             var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
-                            BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
+                            BotClient.SendTextMessageAsync(playerId, "Выбирай направление",
+                                replyMarkup: inlineKeyboard);
                             BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
                             return null;
                         case "/skip":
@@ -259,7 +267,7 @@ namespace MazeGenerator.TelegramBot
                                 new MessageConfig()
                                 {
                                     Answer = "Обучение пропущено",
-                                    PlayerId =  playerId
+                                    PlayerId = playerId
                                 }
                             };
                         default:
@@ -268,7 +276,7 @@ namespace MazeGenerator.TelegramBot
                                 new MessageConfig()
                                 {
                                     Answer = "Неверная команда",
-                                    PlayerId =  playerId
+                                    PlayerId = playerId
                                 }
                             };
                     }
@@ -280,7 +288,7 @@ namespace MazeGenerator.TelegramBot
                             throw new NotImplementedException();
                         case "/stop":
                             _characterRepository.Read(playerId);
-                            MemberRepository repo =new MemberRepository();
+                            MemberRepository repo = new MemberRepository();
                             var character = _characterRepository.Read(playerId);
                             character.State = CharacterState.ChangeGameMode;
                             _characterRepository.Update(character);
@@ -290,7 +298,7 @@ namespace MazeGenerator.TelegramBot
                                 new MessageConfig()
                                 {
                                     Answer = "Вы удалены из очереди",
-                                    PlayerId =  playerId
+                                    PlayerId = playerId
                                 }
                             };
                         default:
@@ -299,7 +307,7 @@ namespace MazeGenerator.TelegramBot
                                 new MessageConfig()
                                 {
                                     Answer = "Неверная команда",
-                                    PlayerId =  playerId
+                                    PlayerId = playerId
                                 }
                             };
                     }
@@ -322,19 +330,23 @@ namespace MazeGenerator.TelegramBot
                         case "Выстрел":
                         {
                             var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
-                            BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
+                            BotClient.SendTextMessageAsync(playerId, "Выбирай направление",
+                                replyMarkup: inlineKeyboard);
                             BotClient.OnCallbackQuery += BotClient_OnCallbackQueryShoot;
                             return null;
                         }
                         case "Взрыв стены":
                         {
                             var inlineKeyboard = KeybordConfiguration.ChooseDirectionKeyboard();
-                            BotClient.SendTextMessageAsync(playerId, "Выбирай направление", replyMarkup: inlineKeyboard);
+                            BotClient.SendTextMessageAsync(playerId, "Выбирай направление",
+                                replyMarkup: inlineKeyboard);
                             BotClient.OnCallbackQuery += BotClient_OnCallbackQueryBomb;
                             return null;
                         }
                         case "/afk":
                             return BotService.AfkCommand(playerId);
+                        case "/leave":
+                            return BotService.LeaveCommand(playerId);
                     }
 
                     return new List<MessageConfig>
@@ -342,7 +354,7 @@ namespace MazeGenerator.TelegramBot
                         new MessageConfig()
                         {
                             Answer = Answers.UndefinedCommand.RandomAnswer(),
-                            PlayerId =  playerId
+                            PlayerId = playerId
                         }
                     };
 
@@ -362,6 +374,7 @@ namespace MazeGenerator.TelegramBot
                             };
                         }
                     }
+
                     return new List<MessageConfig>
                     {
                         new MessageConfig()
@@ -370,11 +383,34 @@ namespace MazeGenerator.TelegramBot
                             PlayerId = playerId
                         }
                     };
+                case CharacterState.AcceptLeave:
+                    if (command == "Подтверждаю")
+                    {
+                        return new List<MessageConfig>
+                        {
+                            new MessageConfig()
+                            {
+                                Answer = "Забанены",
+                                PlayerId = playerId
+                            }
+                        };
+                    }
+                    break;
+                case CharacterState.Ban:
+                    return new List<MessageConfig>
+                    {
+                        new MessageConfig()
+                        {
+                            Answer = "В бане",
+                            PlayerId = playerId
+                        }
+                    };
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
-               
+
             }
+            throw new ArgumentOutOfRangeException(nameof(state), state, null);
         }
     }
 }

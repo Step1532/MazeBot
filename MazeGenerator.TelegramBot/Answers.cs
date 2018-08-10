@@ -23,7 +23,7 @@ namespace MazeGenerator.TelegramBot
         };
         public static readonly List<string> MoveWall = new List<string>()
         {
-            "wall",
+            "Впереди стена. Кто знает, может она Великая...",
             "стена"
         };
         public static readonly List<string> MoveArs = new List<string>()
