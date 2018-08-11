@@ -202,7 +202,8 @@ namespace MazeGenerator.Core.Services
             //TODO: Добавить победу
             //TODO: А еще лучше писать метод, который будет определять, что остался один игрок
             //stabResult.IsGameEnd ==...
-            lobby.Players.Remove(target);
+            KillPlayer(lobby, target);
+            //lobby.Players.Remove(target);
             stabResult.Result = AttackType.Kill;
             return stabResult;
         }

@@ -35,14 +35,12 @@ namespace MazeGenerator.Database
 
             File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(ls));
         }
-        public void Update(List<Member> members)
+        public void Update(Member members)
         {
-            List<Member> ls = new List<Member>();
-            ls = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
-            foreach (var item in members)
-            {
-                ls.Find(e => e.UserId == item.UserId).LobbyId = item.LobbyId;
-            }
+            var ls = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
+            ls.Find(e => e.UserId == members.UserId).LobbyId = members.LobbyId;
+            ls.Find(e => e.UserId == members.UserId).IsLobbyActive = members.IsLobbyActive;
+            ls.Find(e => e.UserId == members.UserId).LanguageId = members.LanguageId;
             File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(ls));
         }
 

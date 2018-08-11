@@ -526,22 +526,17 @@ namespace MazeGenerator.TelegramBot
             var memberlist = members.ReadMemberList(
             members.ReadLobbyId(playerId));
 
-            for (int i = 0; i < memberlist.Count; i++)
+            foreach (var item in memberlist)
             {
                 msg.Add(new MessageConfig
                 {
                     Answer = "Игра начата",
-                    PlayerId = memberlist[i].UserId,
+                    PlayerId = item.UserId,
                     KeyBoardId = KeyboardType.Move
                 });
-            }
-            List<Member> ls = new List<Member>();
-            foreach (var item in members.ReadMemberList(members.ReadLobbyId(playerId)))
-            {
                 item.IsLobbyActive = true;
-                ls.Add(item);
+                members.Update(item);
             }
-            members.Update(ls);
             foreach (var item in memberlist.Select(e => e.UserId))
             {
                 var character = characterRepository.Read(item);
@@ -549,7 +544,7 @@ namespace MazeGenerator.TelegramBot
                 characterRepository.Update(character);
             }
 
-            msg.Find(e => e.PlayerId == members.ReadMemberList(members.ReadLobbyId(playerId)).First().UserId).Answer += "Ваш ход";
+            msg.Find(e => e.PlayerId == members.ReadMemberList(members.ReadLobbyId(playerId)).First().UserId).Answer += " Ваш ход";
             return msg;
         }
     }
