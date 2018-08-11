@@ -28,25 +28,19 @@ namespace MazeGenerator.TelegramBot
             }
         }
 
-        public static MessageConfig MessageOnStab(AttackType status, string username)
+        public static (string, string) MessageOnStab(AttackType status, string username, string username2)
         {
             switch (status)
             {
                 case AttackType.NoTarget:
-                    return new MessageConfig
-                    {
-                        Answer = string.Format(Answers.ShootWall.RandomAnswer(), username),
-                    };
+                    return (string.Format(Answers.StabWall.RandomAnswer(), username, username2),
+                        string.Format(AnswersForOther.StabWall.RandomAnswer(), username, username2));
                 case AttackType.Kill:
-                    return new MessageConfig
-                    {
-                        Answer = string.Format(Answers.ShootKill.RandomAnswer(), username),
-                    };
+                    return (string.Format(Answers.StabKill.RandomAnswer(), username, username2),
+                        string.Format(AnswersForOther.StabKill.RandomAnswer(), username, username2));
                 case AttackType.Hit:
-                    return new MessageConfig
-                    {
-                        Answer = string.Format(Answers.ShootHit.RandomAnswer(), username),
-                    };
+                    return (string.Format(Answers.StabHit.RandomAnswer(), username, username2),
+                        string.Format(AnswersForOther.StabHit.RandomAnswer(), username, username2));
             }
 
             throw new ArgumentException(status.ToString());

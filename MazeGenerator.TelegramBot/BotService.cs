@@ -107,8 +107,8 @@ namespace MazeGenerator.TelegramBot
         public static List<MessageConfig> BombCommand(int userId, Direction direction)
         {
             List<MessageConfig> msg = new List<MessageConfig>();
-            var status = GameCommandService.BombCommand(userId, direction);
             var memberlist = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(userId));
+            var status = GameCommandService.BombCommand(userId, direction);
             if (status.IsOtherTurn)
             {
                 msg.Add(new MessageConfig
@@ -216,9 +216,20 @@ namespace MazeGenerator.TelegramBot
             }
 
 
-            var config = StatusToMessage.MessageOnStab(status.Result, username);
-            config.PlayerId = userId;
-            msg.Add(config);
+            var config = StatusToMessage.MessageOnStab(status.Result, username, status.Target.HeroName);
+            msg.Add(new MessageConfig
+            {
+                Answer = config.Item1,
+                PlayerId = userId
+            });
+
+            msg.AddRange(memberlist
+                .Where(m => m.UserId != userId)
+                .Select(m => new MessageConfig
+                {
+                    Answer = config.Item2,
+                    PlayerId = m.UserId
+                }));
             return msg;
         }
 
@@ -425,11 +436,10 @@ namespace MazeGenerator.TelegramBot
                     messageList.Add(newString);
             }
 
-            if (status.PlayersOnSameCell != null)
-                foreach (var player in status.PlayersOnSameCell)
-                    messageList.Add(String.Format(Answers.MovePlayer.RandomAnswer(), username, player.HeroName));
 
-            s = string.Join("\n", messageList);
+                 //   messageList.Add(String.Format(Answers.MovePlayer.RandomAnswer(), username, player.HeroName));
+
+            s = string.Join("\\n", messageList);
             if(status.PlayerActions.Contains(PlayerAction.OnArsenal))
             msg.Add(new MessageConfig
             {
@@ -452,8 +462,26 @@ namespace MazeGenerator.TelegramBot
                 {
                     Answer = String.Format(AnswersForOther.MoveGo.RandomAnswer(), username, Extensions.DirectionToString(direction)) + s,
                     PlayerId = m.UserId
-                })); 
+                }));
+            if (status.PlayersOnSameCell != null)
+            {
+                foreach (var player in status.PlayersOnSameCell)
+                {
+                    msg.Add(new MessageConfig
+                    {
+                        Answer = String.Format(Answers.MovePlayer.RandomAnswer(), player.HeroName) + '\n',
+                        PlayerId = chatId
+                    });
 
+                    msg.AddRange(memberlist
+                        .Where(m => m.UserId != chatId)
+                        .Select(m => new MessageConfig
+                        {
+                            Answer = String.Format(AnswersForOther.MovePlayer.RandomAnswer(), username, player.HeroName, Extensions.DirectionToString(direction)),
+                            PlayerId = m.UserId
+                        }));
+                }
+            }
             return msg;
         }
 
