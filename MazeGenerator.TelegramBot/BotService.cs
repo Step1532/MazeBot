@@ -329,6 +329,19 @@ namespace MazeGenerator.TelegramBot
             MemberRepository.Delete(lobby.GameId);
             msg.Add(new MessageConfig
             {
+                Answer = "Вы забанены",
+                PlayerId = playerid,
+            });
+            return msg;
+        }
+        public static List<MessageConfig> TryLeaveCommand(int playerid)
+        {
+            List<MessageConfig> msg = new List<MessageConfig>();
+            var c = CharacterRepository.Read(playerid);
+            c.State = CharacterState.AcceptLeave;
+            CharacterRepository.Update(c);
+            msg.Add(new MessageConfig
+            {
                 Answer = "Напишите подтверждение",
                 PlayerId = playerid,
             });

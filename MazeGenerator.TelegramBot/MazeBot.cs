@@ -346,7 +346,7 @@ namespace MazeGenerator.TelegramBot
                         case "/afk":
                             return BotService.AfkCommand(playerId);
                         case "/leave":
-                            return BotService.LeaveCommand(playerId);
+                            return BotService.TryLeaveCommand(playerId);
                     }
 
                     return new List<MessageConfig>
@@ -386,16 +386,19 @@ namespace MazeGenerator.TelegramBot
                 case CharacterState.AcceptLeave:
                     if (command == "Подтверждаю")
                     {
+                        return BotService.LeaveCommand(playerId);
+                    }
+                    else
+                    {
                         return new List<MessageConfig>
                         {
-                            new MessageConfig()
+                            new MessageConfig
                             {
-                                Answer = "Забанены",
+                                Answer = "Не подтверждено",
                                 PlayerId = playerId
                             }
                         };
                     }
-                    break;
                 case CharacterState.Ban:
                     return new List<MessageConfig>
                     {

@@ -41,8 +41,7 @@ namespace MazeGenerator.Database
             ls = JsonConvert.DeserializeObject<List<Member>>(File.ReadAllText(UsersFilePath));
             foreach (var item in members)
             {
-                ls.Remove(ls.Find(e => e.UserId == item.UserId));
-                ls.Add(item);
+                ls.Find(e => e.UserId == item.UserId).LobbyId = item.LobbyId;
             }
             File.WriteAllText(UsersFilePath, JsonConvert.SerializeObject(ls));
         }
