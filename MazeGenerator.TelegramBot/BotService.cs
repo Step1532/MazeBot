@@ -12,6 +12,7 @@ using MazeGenerator.Models;
 using MazeGenerator.Models.ActionStatus;
 using MazeGenerator.Models.Enums;
 using MazeGenerator.TelegramBot.Models;
+using Telegram.Bot.Requests;
 
 namespace MazeGenerator.TelegramBot
 {
@@ -39,6 +40,8 @@ namespace MazeGenerator.TelegramBot
 
             var username = status.CurrentPlayer.HeroName;
             var memberlist = MemberRepository.ReadMemberList(MemberRepository.ReadLobbyId(userId));
+            var lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
+            var nextPlayer = lobby.Players[lobby.CurrentTurn];
             if (status.Result == AttackType.NoAttack)
             {
                 for (int i = 0; i < memberlist.Count; i++)
@@ -60,6 +63,7 @@ namespace MazeGenerator.TelegramBot
                         });
                     }
                 }
+                msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
                 return msg;
             }
 
@@ -80,6 +84,7 @@ namespace MazeGenerator.TelegramBot
                         Answer = String.Format(AnswersForOther.ShootWall.RandomAnswer(), username, Extensions.DirectionToString(direction)),
                         PlayerId = m.UserId
                     }));
+                msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
                 return msg;
             }
             var config = StatusToMessage.MessageOnShoot(status.Result, username, status.Target.HeroName,
@@ -101,6 +106,7 @@ namespace MazeGenerator.TelegramBot
 
             //if (status.ShootCount == false) 
             msg.Find(e => e.PlayerId == userId).KeyBoardId = status.KeyboardType;
+                msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
             return msg;
         }
 
@@ -119,6 +125,8 @@ namespace MazeGenerator.TelegramBot
                 return msg;
             }
 
+            var lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
+            var nextPlayer = lobby.Players[lobby.CurrentTurn];
             var username = status.CurrentPlayer.HeroName;
             if (status.Result == BombResultType.Wall)
             {
@@ -169,6 +177,7 @@ namespace MazeGenerator.TelegramBot
             //            if (status.BombCount == false) 
             msg.Find(e => e.PlayerId == userId).KeyBoardId = status.KeyboardId;
 
+                msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
             return msg;
 
         }
@@ -178,6 +187,8 @@ namespace MazeGenerator.TelegramBot
             //TODO: Назвать все userId и playerId в одном стиле
             var status = GameCommandService.StabCommand(userId);
             List<MessageConfig> msg = new List<MessageConfig>();
+            var lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(userId));
+            var nextPlayer = lobby.Players[lobby.CurrentTurn];
             if (status.IsOtherTurn)
             {
                 msg.Add(new MessageConfig
@@ -212,6 +223,7 @@ namespace MazeGenerator.TelegramBot
                     }
                 }
 
+                msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
                 return msg;
             }
 
@@ -243,6 +255,8 @@ namespace MazeGenerator.TelegramBot
 
             List<MessageConfig> msg = new List<MessageConfig>();
             //TODO
+            var lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
+            var nextPlayer = lobby.Players[lobby.CurrentTurn];
             if (res.CanMakeTurn)
             {
                 if (res.PickChest)
@@ -277,6 +291,7 @@ namespace MazeGenerator.TelegramBot
                             PlayerId = m.UserId
                         }));
                 }
+                msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
                 return msg;
             }
             msg.Add(new MessageConfig
@@ -403,10 +418,11 @@ namespace MazeGenerator.TelegramBot
                         });
                     }
                 }
-
                 return msg;
             }
 
+            var lobby = LobbyRepository.Read(MemberRepository.ReadLobbyId(chatId));
+            var nextPlayer = lobby.Players[lobby.CurrentTurn];
             if (status.PlayerActions.Contains(PlayerAction.OnWall))
             {
                 msg.Add(new MessageConfig
@@ -422,7 +438,8 @@ namespace MazeGenerator.TelegramBot
                         Answer = String.Format(AnswersForOther.MoveWall.RandomAnswer(), username, Extensions.DirectionToString(direction)),
                         PlayerId = m.UserId
                     }));
-
+//TODO OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO))))))))))))))))))))
+                msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
                 return msg;
             }
 
@@ -465,23 +482,29 @@ namespace MazeGenerator.TelegramBot
                 }));
             if (status.PlayersOnSameCell != null)
             {
+                string answ1 = "", answ2 = "";
                 foreach (var player in status.PlayersOnSameCell)
                 {
-                    msg.Add(new MessageConfig
-                    {
-                        Answer = String.Format(Answers.MovePlayer.RandomAnswer(), player.HeroName) + '\n',
-                        PlayerId = chatId
-                    });
+                    answ1 += String.Format(Answers.MovePlayer.RandomAnswer(), player.HeroName) + '\n';
+                    answ2 += String.Format(AnswersForOther.MovePlayer.RandomAnswer(), username, player.HeroName,
+                        Extensions.DirectionToString(direction));
 
-                    msg.AddRange(memberlist
-                        .Where(m => m.UserId != chatId)
-                        .Select(m => new MessageConfig
-                        {
-                            Answer = String.Format(AnswersForOther.MovePlayer.RandomAnswer(), username, player.HeroName, Extensions.DirectionToString(direction)),
-                            PlayerId = m.UserId
-                        }));
                 }
+                msg.Add(new MessageConfig
+                {
+                    Answer = answ1,
+                    PlayerId = chatId
+                });
+
+                msg.AddRange(memberlist
+                    .Where(m => m.UserId != chatId)
+                    .Select(m => new MessageConfig
+                    {
+                        Answer = answ2,
+                        PlayerId = m.UserId
+                    }));
             }
+                msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
             return msg;
         }
 
@@ -553,14 +576,22 @@ namespace MazeGenerator.TelegramBot
             LobbyService.StartNewLobby(playerId);
             var memberlist = members.ReadMemberList(
             members.ReadLobbyId(playerId));
+            string s = "";
+            List<string> Names = new List<string>();
+            var characters = CharacterRepository.ReadAll();
+            foreach (var member in memberlist)
+            {
+               s += "*" + (characters.Find(e => e.TelegramUserId == member.UserId).CharacterName) + "*" + ", ";
+            }
 
-            foreach (var item in memberlist)
+            s = s.Substring(0, s.Length - 2);
+            s += ".";
+;            foreach (var item in memberlist)
             {
                 msg.Add(new MessageConfig
                 {
-                    Answer = "Игра начата",
+                    Answer = "Игра начата. Игроки: " + s,
                     PlayerId = item.UserId,
-                    KeyBoardId = KeyboardType.Move
                 });
                 item.IsLobbyActive = true;
                 members.Update(item);
@@ -573,7 +604,23 @@ namespace MazeGenerator.TelegramBot
             }
 
             msg.Find(e => e.PlayerId == members.ReadMemberList(members.ReadLobbyId(playerId)).First().UserId).Answer += " Ваш ход";
+            msg.Find(e => e.PlayerId == members.ReadMemberList(members.ReadLobbyId(playerId)).First().UserId).KeyBoardId
+                = KeyboardType.Move;
+
             return msg;
+        }
+
+        public static KeyboardType GetKeyboardType(Player player)
+        {
+            if (player.Bombs == 0 && player.Guns == 0)
+                return KeyboardType.Move;
+            if (player.Bombs != 0 && player.Guns == 0)
+                return KeyboardType.Bomb;
+            if (player.Bombs == 0 && player.Guns != 0)
+                return KeyboardType.Shoot;
+            if (player.Bombs != 0 && player.Guns != 0)
+                return KeyboardType.ShootwithBomb;
+            return KeyboardType.Move;
         }
     }
 }

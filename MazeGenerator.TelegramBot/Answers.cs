@@ -62,6 +62,10 @@ namespace MazeGenerator.TelegramBot
             "Ранил *{0}*",
             "Поставил рану *{}*"
         };
+        public static readonly List<string> Help = new List<string>()
+        {
+            "Совет"
+        };
         public static readonly List<string> SkipTurn = new List<string>()
         {
             "Ход пропущен",

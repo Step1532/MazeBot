@@ -44,6 +44,7 @@ namespace MazeGenerator.TelegramBot.Models
                     CreateButtonList("Пропуск хода", "Вниз", "Удар кинжалом"),
                 };
 
+            rkm.OneTimeKeyboard = true;
           return rkm;
         }
 
@@ -59,6 +60,7 @@ namespace MazeGenerator.TelegramBot.Models
                     CreateButtonList("Пропуск хода", "Вниз", "Удар кинжалом"),
                 };
 
+            rkm.OneTimeKeyboard = true;
             return rkm;
         }
 
@@ -73,6 +75,7 @@ namespace MazeGenerator.TelegramBot.Models
                      CreateButtonList("Влево", "Взрыв стены", "Вправо"),
                      CreateButtonList("Пропуск хода", "Вниз", "Удар кинжалом"),
                 };
+            rkm.OneTimeKeyboard = true;
             return rkm;
         }
 
@@ -87,6 +90,7 @@ namespace MazeGenerator.TelegramBot.Models
                     CreateButtonList("Влево", "Вправо"),
                     CreateButtonList("Пропуск хода", "Вниз", "Удар кинжалом"),
                 };
+            rkm.OneTimeKeyboard = true;
             return rkm;
         }
 

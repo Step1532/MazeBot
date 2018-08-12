@@ -285,7 +285,14 @@ namespace MazeGenerator.TelegramBot
                     switch (command)
                     {
                         case "/help":
-                            throw new NotImplementedException();
+                            return new List<MessageConfig>
+                            {
+                                new MessageConfig()
+                                {
+                                    Answer = Answers.Help.RandomAnswer(),
+                                    PlayerId = playerId
+                                }
+                            };
                         case "/stop":
                             _characterRepository.Read(playerId);
                             MemberRepository repo = new MemberRepository();
@@ -400,6 +407,7 @@ namespace MazeGenerator.TelegramBot
                         };
                     }
                 case CharacterState.Ban:
+                    //TODO:REBAN
                     return new List<MessageConfig>
                     {
                         new MessageConfig()
