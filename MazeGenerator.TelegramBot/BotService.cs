@@ -209,7 +209,7 @@ namespace MazeGenerator.TelegramBot
                     {
                         msg.Add(new MessageConfig
                         {
-                            Answer = String.Format(Answers.NotBullet.RandomAnswer(), username),
+                            Answer = String.Format(Answers.StabWall.RandomAnswer(), username),
                             PlayerId = memberlist[i].UserId
                         });
                     }
@@ -217,7 +217,7 @@ namespace MazeGenerator.TelegramBot
                     {
                         msg.Add(new MessageConfig
                         {
-                            Answer = String.Format(AnswersForOther.NotBullet.RandomAnswer(), username),
+                            Answer = String.Format(AnswersForOther.StabWall.RandomAnswer(), username),
                             PlayerId = memberlist[i].UserId
                         });
                     }
@@ -368,7 +368,7 @@ namespace MazeGenerator.TelegramBot
             CharacterRepository.Update(c);
             msg.Add(new MessageConfig
             {
-                Answer = "Напишите подтверждение",
+                Answer = "Напишите подтверждение - \"Подтверждаю\"",
                 PlayerId = playerid,
             });
             return msg;
@@ -438,7 +438,6 @@ namespace MazeGenerator.TelegramBot
                         Answer = String.Format(AnswersForOther.MoveWall.RandomAnswer(), username, Extensions.DirectionToString(direction)),
                         PlayerId = m.UserId
                     }));
-//TODO OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO))))))))))))))))))))
                 msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
                 return msg;
             }
@@ -539,7 +538,7 @@ namespace MazeGenerator.TelegramBot
             msg.Add(new MessageConfig
             {
                 PlayerId = playerId,
-                Answer = $"Имя *{username}* задано"
+                Answer = $"Имя *{username}* задано, нажми /game для поиска игры"
             });
             return msg;
         }
@@ -565,7 +564,9 @@ namespace MazeGenerator.TelegramBot
             {
                 msg.Add(new MessageConfig
                 {
-                    Answer = $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyService.EmptyPlaceCount(playerId)}",
+                    Answer = $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyService.EmptyPlaceCount(playerId)} " +
+                             $"\n /stop - для остановки поиска лобби" +
+                             $"\n /help - попросить совет",
                     PlayerId = playerId
                 });
                 var character = characterRepository.Read(playerId);
@@ -590,7 +591,9 @@ namespace MazeGenerator.TelegramBot
             {
                 msg.Add(new MessageConfig
                 {
-                    Answer = "Игра начата. Игроки: " + s,
+                    Answer = "Игра начата. Игроки: " + s + "" +
+                             "\n/leave - испортить другим игру" +
+                             "\n/afk - если кто-то долго не ходит \n",
                     PlayerId = item.UserId,
                 });
                 item.IsLobbyActive = true;
@@ -612,14 +615,14 @@ namespace MazeGenerator.TelegramBot
 
         public static KeyboardType GetKeyboardType(Player player)
         {
+            if (player.Bombs != 0 && player.Guns != 0)
+                return KeyboardType.ShootwithBomb;
             if (player.Bombs == 0 && player.Guns == 0)
                 return KeyboardType.Move;
             if (player.Bombs != 0 && player.Guns == 0)
                 return KeyboardType.Bomb;
             if (player.Bombs == 0 && player.Guns != 0)
                 return KeyboardType.Shoot;
-            if (player.Bombs != 0 && player.Guns != 0)
-                return KeyboardType.ShootwithBomb;
             return KeyboardType.Move;
         }
     }

@@ -26,7 +26,7 @@ namespace MazeGenerator.TelegramBot
 
         public MazeBot(string token)
         {
-            BotClient = new TelegramBotClient(token); //{"Timeout":"00:01:40","IsReceiving":true,"MessageOffset":0}
+            BotClient = new TelegramBotClient(token);
             BotClient.OnMessage += OnNewMessage;
             BotClient.StartReceiving();
         }
@@ -322,9 +322,9 @@ namespace MazeGenerator.TelegramBot
                 case CharacterState.InGame:
                     switch (command)
                     {
-                        case "Вверх":
+                        case "Вперед":
                             return BotService.MoveCommand(playerId, Direction.North);
-                        case "Вниз":
+                        case "Назад":
                             return BotService.MoveCommand(playerId, Direction.South);
                         case "Вправо":
                             return BotService.MoveCommand(playerId, Direction.East);

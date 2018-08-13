@@ -21,7 +21,7 @@ namespace MazeGenerator.Models
             return new LobbyRules
             {
                 //                Size = new Coordinate(3, 3),
-                Size = new Coordinate(3, 4),
+                Size = new Coordinate(4, 7),
                 ExitCount = 1,
                 ArsenalCount = 1,
                 HospitalCount = 1,

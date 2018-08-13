@@ -260,3 +260,9 @@ paket-files/
 __pycache__/
 *.pyc
 GameFiles/Game2/lobby\.json
+
+GameFiles/Characters\.json
+
+GameFiles/Game1/
+
+GameFiles/

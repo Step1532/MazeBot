@@ -12,7 +12,7 @@ namespace MazeGenerator.TelegramBot.Models
                 new [] // first row
                 {
                     //     InlineKeyboardButton.WithCallbackData(" ", "0"),
-                    InlineKeyboardButton.WithCallbackData("⬆️ Вверх", "1"),
+                    InlineKeyboardButton.WithCallbackData("⬆️ Вперед", "1"),
                     //     InlineKeyboardButton.WithCallbackData(" ", "0"),
                 },
                 new [] // second row
@@ -24,7 +24,7 @@ namespace MazeGenerator.TelegramBot.Models
                 new [] // third row
                 {
                     //     InlineKeyboardButton.WithCallbackData(" ", "0"),
-                    InlineKeyboardButton.WithCallbackData("⬇️ Вниз", "4"),
+                    InlineKeyboardButton.WithCallbackData("⬇️ Назад", "4"),
                     //     InlineKeyboardButton.WithCallbackData(" ", "0"),
                 },
             });
@@ -39,9 +39,9 @@ namespace MazeGenerator.TelegramBot.Models
             rkm.Keyboard =
                 new KeyboardButton[][]
                 {
-                    CreateButtonList("Вверх"),
+                    CreateButtonList("Вперед"),
                     CreateButtonList("Влево", "Вправо"),
-                    CreateButtonList("Пропуск хода", "Вниз", "Удар кинжалом"),
+                    CreateButtonList("Пропуск хода", "Назад", "Удар кинжалом"),
                 };
 
             rkm.OneTimeKeyboard = true;
@@ -55,9 +55,9 @@ namespace MazeGenerator.TelegramBot.Models
             rkm.Keyboard =
                 new KeyboardButton[][]
                 {
-                    CreateButtonList("Вверх"),
+                    CreateButtonList("Вперед"),
                     CreateButtonList("Влево", "Выстрел", "Вправо"),
-                    CreateButtonList("Пропуск хода", "Вниз", "Удар кинжалом"),
+                    CreateButtonList("Пропуск хода", "Назад", "Удар кинжалом"),
                 };
 
             rkm.OneTimeKeyboard = true;
@@ -71,9 +71,9 @@ namespace MazeGenerator.TelegramBot.Models
             rkm.Keyboard =
                 new KeyboardButton[][]
                 {
-                     CreateButtonList("Вверх"),
+                     CreateButtonList("Вперед"),
                      CreateButtonList("Влево", "Взрыв стены", "Вправо"),
-                     CreateButtonList("Пропуск хода", "Вниз", "Удар кинжалом"),
+                     CreateButtonList("Пропуск хода", "Назад", "Удар кинжалом"),
                 };
             rkm.OneTimeKeyboard = true;
             return rkm;
@@ -86,9 +86,9 @@ namespace MazeGenerator.TelegramBot.Models
             rkm.Keyboard =
                 new KeyboardButton[][]
                 {
-                    CreateButtonList("Выстрел", "Вверх", "Взрыв стены"),
+                    CreateButtonList("Выстрел", "Вперед", "Взрыв стены"),
                     CreateButtonList("Влево", "Вправо"),
-                    CreateButtonList("Пропуск хода", "Вниз", "Удар кинжалом"),
+                    CreateButtonList("Пропуск хода", "Назад", "Удар кинжалом"),
                 };
             rkm.OneTimeKeyboard = true;
             return rkm;
