@@ -44,46 +44,60 @@ namespace MazeGenerator.TelegramBot
 
             
             List<MessageConfig> msg;
-            //try
-            //{
-
-            //    if (character == null)
-            //    {
-            //        msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
-            //    }
-            //    else
-            //    {
-            //        msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
-            //    }
-            //}
-            //catch (Exception exception)
-            //{
-            //    Console.WriteLine(exception);
-            //    return;
-            //}
-
-            if (character == null)
+            try
             {
-                msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
-            }
-            else
-            {
-                msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
-            }
 
-            if (msg == null) return;
-            foreach (var item in msg)
-            {
-                if (item.KeyBoardId != null)
+                if (character == null)
                 {
-                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false,false,0, GetKeyboardMarkup(item.KeyBoardId));
+                    msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
                 }
                 else
                 {
-                    BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown);
+                    msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
                 }
 
+                if (msg == null) return;
+                foreach (var item in msg)
+                {
+                    if (item.KeyBoardId != null)
+                    {
+                        BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false, false, 0, GetKeyboardMarkup(item.KeyBoardId));
+                    }
+                    else
+                    {
+                        BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown);
+                    }
+
+                }
             }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+                return;
+            }
+
+            //if (character == null)
+            //{
+            //    msg = StateMachine(CharacterState.NewCharacter, e.Message.Text, playerId);
+            //}
+            //else
+            //{
+            //    msg = StateMachine(_characterRepository.Read(playerId).State, e.Message.Text, playerId);
+            //}
+
+            //if (msg == null) return;
+            //foreach (var item in msg)
+            //{
+            //    if (item.KeyBoardId != null)
+            //    {
+            //        BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown, false,false,0, GetKeyboardMarkup(item.KeyBoardId));
+            //    }
+            //    else
+            //    {
+            //        BotClient.SendTextMessageAsync(item.PlayerId, item.Answer, ParseMode.Markdown);
+            //    }
+
+            //}
         }
 
         private void BotClient_OnCallbackQueryShoot(object sender, CallbackQueryEventArgs e)
@@ -364,7 +378,7 @@ namespace MazeGenerator.TelegramBot
                             PlayerId = playerId
                         }
                     };
-
+ 
                 case CharacterState.NewCharacter:
                     if (command == "/start")
                     {

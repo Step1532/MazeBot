@@ -11,9 +11,11 @@ namespace MazeGenerator.Database
     public class CharacterRepository
     {
         private string _connectionString;
-        private const string CharacterFile = @"C:\Users\Step1\Desktop\mazegen\GameFiles\Characters.json";
-
-
+        #if DEBUG
+            private const string CharacterFile = @"C:\Users\Step1\Desktop\mazegen\GameFiles\Characters.json";
+        #else
+                private const string CharacterFile = @"GameFiles\Characters.json";
+        #endif
         public CharacterRepository()
         {
             _connectionString = Config.ConnectionString;

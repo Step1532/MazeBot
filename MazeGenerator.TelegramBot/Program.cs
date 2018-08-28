@@ -16,6 +16,8 @@ namespace MazeGenerator.TelegramBot
         private static void Main(string[] args)
         {
             var token = Console.ReadLine();
+            Answers a = new Answers();
+            AnswersForOther b = new AnswersForOther();
             File.WriteAllText(@"usersinLobby.json", JsonConvert.SerializeObject(new List<Member>()));
             var bot = new MazeBot(token);
             Console.ReadLine();

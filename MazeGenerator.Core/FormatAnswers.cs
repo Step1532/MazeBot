@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using MazeGenerator.Core.Services;
+using MazeGenerator.Database;
 using MazeGenerator.Models;
 using MazeGenerator.Models.Enums;
 
@@ -15,7 +16,8 @@ namespace MazeGenerator.Core
 
         public static void ConsoleApp(Lobby lobby)
         {
-            Coordinate a = new Coordinate(0, 0);
+            CharacterRepository _characterRepository = new CharacterRepository();
+            MemberRepository _memberRepository = new MemberRepository();
             for (int i = 0; i < lobby.Maze.GetLength(1); i++)
             {
                 for (int j = 0; j < lobby.Maze.GetLength(0); j++)
@@ -36,7 +38,9 @@ namespace MazeGenerator.Core
                 }
                 Console.WriteLine();
             }
-   //         Console.WriteLine(lobby.Events[1].Position.X + " " + lobby.Events[1].Position.Y);
+            //         Console.WriteLine(lobby.Events[1].Position.X + " " + lobby.Events[1].Position.Y);
+            Console.WriteLine("Total  users | " + _characterRepository.ReadAll().Count);
+            Console.WriteLine("Online users | " + _memberRepository.ReadLobbyAll().Count);
         }
 
         public static string EventLetter(EventTypeEnum type)

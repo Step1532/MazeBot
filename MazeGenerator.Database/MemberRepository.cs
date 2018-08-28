@@ -10,8 +10,11 @@ namespace MazeGenerator.Database
     public class MemberRepository
     {
         private readonly string _connectionString;
+#if DEBUG
         private string UsersFilePath = @"C:\Users\Step1\Desktop\mazegen\GameFiles\usersinLobby.json";
-
+#else
+        private string UsersFilePath = @"GameFiles\usersinLobby.json";
+#endif
         public MemberRepository()
         {
             _connectionString = Config.ConnectionString;

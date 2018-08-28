@@ -33,13 +33,13 @@ namespace MazeGenerator.TelegramBot
             switch (status)
             {
                 case AttackType.NoTarget:
-                    return (string.Format(Answers.StabWall.RandomAnswer(), username, username2),
-                        string.Format(AnswersForOther.StabWall.RandomAnswer(), username, username2));
+                    return (string.Format(Answers.StabWall.RandomAnswer()),
+                        string.Format(AnswersForOther.StabWall.RandomAnswer(), username));
                 case AttackType.Kill:
-                    return (string.Format(Answers.StabKill.RandomAnswer(), username, username2),
+                    return (string.Format(Answers.StabKill.RandomAnswer(), username2),
                         string.Format(AnswersForOther.StabKill.RandomAnswer(), username, username2));
                 case AttackType.Hit:
-                    return (string.Format(Answers.StabHit.RandomAnswer(), username, username2),
+                    return (string.Format(Answers.StabHit.RandomAnswer(), username2),
                         string.Format(AnswersForOther.StabHit.RandomAnswer(), username, username2));
             }
 
@@ -54,10 +54,10 @@ namespace MazeGenerator.TelegramBot
                     return (string.Format(Answers.ShootWall.RandomAnswer(), username, username2, direction),
                             string.Format(AnswersForOther.ShootWall.RandomAnswer(), username, username2, direction)) ;
                 case AttackType.Kill:
-                    return (string.Format(Answers.ShootKill.RandomAnswer(), username, username2, direction),
+                    return (string.Format(Answers.ShootKill.RandomAnswer(), username2, direction),
                         string.Format(AnswersForOther.ShootKill.RandomAnswer(), username, username2, direction));
                 case AttackType.Hit:
-                    return (string.Format(Answers.ShootHit.RandomAnswer(), username, username2, direction),
+                    return (string.Format(Answers.ShootHit.RandomAnswer(),  username2, direction),
                         string.Format(AnswersForOther.ShootHit.RandomAnswer(), username, username2, direction));
             }
 

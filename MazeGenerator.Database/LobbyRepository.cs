@@ -8,8 +8,11 @@ namespace MazeGenerator.Database
 {
     public class LobbyRepository
     {
+#if DEBUG
         private string LobbyFile(int id) => $@"C:\Users\Step1\Desktop\mazegen\GameFiles\Game{id}\lobby.json";
-
+#else
+                private const string LobbyFile(int id) = $@"GameFiles\Game{id}\lobby.json";
+#endif
         private readonly string _connectionString;
         public LobbyRepository()
         {
@@ -18,7 +21,11 @@ namespace MazeGenerator.Database
 
         public void Create(Lobby lobby)
         {
+#if DEBUG
             Directory.CreateDirectory($@"C:\Users\Step1\Desktop\mazegen\GameFiles\Game{lobby.GameId}");
+#else
+            Directory.CreateDirectory($@"GameFiles\Game{lobby.GameId}");
+#endif
             File.WriteAllText(LobbyFile(lobby.GameId), JsonConvert.SerializeObject(lobby));
         }
 

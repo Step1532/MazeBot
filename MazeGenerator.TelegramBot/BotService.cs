@@ -94,7 +94,6 @@ namespace MazeGenerator.TelegramBot
                     Answer = config.Item1,
                     PlayerId = userId
                 });
-
                 msg.AddRange(memberlist
                     .Where(m => m.UserId != userId)
                     .Select(m => new MessageConfig
@@ -107,6 +106,8 @@ namespace MazeGenerator.TelegramBot
             //if (status.ShootCount == false) 
             msg.Find(e => e.PlayerId == userId).KeyBoardId = status.KeyboardType;
                 msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
+            msg.Find(e => e.PlayerId == status.Target.TelegramUserId).Answer +=
+                "Вы убиты. Для поиска игры воспользуйтесь командой /game";
             return msg;
         }
 
@@ -242,6 +243,9 @@ namespace MazeGenerator.TelegramBot
                     Answer = config.Item2,
                     PlayerId = m.UserId
                 }));
+            msg.Find(e => e.PlayerId == nextPlayer.TelegramUserId).KeyBoardId = GetKeyboardType(nextPlayer);
+            msg.Find(e => e.PlayerId == status.Target.TelegramUserId).Answer +=
+                "Вы убиты. Для поиска игры воспользуйтесь командой /game";
             return msg;
         }
 
@@ -564,7 +568,7 @@ namespace MazeGenerator.TelegramBot
             {
                 msg.Add(new MessageConfig
                 {
-                    Answer = $"Вы добавлены в лобби, осталось игроков для начала игры{LobbyService.EmptyPlaceCount(playerId)} " +
+                    Answer = $"Вы добавлены в лобби, осталось игроков для начала игры: *{LobbyService.EmptyPlaceCount(playerId)}* " +
                              $"\n /stop - для остановки поиска лобби" +
                              $"\n /help - попросить совет",
                     PlayerId = playerId
